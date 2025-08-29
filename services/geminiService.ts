@@ -306,7 +306,7 @@ const handleApiError = (error: any): string => {
     // Check if this might be a different 429 error
     const errorMsg = error.error?.message || error.message || '';
     if (errorMsg.includes('quota') || errorMsg.includes('limit')) {
-      return "You've reached the API rate limit. The free tier allows 5 requests per minute and 25 per day. Please wait a few minutes before trying again, or consider upgrading your API plan for higher limits.";
+      return "You've reached the API rate limit. The free tier allows 15 requests per minute and 1,500 per day. Please wait a moment before trying again, or consider upgrading your API plan for higher limits.";
     } else {
       return `API returned status 429: ${errorMsg}. This might indicate a service issue or billing problem. Please check your Google AI Studio console for more details.`;
     }
@@ -324,7 +324,22 @@ const handleApiError = (error: any): string => {
   
   // Handle authentication errors
   if (error.status === 401 || error.status === 403) {
-    return "API authentication failed. Please check that your Gemini API key is valid and has the necessary permissions.";
+    return "API authentication failed. Please check that your Gemini API key is valid and has the necessary permissions for image generation.";
+  }
+  
+  // Handle content policy violations
+  if (error.error?.code === 400 && error.error?.message?.includes('content policy')) {
+    return "The image was rejected due to content policy restrictions. Please try with different images that comply with Google's AI content policies.";
+  }
+  
+  // Handle image processing errors
+  if (error.message?.includes('image') && (error.message?.includes('format') || error.message?.includes('size'))) {
+    return "There was an issue processing your images. Please ensure they are in a supported format (JPEG, PNG) and under 20MB in size.";
+  }
+  
+  // Handle model capacity issues
+  if (error.status === 503 || error.message?.includes('service unavailable')) {
+    return "The AI service is temporarily unavailable due to high demand. Please wait a moment and try again.";
   }
   
   // Handle fetch/network errors  
@@ -333,9 +348,14 @@ const handleApiError = (error: any): string => {
     return "Network connection failed. Please check your internet connection and try again.";
   }
   
-  // Generic error fallback
+  // Handle timeout errors
+  if (error.name === 'TimeoutError' || error.message?.includes('timeout')) {
+    return "The request took too long to complete. This might be due to large images or server load. Please try again with smaller images.";
+  }
+  
+  // Generic error fallback with more guidance
   const message = error.error?.message || error.message || 'Unknown error occurred';
-  return `API Error: ${message}`;
+  return `API Error: ${message}. If this persists, please check your API key settings or try again later.`;
 };
 
 export const generateTryOnImage = async (
@@ -414,6 +434,18 @@ ${selectedColor ? '0.  **ABSOLUTE PRIORITY - Color Matching:** The outfit MUST b
 4.  **Realistic Integration:** Adjust the lighting, shadows, and colors of the outfit to perfectly match the lighting conditions of the subject's photo. The outfit must cast realistic shadows on the body and the environment.
 5.  **Complete Replacement:** The new outfit must completely REPLACE the clothing the subject is currently wearing. If the outfit image contains an item that corresponds to an item the subject is wearing (e.g., both images contain a hat, or the outfit has glasses and the person is wearing glasses), you MUST replace the subject's original item with the new one. Ensure a complete replacement, leaving no parts of the original item visible.
 6.  **Clean Output:** The final output must ONLY be the composed image. Do not add any text, logos, watermarks, or other artifacts.
+
+**CRITICAL NEGATIVE CONSTRAINTS (Things to ABSOLUTELY AVOID):**
+- **DO NOT** alter the subject's face, facial features, hair, or skin tone in any way
+- **DO NOT** change the background, lighting environment, or scene from the subject's photo
+- **DO NOT** add any text, logos, watermarks, branding, or digital artifacts to the final image
+- **DO NOT** generate an image where the person's body type differs from the specified '${bodyBuild}' build
+- **DO NOT** leave any part of the original clothing visible under or through the new outfit
+- **DO NOT** change the subject's pose, hand positions, or body positioning
+- **DO NOT** add accessories, jewelry, or items not present in the outfit image
+- **DO NOT** modify the subject's age, gender presentation, or physical characteristics
+- **DO NOT** create unrealistic proportions or impossible clothing fits
+- **DO NOT** generate multiple people if only one person exists in the subject image
 
 Execute this task with the highest degree of photorealism, paying special attention to the unbreakable rule of body build fidelity${selectedColor ? ' and the critical color matching requirement' : ''}.
 `;
