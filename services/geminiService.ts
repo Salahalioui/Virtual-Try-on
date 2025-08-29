@@ -9,6 +9,49 @@ import { GoogleGenAI, GenerateContentResponse, Modality } from "@google/genai";
 // Helper to get intrinsic image dimensions from a File object
 const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
     return new Promise((resolve, reject) => {
+        console.log('📐 Getting dimensions for:', file.name, 'Size:', file.size, 'Type:', file.type);
+        
+        // Mobile-specific: Try URL.createObjectURL first (more reliable on mobile)
+        const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            try {
+                const objectUrl = URL.createObjectURL(file);
+                console.log('📱 Using object URL method for mobile dimension analysis');
+                
+                const img = new Image();
+                img.onload = function() {
+                    try {
+                        console.log('✅ Mobile dimensions loaded:', img.naturalWidth, 'x', img.naturalHeight);
+                        URL.revokeObjectURL(objectUrl); // Clean up
+                        resolve({ width: img.naturalWidth, height: img.naturalHeight });
+                    } catch (error) {
+                        URL.revokeObjectURL(objectUrl);
+                        reject(new Error(`Error getting image dimensions on mobile: ${error}`));
+                    }
+                };
+                img.onerror = function(err) {
+                    URL.revokeObjectURL(objectUrl);
+                    console.error('📱 Mobile image load error, falling back to FileReader:', err);
+                    // Fallback to FileReader method
+                    getImageDimensionsWithFileReader(file).then(resolve).catch(reject);
+                };
+                img.src = objectUrl;
+                return;
+            } catch (error) {
+                console.error('📱 Object URL method failed, using FileReader:', error);
+                // Fallback to FileReader
+            }
+        }
+        
+        // Desktop or fallback method
+        getImageDimensionsWithFileReader(file).then(resolve).catch(reject);
+    });
+};
+
+// Separate FileReader method for dimension analysis
+const getImageDimensionsWithFileReader = (file: File): Promise<{ width: number; height: number }> => {
+    return new Promise((resolve, reject) => {
         const reader = new FileReader();
         
         reader.onload = function(event) {
@@ -19,6 +62,7 @@ const getImageDimensions = (file: File): Promise<{ width: number; height: number
                 const img = new Image();
                 img.onload = function() {
                     try {
+                        console.log('✅ FileReader dimensions loaded:', img.naturalWidth, 'x', img.naturalHeight);
                         resolve({ width: img.naturalWidth, height: img.naturalHeight });
                     } catch (error) {
                         reject(new Error(`Error getting image dimensions: ${error}`));
@@ -34,7 +78,7 @@ const getImageDimensions = (file: File): Promise<{ width: number; height: number
         };
         
         reader.onerror = function(err) {
-            console.error('📱 FileReader error in getImageDimensions:', err);
+            console.error('📱 FileReader error in getImageDimensionsWithFileReader:', err);
             const errorMsg = err instanceof Event ? 'FileReader failed to read the image file for dimension analysis' : String(err);
             reject(new Error(`File reader error: ${errorMsg}`));
         };
