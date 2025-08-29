@@ -290,6 +290,12 @@ const fileToPart = async (file: File): Promise<{ inlineData: { mimeType: string;
 const handleApiError = (error: any): string => {
   console.error('API Error Details:', error);
   
+  // Handle character encoding errors (mobile-specific)
+  if (error.message?.includes('non ISO-8859-1 code point') || 
+      error.message?.includes('Failed to execute') && error.message?.includes('Headers')) {
+    return "API key contains invalid characters. Please copy your API key again, ensuring no extra characters or spaces are included.";
+  }
+  
   // Handle rate limit errors specifically
   if (error.status === 429 || (error.error && error.error.code === 429)) {
     return "You've reached the API rate limit. The free tier allows 5 requests per minute and 25 per day. Please wait a few minutes before trying again, or consider upgrading your API plan for higher limits.";
@@ -330,7 +336,7 @@ export const generateTryOnImage = async (
   console.log('Starting virtual try-on generation process...');
   
   // Use custom API key if provided, otherwise fall back to environment variable
-  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
+  let apiKey = customApiKey || process.env.GEMINI_API_KEY;
   
   // Debug logging to verify which API key is being used
   if (customApiKey) {
@@ -344,7 +350,14 @@ export const generateTryOnImage = async (
   if (!apiKey) {
     throw new Error('No API key available. Please set up your Gemini API key in Settings.');
   }
+
+  // Mobile-specific: Clean API key to prevent header encoding issues
+  apiKey = apiKey.trim().replace(/[^\x00-\x7F]/g, ''); // Remove non-ASCII characters
+  if (!apiKey || apiKey.length < 20) {
+    throw new Error('API key appears to be corrupted or invalid after cleaning. Please check your API key.');
+  }
   
+  console.log('🧹 Cleaned API key for mobile compatibility');
   const ai = new GoogleGenAI({ apiKey });
 
   // Get original scene dimensions for final cropping
