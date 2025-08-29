@@ -10,6 +10,7 @@ import ImageUploader from './components/ImageUploader';
 import Spinner from './components/Spinner';
 import SettingsModal from './components/SettingsModal';
 import MobileConsole from './components/MobileConsole';
+import ColorPicker from './components/ColorPicker';
 
 const loadingMessages = [
     "Warming up the virtual dressing room...",
@@ -33,6 +34,8 @@ const App: React.FC = () => {
   const [customApiKey, setCustomApiKey] = useState<string>('');
   const [isPWAInstallable, setIsPWAInstallable] = useState<boolean>(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
   const subjectImageUrl = useMemo(() => {
     if (subjectImageFile) {
@@ -70,7 +73,13 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const { finalImageUrl } = await generateTryOnImage(subjectImageFile, outfitImageFile, bodyBuild, customApiKey || undefined);
+      const { finalImageUrl } = await generateTryOnImage(
+        subjectImageFile, 
+        outfitImageFile, 
+        bodyBuild, 
+        customApiKey || undefined,
+        selectedColor || undefined
+      );
       setGeneratedImageUrl(finalImageUrl);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
@@ -79,7 +88,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [subjectImageFile, outfitImageFile, bodyBuild, customApiKey]);
+  }, [subjectImageFile, outfitImageFile, bodyBuild, customApiKey, selectedColor]);
 
   const handleDownload = () => {
     if (!generatedImageUrl) return;
@@ -98,6 +107,24 @@ const App: React.FC = () => {
     setError(null);
     setIsLoading(false);
     setBodyBuild(bodyBuildOptions[2]);
+    setSelectedColor(null);
+  }, []);
+
+  const handleColorSelect = useCallback((color: string) => {
+    setSelectedColor(color);
+    console.log('🎨 Color selected for outfit recoloring:', color);
+  }, []);
+
+  const handleOpenColorPicker = useCallback(() => {
+    setShowColorPicker(true);
+  }, []);
+
+  const handleCloseColorPicker = useCallback(() => {
+    setShowColorPicker(false);
+  }, []);
+
+  const resetColorSelection = useCallback(() => {
+    setSelectedColor(null);
   }, []);
 
   const handleApiKeyChange = useCallback((apiKey: string) => {
@@ -340,6 +367,46 @@ const App: React.FC = () => {
                 </div>
 
                 <div className="mt-8 lg:mt-12 space-y-6">
+                    {/* Color Picker Section */}
+                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
+                        <div className="text-center mb-4">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-2">🎨 Color Customization</h3>
+                            <p className="text-sm text-gray-600">Pick a color from your photo to recolor the outfit</p>
+                        </div>
+                        
+                        <div className="flex items-center justify-center gap-4 flex-wrap">
+                            <button
+                                onClick={handleOpenColorPicker}
+                                className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+                            >
+                                👁️ Pick a Color
+                            </button>
+                            
+                            {selectedColor && (
+                                <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm border">
+                                    <div 
+                                        className="w-6 h-6 rounded border-2 border-gray-300 shadow-sm"
+                                        style={{ backgroundColor: selectedColor }}
+                                    />
+                                    <span className="font-mono text-sm text-gray-700">{selectedColor}</span>
+                                    <button
+                                        onClick={resetColorSelection}
+                                        className="text-gray-400 hover:text-red-500 transition-colors ml-1"
+                                        title="Remove color selection"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        
+                        {selectedColor && (
+                            <p className="text-xs text-center text-gray-500 mt-2">
+                                The AI will recolor the outfit to match this color
+                            </p>
+                        )}
+                    </div>
+
                     <div className="text-center">
                         <label htmlFor="body-build-select" className="block text-lg font-semibold text-gray-700 mb-4">
                             Select Your Body Build
@@ -443,6 +510,15 @@ const App: React.FC = () => {
         />
         
         <MobileConsole />
+        
+        {/* Color Picker Modal */}
+        {showColorPicker && subjectImageUrl && (
+          <ColorPicker
+            imageUrl={subjectImageUrl}
+            onColorSelect={handleColorSelect}
+            onClose={handleCloseColorPicker}
+          />
+        )}
       </div>
     </div>
   );

@@ -177,12 +177,6 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile,
             Cancel
           </button>
           <button
-            onClick={() => onCropComplete(originalFile)}
-            className="bg-zinc-500 hover:bg-zinc-600 text-white font-bold py-2 px-6 rounded-lg transition-colors"
-          >
-            Use Full Image
-          </button>
-          <button
             onClick={handleCrop}
             disabled={!completedCrop || isCropping}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
