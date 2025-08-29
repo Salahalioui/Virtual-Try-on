@@ -195,9 +195,18 @@ export const generateTryOnImage = async (
     subjectImage: File, 
     outfitImage: File,
     bodyBuild: string,
+    customApiKey?: string,
 ): Promise<{ finalImageUrl: string; }> => {
   console.log('Starting virtual try-on generation process...');
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
+  // Use custom API key if provided, otherwise fall back to environment variable
+  const apiKey = customApiKey || process.env.API_KEY;
+  
+  if (!apiKey) {
+    throw new Error('No API key available. Please set up your Gemini API key in Settings.');
+  }
+  
+  const ai = new GoogleGenAI({ apiKey });
 
   // Get original scene dimensions for final cropping
   const { width: originalWidth, height: originalHeight } = await getImageDimensions(subjectImage);

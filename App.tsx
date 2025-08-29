@@ -8,6 +8,7 @@ import { generateTryOnImage } from './services/geminiService';
 import Header from './components/Header';
 import ImageUploader from './components/ImageUploader';
 import Spinner from './components/Spinner';
+import SettingsModal from './components/SettingsModal';
 
 const loadingMessages = [
     "Warming up the virtual dressing room...",
@@ -27,6 +28,10 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+  const [showSettings, setShowSettings] = useState<boolean>(false);
+  const [customApiKey, setCustomApiKey] = useState<string>('');
+  const [isPWAInstallable, setIsPWAInstallable] = useState<boolean>(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   const subjectImageUrl = subjectImageFile ? URL.createObjectURL(subjectImageFile) : null;
   const outfitImageUrl = outfitImageFile ? URL.createObjectURL(outfitImageFile) : null;
@@ -39,7 +44,7 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const { finalImageUrl } = await generateTryOnImage(subjectImageFile, outfitImageFile, bodyBuild);
+      const { finalImageUrl } = await generateTryOnImage(subjectImageFile, outfitImageFile, bodyBuild, customApiKey || undefined);
       setGeneratedImageUrl(finalImageUrl);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
@@ -48,7 +53,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [subjectImageFile, outfitImageFile, bodyBuild]);
+  }, [subjectImageFile, outfitImageFile, bodyBuild, customApiKey]);
 
   const handleDownload = () => {
     if (!generatedImageUrl) return;
@@ -68,6 +73,28 @@ const App: React.FC = () => {
     setIsLoading(false);
     setBodyBuild(bodyBuildOptions[2]);
   }, []);
+
+  const handleApiKeyChange = useCallback((apiKey: string) => {
+    setCustomApiKey(apiKey);
+    if (apiKey) {
+      localStorage.setItem('gemini-api-key', apiKey);
+    } else {
+      localStorage.removeItem('gemini-api-key');
+    }
+  }, []);
+
+  const handleInstallPWA = useCallback(() => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        }
+        setDeferredPrompt(null);
+        setIsPWAInstallable(false);
+      });
+    }
+  }, [deferredPrompt]);
 
   const handleChangeOutfit = useCallback(() => {
     setOutfitImageFile(null);
@@ -92,6 +119,36 @@ const App: React.FC = () => {
     };
   }, [isLoading]);
   
+  // PWA Installation handling
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsPWAInstallable(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch((error) => console.log('Service Worker registration failed:', error));
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  // Load custom API key from localStorage
+  useEffect(() => {
+    const savedApiKey = localStorage.getItem('gemini-api-key');
+    if (savedApiKey) {
+      setCustomApiKey(savedApiKey);
+    }
+  }, []);
+
   useEffect(() => {
     return () => {
         if (subjectImageUrl) URL.revokeObjectURL(subjectImageUrl);
@@ -334,12 +391,24 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 text-gray-800">
       <div className="flex flex-col min-h-screen">
-        <Header />
+        <Header 
+          onOpenSettings={() => setShowSettings(true)}
+          onInstallPWA={handleInstallPWA}
+          showInstallButton={isPWAInstallable}
+          hasCustomApiKey={!!customApiKey}
+        />
         <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
           <div className="w-full">
             {renderContent()}
           </div>
         </main>
+        
+        <SettingsModal
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          onApiKeyChange={handleApiKeyChange}
+          currentApiKey={customApiKey}
+        />
       </div>
     </div>
   );
