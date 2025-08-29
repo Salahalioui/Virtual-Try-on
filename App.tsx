@@ -43,8 +43,8 @@ const App: React.FC = () => {
       setGeneratedImageUrl(finalImageUrl);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setError(`Failed to generate the image. ${errorMessage}`);
-      console.error(err);
+      console.error('Try-on generation error:', err);
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -102,22 +102,78 @@ const App: React.FC = () => {
 
   const renderContent = () => {
     if (error) {
+        // Check if it's a rate limit error
+        const isRateLimit = error.includes('rate limit') || error.includes('quota') || error.includes('exceeded');
+        const isQuotaExceeded = error.includes('daily') || error.includes('quota');
+        
        return (
-           <div className="text-center animate-fade-in max-w-2xl mx-auto px-4">
-            <div className="bg-red-50 border border-red-200 p-6 sm:p-8 rounded-2xl shadow-lg">
-                <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
+           <div className="text-center animate-fade-in max-w-3xl mx-auto px-4">
+            <div className={`${isRateLimit ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200'} border p-6 sm:p-8 rounded-2xl shadow-lg`}>
+                <div className={`w-16 h-16 mx-auto mb-4 ${isRateLimit ? 'bg-amber-100' : 'bg-red-100'} rounded-full flex items-center justify-center`}>
+                    {isRateLimit ? (
+                        <svg className="w-8 h-8 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                        </svg>
+                    ) : (
+                        <svg className="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                    )}
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-red-800">Oops! Something went wrong</h2>
-                <p className="text-base sm:text-lg text-red-700 mb-6 leading-relaxed">{error}</p>
-                <button
-                    onClick={handleReset}
-                    className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 sm:px-8 rounded-xl text-base sm:text-lg transition-all duration-200 shadow-md hover:shadow-lg"
-                  >
-                    🔄 Try Again
-                </button>
+                
+                {isRateLimit ? (
+                    <>
+                        <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-amber-800">
+                            {isQuotaExceeded ? '⏰ Daily Limit Reached' : '🚦 Rate Limit Reached'}
+                        </h2>
+                        <p className="text-base sm:text-lg text-amber-700 mb-6 leading-relaxed">{error}</p>
+                        
+                        <div className="bg-white rounded-xl p-4 mb-6 border border-amber-200">
+                            <h3 className="font-semibold text-amber-800 mb-3">📊 Gemini API Free Tier Limits:</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
+                                <div className="flex items-center space-x-2">
+                                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                    <span>5 requests per minute</span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                                    <span>25 requests per day</span>
+                                </div>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2">Resets at midnight Pacific Time</p>
+                        </div>
+                        
+                        <div className="space-y-3">
+                            <button
+                                onClick={handleReset}
+                                className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-6 sm:px-8 rounded-xl text-base sm:text-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                            >
+                                🔄 Try Again Later
+                            </button>
+                            <div className="text-center">
+                                <a 
+                                    href="https://ai.google.dev/pricing" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
+                                >
+                                    💳 Upgrade API Plan for Higher Limits
+                                </a>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-red-800">Oops! Something went wrong</h2>
+                        <p className="text-base sm:text-lg text-red-700 mb-6 leading-relaxed">{error}</p>
+                        <button
+                            onClick={handleReset}
+                            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 sm:px-8 rounded-xl text-base sm:text-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                        >
+                            🔄 Try Again
+                        </button>
+                    </>
+                )}
             </div>
           </div>
         );

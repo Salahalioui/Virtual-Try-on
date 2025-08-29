@@ -157,6 +157,40 @@ const fileToPart = async (file: File): Promise<{ inlineData: { mimeType: string;
  * @param bodyBuild A text description of the person's body build.
  * @returns A promise that resolves to an object containing the base64 data URL of the generated image.
  */
+// Enhanced error handling for API responses
+const handleApiError = (error: any): string => {
+  console.error('API Error Details:', error);
+  
+  // Handle rate limit errors specifically
+  if (error.status === 429 || (error.error && error.error.code === 429)) {
+    return "You've reached the API rate limit. The free tier allows 5 requests per minute and 25 per day. Please wait a few minutes before trying again, or consider upgrading your API plan for higher limits.";
+  }
+  
+  // Handle quota exceeded errors
+  if (error.error && error.error.status === 'RESOURCE_EXHAUSTED') {
+    const details = error.error.details || [];
+    const quotaFailure = details.find((d: any) => d['@type']?.includes('QuotaFailure'));
+    
+    if (quotaFailure) {
+      return "You've exceeded your daily API quota. The free tier resets at midnight Pacific Time. You can upgrade your API plan for higher limits, or try again tomorrow.";
+    }
+  }
+  
+  // Handle authentication errors
+  if (error.status === 401 || error.status === 403) {
+    return "API authentication failed. Please check that your Gemini API key is valid and has the necessary permissions.";
+  }
+  
+  // Handle network errors
+  if (error.name === 'NetworkError' || error.message?.includes('network')) {
+    return "Network connection failed. Please check your internet connection and try again.";
+  }
+  
+  // Generic error fallback
+  const message = error.error?.message || error.message || 'Unknown error occurred';
+  return `API Error: ${message}`;
+};
+
 export const generateTryOnImage = async (
     subjectImage: File, 
     outfitImage: File,
@@ -204,13 +238,18 @@ Execute this task with the highest degree of photorealism, paying special attent
   
   console.log('Sending images and prompt to the model...');
   
-  const response: GenerateContentResponse = await ai.models.generateContent({
-    model: 'gemini-2.5-flash-image-preview',
-    contents: { parts: [subjectImagePart, outfitImagePart, textPart] },
-    config: {
-        responseModalities: [Modality.IMAGE, Modality.TEXT],
-    },
-  });
+  let response: GenerateContentResponse;
+  try {
+    response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-image-preview',
+      contents: { parts: [subjectImagePart, outfitImagePart, textPart] },
+      config: {
+          responseModalities: [Modality.IMAGE, Modality.TEXT],
+      },
+    });
+  } catch (apiError: any) {
+    throw new Error(handleApiError(apiError));
+  }
 
   console.log('Received response from the model.');
   
@@ -233,5 +272,5 @@ Execute this task with the highest degree of photorealism, paying special attent
   }
 
   console.error("Model response did not contain an image part.", response);
-  throw new Error("The AI model did not return an image. Please try again.");
+  throw new Error("The AI model did not return an image. This might be due to content restrictions or processing issues. Please try with different images or try again later.");
 };
