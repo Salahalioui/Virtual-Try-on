@@ -303,7 +303,13 @@ const handleApiError = (error: any): string => {
   
   // Handle rate limit errors specifically
   if (error.status === 429 || (error.error && error.error.code === 429)) {
-    return "You've reached the API rate limit. The free tier allows 5 requests per minute and 25 per day. Please wait a few minutes before trying again, or consider upgrading your API plan for higher limits.";
+    // Check if this might be a different 429 error
+    const errorMsg = error.error?.message || error.message || '';
+    if (errorMsg.includes('quota') || errorMsg.includes('limit')) {
+      return "You've reached the API rate limit. The free tier allows 5 requests per minute and 25 per day. Please wait a few minutes before trying again, or consider upgrading your API plan for higher limits.";
+    } else {
+      return `API returned status 429: ${errorMsg}. This might indicate a service issue or billing problem. Please check your Google AI Studio console for more details.`;
+    }
   }
   
   // Handle quota exceeded errors
@@ -415,6 +421,7 @@ Execute this task with the highest degree of photorealism, paying special attent
     });
   } catch (apiError: any) {
     console.error('🔥 API call failed:', apiError);
+    console.error('🔥 Full error object:', JSON.stringify(apiError, null, 2));
     throw new Error(handleApiError(apiError));
   }
 
