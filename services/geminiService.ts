@@ -10,19 +10,42 @@ import { GoogleGenAI, GenerateContentResponse, Modality } from "@google/genai";
 const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (event) => {
-            if (!event.target?.result) {
-                return reject(new Error("Failed to read file."));
+        
+        reader.onload = function(event) {
+            try {
+                if (!event.target?.result) {
+                    return reject(new Error("Failed to read file - no result data"));
+                }
+                const img = new Image();
+                img.onload = function() {
+                    try {
+                        resolve({ width: img.naturalWidth, height: img.naturalHeight });
+                    } catch (error) {
+                        reject(new Error(`Error getting image dimensions: ${error}`));
+                    }
+                };
+                img.onerror = function(err) {
+                    reject(new Error(`Image load error: ${err || 'Unknown image error'}`));
+                };
+                img.src = event.target.result as string;
+            } catch (error) {
+                reject(new Error(`File processing error: ${error}`));
             }
-            const img = new Image();
-            img.src = event.target.result as string;
-            img.onload = () => {
-                resolve({ width: img.naturalWidth, height: img.naturalHeight });
-            };
-            img.onerror = (err) => reject(new Error(`Image load error: ${err}`));
         };
-        reader.onerror = (err) => reject(new Error(`File reader error: ${err}`));
+        
+        reader.onerror = function(err) {
+            reject(new Error(`File reader error: ${err || 'Unknown file reader error'}`));
+        };
+        
+        reader.onabort = function() {
+            reject(new Error('File reading was aborted'));
+        };
+        
+        try {
+            reader.readAsDataURL(file);
+        } catch (error) {
+            reject(new Error(`Cannot start file reading: ${error}`));
+        }
     });
 };
 
@@ -78,56 +101,79 @@ const cropToOriginalAspectRatio = (
 const resizeImage = (file: File, targetDimension: number): Promise<File> => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (event) => {
-            if (!event.target?.result) {
-                return reject(new Error("Failed to read file."));
-            }
-            const img = new Image();
-            img.src = event.target.result as string;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = targetDimension;
-                canvas.height = targetDimension;
-
-                const ctx = canvas.getContext('2d');
-                if (!ctx) {
-                    return reject(new Error('Could not get canvas context.'));
+        
+        reader.onload = function(event) {
+            try {
+                if (!event.target?.result) {
+                    return reject(new Error("Failed to read file - no result data"));
                 }
+                const img = new Image();
+                img.onload = function() {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = targetDimension;
+                        canvas.height = targetDimension;
 
-                ctx.fillStyle = 'black';
-                ctx.fillRect(0, 0, targetDimension, targetDimension);
+                        const ctx = canvas.getContext('2d');
+                        if (!ctx) {
+                            return reject(new Error('Could not get canvas context.'));
+                        }
 
-                const aspectRatio = img.width / img.height;
-                let newWidth, newHeight;
+                        ctx.fillStyle = 'black';
+                        ctx.fillRect(0, 0, targetDimension, targetDimension);
 
-                if (aspectRatio > 1) { // Landscape image
-                    newWidth = targetDimension;
-                    newHeight = targetDimension / aspectRatio;
-                } else { // Portrait or square image
-                    newHeight = targetDimension;
-                    newWidth = targetDimension * aspectRatio;
-                }
+                        const aspectRatio = img.width / img.height;
+                        let newWidth, newHeight;
 
-                const x = (targetDimension - newWidth) / 2;
-                const y = (targetDimension - newHeight) / 2;
-                
-                ctx.drawImage(img, x, y, newWidth, newHeight);
+                        if (aspectRatio > 1) { // Landscape image
+                            newWidth = targetDimension;
+                            newHeight = targetDimension / aspectRatio;
+                        } else { // Portrait or square image
+                            newHeight = targetDimension;
+                            newWidth = targetDimension * aspectRatio;
+                        }
 
-                canvas.toBlob((blob) => {
-                    if (blob) {
-                        resolve(new File([blob], file.name, {
-                            type: 'image/jpeg',
-                            lastModified: Date.now()
-                        }));
-                    } else {
-                        reject(new Error('Canvas to Blob conversion failed.'));
+                        const x = (targetDimension - newWidth) / 2;
+                        const y = (targetDimension - newHeight) / 2;
+                        
+                        ctx.drawImage(img, x, y, newWidth, newHeight);
+
+                        canvas.toBlob((blob) => {
+                            if (blob) {
+                                resolve(new File([blob], file.name, {
+                                    type: 'image/jpeg',
+                                    lastModified: Date.now()
+                                }));
+                            } else {
+                                reject(new Error('Canvas to Blob conversion failed.'));
+                            }
+                        }, 'image/jpeg', 0.85); // Slightly lower quality for mobile
+                    } catch (error) {
+                        reject(new Error(`Canvas processing error: ${error}`));
                     }
-                }, 'image/jpeg', 0.95);
-            };
-            img.onerror = (err) => reject(new Error(`Image load error: ${err}`));
+                };
+                img.onerror = function(err) {
+                    reject(new Error(`Image load error: ${err || 'Unknown image error'}`));
+                };
+                img.src = event.target.result as string;
+            } catch (error) {
+                reject(new Error(`File processing error: ${error}`));
+            }
         };
-        reader.onerror = (err) => reject(new Error(`File reader error: ${err}`));
+        
+        reader.onerror = function(err) {
+            reject(new Error(`File reader error: ${err || 'Unknown file reader error'}`));
+        };
+        
+        reader.onabort = function() {
+            reject(new Error('File reading was aborted'));
+        };
+        
+        try {
+            reader.readAsDataURL(file);
+        } catch (error) {
+            reject(new Error(`Cannot start file reading: ${error}`));
+        }
     });
 };
 
@@ -135,19 +181,52 @@ const resizeImage = (file: File, targetDimension: number): Promise<File> => {
 const fileToPart = async (file: File): Promise<{ inlineData: { mimeType: string; data: string; } }> => {
     const dataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = error => reject(error);
+        
+        reader.onload = function(event) {
+            try {
+                if (event.target && event.target.result) {
+                    resolve(event.target.result as string);
+                } else {
+                    reject(new Error('No result from FileReader'));
+                }
+            } catch (error) {
+                reject(new Error(`FileReader result processing error: ${error}`));
+            }
+        };
+        
+        reader.onerror = function(error) {
+            reject(new Error(`FileReader error: ${error || 'Unknown file reader error'}`));
+        };
+        
+        reader.onabort = function() {
+            reject(new Error('File reading was aborted'));
+        };
+        
+        try {
+            reader.readAsDataURL(file);
+        } catch (error) {
+            reject(new Error(`Cannot start file reading: ${error}`));
+        }
     });
     
-    const arr = dataUrl.split(',');
-    if (arr.length < 2) throw new Error("Invalid data URL");
-    const mimeMatch = arr[0].match(/:(.*?);/);
-    if (!mimeMatch || !mimeMatch[1]) throw new Error("Could not parse MIME type from data URL");
-    
-    const mimeType = mimeMatch[1];
-    const data = arr[1];
-    return { inlineData: { mimeType, data } };
+    try {
+        const arr = dataUrl.split(',');
+        if (arr.length < 2) throw new Error("Invalid data URL format");
+        
+        const mimeMatch = arr[0].match(/:(.*?);/);
+        if (!mimeMatch || !mimeMatch[1]) throw new Error("Could not parse MIME type from data URL");
+        
+        const mimeType = mimeMatch[1];
+        const data = arr[1];
+        
+        if (!data || data.length === 0) {
+            throw new Error("No image data found in file");
+        }
+        
+        return { inlineData: { mimeType, data } };
+    } catch (error) {
+        throw new Error(`Data URL processing error: ${error}`);
+    }
 };
 
 /**

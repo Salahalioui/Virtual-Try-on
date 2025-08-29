@@ -1,10 +1,11 @@
-const CACHE_NAME = 'virtual-try-on-v1';
+const CACHE_NAME = 'virtual-try-on-v2';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/index.css',
+  '/manifest.json',
   'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'
+  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
+  'https://esm.sh/react-image-crop@11.0.6/dist/ReactCrop.css'
 ];
 
 // Install event

@@ -238,14 +238,47 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
         setFileTypeError('Please use PNG, JPG, or JPEG formats.');
         return;
     }
+    
+    // Check file size (mobile browsers have memory limitations)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+        setFileTypeError('File size too large. Please use an image under 10MB.');
+        return;
+    }
+    
     setFileTypeError(null);
-
     setOriginalFile(file);
+    
     const reader = new FileReader();
-    reader.addEventListener('load', () => {
-        setUncroppedImage(reader.result as string);
-    });
-    reader.readAsDataURL(file);
+    
+    reader.onload = function(event) {
+        try {
+            if (event.target && event.target.result) {
+                setUncroppedImage(event.target.result as string);
+            } else {
+                setFileTypeError('Failed to read image file. Please try again.');
+            }
+        } catch (error) {
+            console.error('File processing error:', error);
+            setFileTypeError('Error processing image. Please try a different file.');
+        }
+    };
+    
+    reader.onerror = function(error) {
+        console.error('FileReader error:', error);
+        setFileTypeError('Failed to read image file. Please try again or use a different image.');
+    };
+    
+    reader.onabort = function() {
+        setFileTypeError('File reading was cancelled. Please try again.');
+    };
+    
+    try {
+        reader.readAsDataURL(file);
+    } catch (error) {
+        console.error('FileReader start error:', error);
+        setFileTypeError('Cannot read this image file. Please try a different format.');
+    }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -322,21 +355,30 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
           id={id}
           ref={inputRef}
           onChange={handleFileChange}
-          accept="image/png, image/jpeg"
+          accept="image/png, image/jpeg, image/jpg, image/webp"
+          capture="environment"
           className="hidden"
         />
         {imageUrl ? (
           <img 
             src={imageUrl} 
             alt={label || 'Uploaded Image'} 
-            className="w-full h-full object-contain" 
+            className="w-full h-full object-contain"
+            onError={(e) => {
+              console.error('Image preview error:', e);
+              setFileTypeError('Error displaying image preview. The file may be corrupted.');
+            }}
+            onLoad={() => {
+              // Clear any previous errors when image loads successfully
+              setFileTypeError(null);
+            }}
           />
         ) : (
           <div className="text-center text-gray-500 p-4 sm:p-6">
             <UploadIcon />
             <div className="space-y-2">
               <p className="text-sm sm:text-base font-medium text-gray-700">Upload your image</p>
-              <p className="text-xs sm:text-sm text-gray-500">Click to browse or drag & drop</p>
+              <p className="text-xs sm:text-sm text-gray-500">Tap to browse{/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? '' : ' or drag & drop'}</p>
               <p className="text-xs text-gray-400">PNG, JPG, JPEG (Max 10MB)</p>
             </div>
           </div>
