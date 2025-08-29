@@ -181,8 +181,9 @@ const handleApiError = (error: any): string => {
     return "API authentication failed. Please check that your Gemini API key is valid and has the necessary permissions.";
   }
   
-  // Handle network errors
-  if (error.name === 'NetworkError' || error.message?.includes('network')) {
+  // Handle fetch/network errors  
+  if (error.name === 'NetworkError' || error.name === 'TypeError' || 
+      error.message?.includes('network') || error.message?.includes('fetch')) {
     return "Network connection failed. Please check your internet connection and try again.";
   }
   
@@ -200,7 +201,7 @@ export const generateTryOnImage = async (
   console.log('Starting virtual try-on generation process...');
   
   // Use custom API key if provided, otherwise fall back to environment variable
-  const apiKey = customApiKey || process.env.API_KEY;
+  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
   
   if (!apiKey) {
     throw new Error('No API key available. Please set up your Gemini API key in Settings.');
