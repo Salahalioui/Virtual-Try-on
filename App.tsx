@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { generateTryOnImage } from './services/geminiService';
 import Header from './components/Header';
 import ImageUploader from './components/ImageUploader';
@@ -33,8 +33,33 @@ const App: React.FC = () => {
   const [isPWAInstallable, setIsPWAInstallable] = useState<boolean>(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
-  const subjectImageUrl = subjectImageFile ? URL.createObjectURL(subjectImageFile) : null;
-  const outfitImageUrl = outfitImageFile ? URL.createObjectURL(outfitImageFile) : null;
+  const subjectImageUrl = useMemo(() => {
+    if (subjectImageFile) {
+      try {
+        const url = URL.createObjectURL(subjectImageFile);
+        console.log('📸 Created subject image URL:', url.substring(0, 50) + '...');
+        return url;
+      } catch (error) {
+        console.error('❌ Error creating subject image URL:', error);
+        return null;
+      }
+    }
+    return null;
+  }, [subjectImageFile]);
+
+  const outfitImageUrl = useMemo(() => {
+    if (outfitImageFile) {
+      try {
+        const url = URL.createObjectURL(outfitImageFile);
+        console.log('👕 Created outfit image URL:', url.substring(0, 50) + '...');
+        return url;
+      } catch (error) {
+        console.error('❌ Error creating outfit image URL:', error);
+        return null;
+      }
+    }
+    return null;
+  }, [outfitImageFile]);
 
   const handleGenerateTryOn = useCallback(async () => {
     if (!subjectImageFile || !outfitImageFile) {

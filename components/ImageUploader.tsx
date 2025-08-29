@@ -233,8 +233,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
   }, [imageUrl]);
   
   const processFile = (file: File) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    console.log('📁 Processing file:', file.name, 'Type:', file.type, 'Size:', file.size);
+    
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
+        console.warn('❌ File type not allowed:', file.type);
         setFileTypeError('Please use PNG, JPG, or JPEG formats.');
         return;
     }
@@ -242,41 +245,69 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
     // Check file size (mobile browsers have memory limitations)
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
+        console.warn('❌ File too large:', file.size);
         setFileTypeError('File size too large. Please use an image under 10MB.');
         return;
     }
     
+    // Clear any previous errors
     setFileTypeError(null);
     setOriginalFile(file);
     
+    // Use a more robust file reading approach for mobile
     const reader = new FileReader();
     
     reader.onload = function(event) {
         try {
+            console.log('📖 FileReader onload triggered');
             if (event.target && event.target.result) {
-                setUncroppedImage(event.target.result as string);
+                const result = event.target.result as string;
+                console.log('✅ File read successfully, data URL length:', result.length);
+                
+                // Validate the data URL format
+                if (result.startsWith('data:image/')) {
+                    setUncroppedImage(result);
+                    console.log('✅ Image set for cropping');
+                } else {
+                    console.error('❌ Invalid data URL format');
+                    setFileTypeError('Invalid image format. Please try a different image.');
+                }
             } else {
+                console.error('❌ No result from FileReader');
                 setFileTypeError('Failed to read image file. Please try again.');
             }
         } catch (error) {
-            console.error('File processing error:', error);
+            console.error('❌ File processing error:', error);
             setFileTypeError('Error processing image. Please try a different file.');
         }
     };
     
     reader.onerror = function(error) {
-        console.error('FileReader error:', error);
+        console.error('❌ FileReader error:', error);
         setFileTypeError('Failed to read image file. Please try again or use a different image.');
     };
     
     reader.onabort = function() {
+        console.warn('⚠️ File reading was aborted');
         setFileTypeError('File reading was cancelled. Please try again.');
     };
     
+    reader.onloadstart = function() {
+        console.log('🔄 Starting to read file...');
+    };
+    
+    reader.onprogress = function(event) {
+        if (event.lengthComputable) {
+            const percentLoaded = Math.round((event.loaded / event.total) * 100);
+            console.log('📊 File reading progress:', percentLoaded + '%');
+        }
+    };
+    
     try {
+        console.log('🚀 Starting FileReader.readAsDataURL()');
         reader.readAsDataURL(file);
     } catch (error) {
-        console.error('FileReader start error:', error);
+        console.error('❌ FileReader start error:', error);
         setFileTypeError('Cannot read this image file. Please try a different format.');
     }
   };
@@ -316,6 +347,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
   }, []);
   
   const handleCropComplete = (croppedFile: File) => {
+      console.log('✅ Crop completed, file size:', croppedFile.size);
       onFileSelect(croppedFile);
       setUncroppedImage(null);
       setOriginalFile(null);
@@ -365,7 +397,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
             className="w-full h-full object-contain"
             onError={(e) => {
               console.error('Image preview error:', e);
-              setFileTypeError('Error displaying image preview. The file may be corrupted.');
+              // Don't immediately show error, the image might still be loading
+              setTimeout(() => {
+                if (!imageUrl) {
+                  setFileTypeError('Error displaying image preview. Please try a different image.');
+                }
+              }, 1000);
             }}
             onLoad={() => {
               // Clear any previous errors when image loads successfully
