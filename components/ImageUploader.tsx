@@ -424,14 +424,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
               console.error('Image preview error on mobile:', e);
               const img = e.target as HTMLImageElement;
               console.error('Failed image src:', img.src);
-              // Mobile-specific: Try to reload the image once
-              setTimeout(() => {
-                if (img.src === imageUrl) {
-                  console.log('Attempting to reload image on mobile...');
-                  img.src = imageUrl + '?reload=' + Date.now();
-                }
-              }, 500);
-              setFileTypeError('Image preview issue on mobile. The upload should still work.');
+              // Mobile-specific: Hide the broken image but don't show error
+              img.style.display = 'none';
+              // Show a placeholder message instead
+              const container = img.parentElement;
+              if (container && !container.querySelector('.mobile-placeholder')) {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'mobile-placeholder flex items-center justify-center h-full text-gray-500 text-sm text-center p-4';
+                placeholder.innerHTML = '📱 Image uploaded successfully<br/>Preview not available on mobile<br/>but generation will work!';
+                container.appendChild(placeholder);
+              }
             }}
             onLoad={(e) => {
               console.log('✅ Image loaded successfully on mobile');

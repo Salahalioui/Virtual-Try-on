@@ -347,8 +347,25 @@ export const generateTryOnImage = async (
   
   const ai = new GoogleGenAI({ apiKey });
 
-  // Get original scene dimensions for final cropping
-  const { width: originalWidth, height: originalHeight } = await getImageDimensions(subjectImage);
+  // Mobile-friendly: Skip dimension analysis and use standard square format
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  let originalWidth = 1024;
+  let originalHeight = 1024;
+  
+  if (!isMobile) {
+    try {
+      console.log('📐 Getting original dimensions (desktop)...');
+      const dimensions = await getImageDimensions(subjectImage);
+      originalWidth = dimensions.width;
+      originalHeight = dimensions.height;
+      console.log('✅ Original dimensions:', originalWidth, 'x', originalHeight);
+    } catch (error) {
+      console.warn('⚠️ Could not get dimensions, using square format:', error);
+      // Use default square dimensions
+    }
+  } else {
+    console.log('📱 Mobile detected: Using standard square format (1024x1024) to avoid FileReader issues');
+  }
   
   // Define standard dimension for model inputs
   const MAX_DIMENSION = 1024;
@@ -409,15 +426,21 @@ Execute this task with the highest degree of photorealism, paying special attent
     console.log(`Received image data (${mimeType}), length:`, data.length);
     const generatedSquareImageUrl = `data:${mimeType};base64,${data}`;
     
-    console.log('Cropping generated image to original aspect ratio...');
-    const finalImageUrl = await cropToOriginalAspectRatio(
-        generatedSquareImageUrl,
-        originalWidth,
-        originalHeight,
-        MAX_DIMENSION
-    );
-    
-    return { finalImageUrl };
+    // Mobile-friendly: Skip cropping if using square format
+    if (originalWidth === originalHeight && originalWidth === 1024) {
+      console.log('📱 Mobile mode: Using generated square image as-is');
+      return { finalImageUrl: generatedSquareImageUrl };
+    } else {
+      console.log('Cropping generated image to original aspect ratio...');
+      const finalImageUrl = await cropToOriginalAspectRatio(
+          generatedSquareImageUrl,
+          originalWidth,
+          originalHeight,
+          MAX_DIMENSION
+      );
+      
+      return { finalImageUrl };
+    }
   }
 
   console.error("Model response did not contain an image part.", response);
