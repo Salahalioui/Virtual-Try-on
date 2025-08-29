@@ -254,31 +254,43 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
     setFileTypeError(null);
     setOriginalFile(file);
     
-    // Use a more robust file reading approach for mobile
+    // Mobile-optimized file reading approach
     const reader = new FileReader();
     
     reader.onload = function(event) {
         try {
-            console.log('📖 FileReader onload triggered');
+            console.log('📖 FileReader onload triggered on mobile');
             if (event.target && event.target.result) {
                 const result = event.target.result as string;
                 console.log('✅ File read successfully, data URL length:', result.length);
                 
-                // Validate the data URL format
+                // Mobile-specific: Validate data URL more thoroughly
                 if (result.startsWith('data:image/')) {
-                    setUncroppedImage(result);
-                    console.log('✅ Image set for cropping');
+                    // For mobile: Check if the data URL is complete
+                    const base64Data = result.split(',')[1];
+                    if (base64Data && base64Data.length > 100) {
+                        console.log('✅ Valid base64 data detected for mobile');
+                        
+                        // Mobile optimization: Add a small delay to ensure proper processing
+                        setTimeout(() => {
+                            setUncroppedImage(result);
+                            console.log('✅ Image set for cropping on mobile');
+                        }, 100);
+                    } else {
+                        console.error('❌ Incomplete or corrupted image data on mobile');
+                        setFileTypeError('Image file appears corrupted. Please try a different image.');
+                    }
                 } else {
-                    console.error('❌ Invalid data URL format');
+                    console.error('❌ Invalid data URL format on mobile');
                     setFileTypeError('Invalid image format. Please try a different image.');
                 }
             } else {
-                console.error('❌ No result from FileReader');
-                setFileTypeError('Failed to read image file. Please try again.');
+                console.error('❌ No result from FileReader on mobile');
+                setFileTypeError('Failed to read image file on mobile. Please try again.');
             }
         } catch (error) {
-            console.error('❌ File processing error:', error);
-            setFileTypeError('Error processing image. Please try a different file.');
+            console.error('❌ File processing error on mobile:', error);
+            setFileTypeError('Error processing image on mobile device. Please try a different file.');
         }
     };
     
@@ -304,11 +316,22 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
     };
     
     try {
-        console.log('🚀 Starting FileReader.readAsDataURL()');
+        console.log('🚀 Starting FileReader.readAsDataURL() on mobile');
+        // Mobile-specific: Add timeout to prevent hanging
+        const timeoutId = setTimeout(() => {
+            reader.abort();
+            console.error('❌ FileReader timeout on mobile');
+            setFileTypeError('File reading timeout on mobile. Please try a smaller image.');
+        }, 30000); // 30 second timeout for mobile
+        
+        reader.addEventListener('loadend', () => {
+            clearTimeout(timeoutId);
+        });
+        
         reader.readAsDataURL(file);
     } catch (error) {
-        console.error('❌ FileReader start error:', error);
-        setFileTypeError('Cannot read this image file. Please try a different format.');
+        console.error('❌ FileReader start error on mobile:', error);
+        setFileTypeError('Cannot read this image file on mobile. Please try a different format.');
     }
   };
 
@@ -387,7 +410,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
           id={id}
           ref={inputRef}
           onChange={handleFileChange}
-          accept="image/png, image/jpeg, image/jpg, image/webp"
+          accept="image/*"
           className="hidden"
         />
         {imageUrl ? (
@@ -395,17 +418,23 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
             src={imageUrl} 
             alt={label || 'Uploaded Image'} 
             className="w-full h-full object-contain"
+            crossOrigin="anonymous"
+            loading="eager"
             onError={(e) => {
-              console.error('Image preview error:', e);
-              // Don't immediately show error, the image might still be loading
+              console.error('Image preview error on mobile:', e);
+              const img = e.target as HTMLImageElement;
+              console.error('Failed image src:', img.src);
+              // Mobile-specific: Try to reload the image once
               setTimeout(() => {
-                if (!imageUrl) {
-                  setFileTypeError('Error displaying image preview. Please try a different image.');
+                if (img.src === imageUrl) {
+                  console.log('Attempting to reload image on mobile...');
+                  img.src = imageUrl + '?reload=' + Date.now();
                 }
-              }, 1000);
+              }, 500);
+              setFileTypeError('Image preview issue on mobile. The upload should still work.');
             }}
-            onLoad={() => {
-              // Clear any previous errors when image loads successfully
+            onLoad={(e) => {
+              console.log('✅ Image loaded successfully on mobile');
               setFileTypeError(null);
             }}
           />
