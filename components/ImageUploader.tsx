@@ -206,7 +206,7 @@ interface ImageUploaderProps {
 }
 
 const UploadIcon: React.FC = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-zinc-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
     </svg>
 );
@@ -293,9 +293,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
       setOriginalFile(null);
   };
   
-  const uploaderClasses = `w-full aspect-video bg-zinc-100 border-2 border-dashed rounded-lg flex items-center justify-center transition-all duration-300 relative overflow-hidden ${
-      isDraggingOver ? 'border-blue-500 bg-blue-50'
-    : 'border-zinc-300 hover:border-blue-500 cursor-pointer'
+  const uploaderClasses = `w-full aspect-[4/3] sm:aspect-video bg-gray-50 border-2 border-dashed rounded-xl flex items-center justify-center transition-all duration-300 relative overflow-hidden group ${
+      isDraggingOver ? 'border-blue-400 bg-blue-50 shadow-lg scale-105'
+    : imageUrl ? 'border-green-300 hover:border-green-400'
+    : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50 cursor-pointer'
   }`;
 
   return (
@@ -331,14 +332,18 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
             className="w-full h-full object-contain" 
           />
         ) : (
-          <div className="text-center text-zinc-500 p-4">
+          <div className="text-center text-gray-500 p-4 sm:p-6">
             <UploadIcon />
-            <p>Click to upload or drag & drop</p>
+            <div className="space-y-2">
+              <p className="text-sm sm:text-base font-medium text-gray-700">Upload your image</p>
+              <p className="text-xs sm:text-sm text-gray-500">Click to browse or drag & drop</p>
+              <p className="text-xs text-gray-400">PNG, JPG, JPEG (Max 10MB)</p>
+            </div>
           </div>
         )}
       </div>
       {fileTypeError && (
-        <div className="w-full mt-2 text-sm text-yellow-800 bg-yellow-100 border border-yellow-300 rounded-lg p-3 flex items-center animate-fade-in" role="alert">
+        <div className="w-full mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-3 flex items-center animate-fade-in" role="alert">
             <WarningIcon />
             <span>{fileTypeError}</span>
         </div>
