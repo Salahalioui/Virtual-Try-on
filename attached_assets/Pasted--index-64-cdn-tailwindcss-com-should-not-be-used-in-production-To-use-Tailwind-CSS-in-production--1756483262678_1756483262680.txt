@@ -1,0 +1,102 @@
+(index):64  cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+(anonymous) @ (index):64
+(anonymous) @ (index):64
+index-B6XVz0kw.js:211 🔄 No custom API key found in localStorage, will use default
+index-B6XVz0kw.js:211 Service Worker registered
+Access to fetch at 'https://cdn.tailwindcss.com/' from origin 'https://virtual-try-on-ruby.vercel.app' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+sw.js:16    Uncaught (in promise) TypeError: Failed to fetch
+    at sw.js:16:22
+(anonymous) @ sw.js:16
+Promise.then
+(anonymous) @ sw.js:15
+manifest.json:1  Manifest: Enctype should be set to either application/x-www-form-urlencoded or multipart/form-data. It currently defaults to application/x-www-form-urlencoded
+manifest.json:1  Manifest: files are only supported with multipart/form-data POST.
+(index):1  <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+(index):1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+index-B6XVz0kw.js:208 📁 Processing file: 1756466961987-d20972d3-61fe-4808-8fb2-768823215b0f.png Type: image/png Size: 1497450
+index-B6XVz0kw.js:208 🚀 Starting FileReader.readAsDataURL() on mobile
+index-B6XVz0kw.js:208 🔄 Starting to read file...
+index-B6XVz0kw.js:208 📊 File reading progress: 100%
+index-B6XVz0kw.js:208 📖 FileReader onload triggered on mobile
+index-B6XVz0kw.js:208 ✅ File read successfully, data URL length: 1996622
+index-B6XVz0kw.js:208 ✅ Valid base64 data detected for mobile
+index-B6XVz0kw.js:208 ✅ Image set for cropping on mobile
+index-B6XVz0kw.js:208 ✅ Crop completed, file size: 35675
+index-B6XVz0kw.js:211 📸 Created subject image URL: blob:https://virtual-try-on-ruby.vercel.app/18fa33...
+index-B6XVz0kw.js:208 ✅ Image loaded successfully on mobile
+index-B6XVz0kw.js:208 📁 Processing file: 995039ae206a4a4bcb60ada7144780b2.jpg Type: image/jpeg Size: 104231
+index-B6XVz0kw.js:208 🚀 Starting FileReader.readAsDataURL() on mobile
+index-B6XVz0kw.js:208 🔄 Starting to read file...
+index-B6XVz0kw.js:208 📊 File reading progress: 100%
+index-B6XVz0kw.js:208 📖 FileReader onload triggered on mobile
+index-B6XVz0kw.js:208 ✅ File read successfully, data URL length: 138999
+index-B6XVz0kw.js:208 ✅ Valid base64 data detected for mobile
+index-B6XVz0kw.js:208 ✅ Image set for cropping on mobile
+index-B6XVz0kw.js:208 ✅ Crop completed, file size: 16212
+index-B6XVz0kw.js:211 👕 Created outfit image URL: blob:https://virtual-try-on-ruby.vercel.app/8d2ace...
+index-B6XVz0kw.js:208 ✅ Image loaded successfully on mobile
+18fa335f-7ceb-4945-96d7-bb7db0f4d1e6:1   GET blob:https://virtual-try-on-ruby.vercel.app/18fa335f-7ceb-4945-96d7-bb7db0f4d1e6 net::ERR_FILE_NOT_FOUND
+Image
+zf @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+pd @ index-B6XVz0kw.js:48
+md @ index-B6XVz0kw.js:48
+ad @ index-B6XVz0kw.js:48
+ld @ index-B6XVz0kw.js:48
+Ad @ index-B6XVz0kw.js:48
+Po @ index-B6XVz0kw.js:48
+Sd @ index-B6XVz0kw.js:48
+(anonymous) @ index-B6XVz0kw.js:48
+index-B6XVz0kw.js:211 👁️ Eye-dropper activated
+18fa335f-7ceb-4945-96d7-bb7db0f4d1e6:1   GET blob:https://virtual-try-on-ruby.vercel.app/18fa335f-7ceb-4945-96d7-bb7db0f4d1e6 net::ERR_FILE_NOT_FOUND
+Image
+zf @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+yn @ index-B6XVz0kw.js:48
+Jf @ index-B6XVz0kw.js:48
+pd @ index-B6XVz0kw.js:48
+md @ index-B6XVz0kw.js:48
+ad @ index-B6XVz0kw.js:48
+ld @ index-B6XVz0kw.js:48
+Ad @ index-B6XVz0kw.js:48
+Po @ index-B6XVz0kw.js:48
+Sd @ index-B6XVz0kw.js:48
+(anonymous) @ index-B6XVz0kw.js:48

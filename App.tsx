@@ -512,9 +512,9 @@ const App: React.FC = () => {
         <MobileConsole />
         
         {/* Color Picker Modal */}
-        {showColorPicker && subjectImageUrl && (
+        {showColorPicker && subjectImageFile && (
           <ColorPicker
-            imageUrl={subjectImageUrl}
+            imageFile={subjectImageFile}
             onColorSelect={handleColorSelect}
             onClose={handleCloseColorPicker}
           />

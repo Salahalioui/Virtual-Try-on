@@ -6,30 +6,73 @@
 import React, { useRef, useState, useCallback } from 'react';
 
 interface ColorPickerProps {
-  imageUrl: string;
+  imageFile: File;
   onColorSelect: (color: string) => void;
   onClose: () => void;
 }
 
-const ColorPicker: React.FC<ColorPickerProps> = ({ imageUrl, onColorSelect, onClose }) => {
+const ColorPicker: React.FC<ColorPickerProps> = ({ imageFile, onColorSelect, onClose }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const [isActive, setIsActive] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  // Create a stable URL from the file
+  React.useEffect(() => {
+    if (imageFile) {
+      console.log('🖼️ Creating image URL from file for color picker');
+      try {
+        const url = URL.createObjectURL(imageFile);
+        setImageUrl(url);
+        setImageError(false);
+        
+        // Cleanup function to revoke the URL
+        return () => {
+          console.log('🧹 Cleaning up image URL for color picker');
+          URL.revokeObjectURL(url);
+        };
+      } catch (error) {
+        console.error('❌ Error creating image URL for color picker:', error);
+        setImageError(true);
+      }
+    }
+  }, [imageFile]);
 
   const handleImageLoad = useCallback((img: HTMLImageElement) => {
+    console.log('🖼️ Image loaded for color picker');
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas dimensions to match image
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    
-    // Draw image on canvas
-    ctx.drawImage(img, 0, 0);
+    try {
+      // Set canvas dimensions to match image display size
+      const displayWidth = Math.min(img.naturalWidth, 600);
+      const displayHeight = (img.naturalHeight / img.naturalWidth) * displayWidth;
+      
+      canvas.width = displayWidth;
+      canvas.height = displayHeight;
+      
+      // Draw image on canvas
+      ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+      setImageLoaded(true);
+      setImageError(false);
+      console.log('✅ Canvas ready for color picking');
+    } catch (error) {
+      console.error('❌ Error drawing image to canvas:', error);
+      setImageError(true);
+    }
+  }, []);
+
+  const handleImageError = useCallback(() => {
+    console.error('❌ Failed to load image for color picker');
+    setImageError(true);
+    setImageLoaded(false);
   }, []);
 
   const getColorAtPosition = useCallback((x: number, y: number) => {
@@ -123,30 +166,48 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ imageUrl, onColorSelect, onCl
           </div>
 
           <div className="relative">
-            <img
-              src={imageUrl}
-              alt="Color picker reference"
-              className="hidden"
-              onLoad={(e) => handleImageLoad(e.target as HTMLImageElement)}
-              crossOrigin="anonymous"
-            />
+            {imageUrl && (
+              <img
+                ref={imageRef}
+                src={imageUrl}
+                alt="Color picker reference"
+                className="hidden"
+                onLoad={(e) => handleImageLoad(e.target as HTMLImageElement)}
+                onError={handleImageError}
+              />
+            )}
             
-            <canvas
-              ref={canvasRef}
-              onClick={handleCanvasClick}
-              onMouseMove={handleMouseMove}
-              className={`max-w-full max-h-96 border rounded ${
-                isActive ? 'cursor-crosshair' : 'cursor-default'
-              }`}
-              style={{
-                maxHeight: '400px',
-                objectFit: 'contain'
-              }}
-            />
+            {imageError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                <p className="text-red-600 mb-2">❌ Could not load image for color picking</p>
+                <p className="text-sm text-red-500">Try uploading the image again or use a different photo</p>
+              </div>
+            )}
+            
+            {!imageError && (
+              <canvas
+                ref={canvasRef}
+                onClick={handleCanvasClick}
+                onMouseMove={handleMouseMove}
+                className={`max-w-full border rounded ${
+                  isActive ? 'cursor-crosshair' : 'cursor-default'
+                } ${!imageLoaded ? 'opacity-50' : ''}`}
+                style={{
+                  maxHeight: '400px',
+                  objectFit: 'contain'
+                }}
+              />
+            )}
 
-            {isActive && (
+            {isActive && imageLoaded && !imageError && (
               <div className="mt-2 text-sm text-gray-600 text-center">
                 Click anywhere on your photo to pick a color for the outfit
+              </div>
+            )}
+            
+            {!imageLoaded && !imageError && (
+              <div className="mt-2 text-sm text-gray-500 text-center">
+                Loading image for color picking...
               </div>
             )}
           </div>
