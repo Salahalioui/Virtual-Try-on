@@ -34,17 +34,19 @@ const getImageDimensions = (file: File): Promise<{ width: number; height: number
         };
         
         reader.onerror = function(err) {
-            reject(new Error(`File reader error: ${err || 'Unknown file reader error'}`));
+            console.error('📱 FileReader error in getImageDimensions:', err);
+            const errorMsg = err instanceof Event ? 'FileReader failed to read the image file for dimension analysis' : String(err);
+            reject(new Error(`File reader error: ${errorMsg}`));
         };
         
         reader.onabort = function() {
-            reject(new Error('File reading was aborted'));
+            reject(new Error('File reading was aborted during dimension analysis'));
         };
         
         try {
             reader.readAsDataURL(file);
         } catch (error) {
-            reject(new Error(`Cannot start file reading: ${error}`));
+            reject(new Error(`Cannot start file reading for dimensions: ${error}`));
         }
     });
 };
@@ -162,17 +164,19 @@ const resizeImage = (file: File, targetDimension: number): Promise<File> => {
         };
         
         reader.onerror = function(err) {
-            reject(new Error(`File reader error: ${err || 'Unknown file reader error'}`));
+            console.error('📱 FileReader error in resizeImage:', err);
+            const errorMsg = err instanceof Event ? 'FileReader failed to process the image for resizing' : String(err);
+            reject(new Error(`File reader error: ${errorMsg}`));
         };
         
         reader.onabort = function() {
-            reject(new Error('File reading was aborted'));
+            reject(new Error('File reading was aborted during resizing'));
         };
         
         try {
             reader.readAsDataURL(file);
         } catch (error) {
-            reject(new Error(`Cannot start file reading: ${error}`));
+            reject(new Error(`Cannot start file reading for resizing: ${error}`));
         }
     });
 };
@@ -195,17 +199,19 @@ const fileToPart = async (file: File): Promise<{ inlineData: { mimeType: string;
         };
         
         reader.onerror = function(error) {
-            reject(new Error(`FileReader error: ${error || 'Unknown file reader error'}`));
+            console.error('📱 FileReader error in fileToPart:', error);
+            const errorMsg = error instanceof Event ? 'FileReader failed to convert image for AI processing' : String(error);
+            reject(new Error(`FileReader error: ${errorMsg}`));
         };
         
         reader.onabort = function() {
-            reject(new Error('File reading was aborted'));
+            reject(new Error('File reading was aborted during AI conversion'));
         };
         
         try {
             reader.readAsDataURL(file);
         } catch (error) {
-            reject(new Error(`Cannot start file reading: ${error}`));
+            reject(new Error(`Cannot start file reading for AI conversion: ${error}`));
         }
     });
     
@@ -346,6 +352,7 @@ Execute this task with the highest degree of photorealism, paying special attent
       },
     });
   } catch (apiError: any) {
+    console.error('🔥 API call failed:', apiError);
     throw new Error(handleApiError(apiError));
   }
 
