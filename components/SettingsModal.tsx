@@ -125,8 +125,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             </button>
           </div>
 
-          <div className="text-center text-xs text-gray-500">
-            🔒 Your API key is stored locally and never shared
+          <div className="text-center space-y-2">
+            <div className="text-xs text-gray-500">
+              🔒 Your API key is stored locally and never shared
+            </div>
+            <div className="text-xs text-gray-400 border-t pt-2">
+              💻 Developed by <span className="font-medium text-gray-600">SALAH.A (ELBAYADH)</span>
+            </div>
           </div>
         </div>
       </div>
