@@ -75,11 +75,14 @@ const App: React.FC = () => {
   }, []);
 
   const handleApiKeyChange = useCallback((apiKey: string) => {
+    console.log('📝 API key changed, length:', apiKey.length);
     setCustomApiKey(apiKey);
     if (apiKey) {
       localStorage.setItem('gemini-api-key', apiKey);
+      console.log('💾 Custom API key saved to localStorage');
     } else {
       localStorage.removeItem('gemini-api-key');
+      console.log('🗑️ Custom API key removed from localStorage');
     }
   }, []);
 
@@ -145,7 +148,10 @@ const App: React.FC = () => {
   useEffect(() => {
     const savedApiKey = localStorage.getItem('gemini-api-key');
     if (savedApiKey) {
+      console.log('🔄 Loading saved custom API key from localStorage (length:', savedApiKey.length, 'chars)');
       setCustomApiKey(savedApiKey);
+    } else {
+      console.log('🔄 No custom API key found in localStorage, will use default');
     }
   }, []);
 

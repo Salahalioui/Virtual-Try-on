@@ -282,6 +282,15 @@ export const generateTryOnImage = async (
   // Use custom API key if provided, otherwise fall back to environment variable
   const apiKey = customApiKey || process.env.GEMINI_API_KEY;
   
+  // Debug logging to verify which API key is being used
+  if (customApiKey) {
+    console.log('🔑 Using custom API key (length:', customApiKey.length, 'chars)');
+  } else if (process.env.GEMINI_API_KEY) {
+    console.log('🔑 Using default environment API key');
+  } else {
+    console.log('❌ No API key found');
+  }
+  
   if (!apiKey) {
     throw new Error('No API key available. Please set up your Gemini API key in Settings.');
   }
