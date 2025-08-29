@@ -9,6 +9,7 @@ import Header from './components/Header';
 import ImageUploader from './components/ImageUploader';
 import Spinner from './components/Spinner';
 import SettingsModal from './components/SettingsModal';
+import MobileConsole from './components/MobileConsole';
 
 const loadingMessages = [
     "Warming up the virtual dressing room...",
@@ -440,6 +441,8 @@ const App: React.FC = () => {
           onApiKeyChange={handleApiKeyChange}
           currentApiKey={customApiKey}
         />
+        
+        <MobileConsole />
       </div>
     </div>
   );
