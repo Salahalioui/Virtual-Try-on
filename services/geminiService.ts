@@ -466,6 +466,19 @@ Execute this task with the highest degree of photorealism, paying special attent
   } catch (apiError: any) {
     console.error('🔥 API call failed:', apiError);
     console.error('🔥 Full error object:', JSON.stringify(apiError, null, 2));
+    console.error('🔥 Error status:', apiError.status);
+    console.error('🔥 Error message:', apiError.message);
+    console.error('🔥 Error details:', apiError.error);
+    
+    // Log additional debugging info for 429 errors
+    if (apiError.status === 429) {
+      console.error('🔍 429 Debug Info:');
+      console.error('- Using custom API key:', !!customApiKey);
+      console.error('- API key length:', apiKey?.length || 'undefined');
+      console.error('- Request timestamp:', new Date().toISOString());
+      console.error('- User agent:', navigator?.userAgent || 'unknown');
+    }
+    
     throw new Error(handleApiError(apiError));
   }
 
