@@ -435,13 +435,36 @@ AVOID: changing face/hair/background, wrong body type, visible original clothes,
   
   let response: GenerateContentResponse;
   try {
-    response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image-preview',
-      contents: { parts: [subjectImagePart, outfitImagePart, textPart] },
-      config: {
-          responseModalities: [Modality.IMAGE, Modality.TEXT],
-      },
-    });
+    // Try gemini-2.0-flash-experimental first (higher limits), fallback to 2.5 if needed
+    const models = [
+      'gemini-2.0-flash-experimental', 
+      'gemini-2.5-flash-image-preview'
+    ];
+    
+    let lastError;
+    for (const modelName of models) {
+      try {
+        console.log(`🤖 Trying model: ${modelName}`);
+        response = await ai.models.generateContent({
+          model: modelName,
+          contents: { parts: [subjectImagePart, outfitImagePart, textPart] },
+          config: {
+              responseModalities: [Modality.IMAGE, Modality.TEXT],
+          },
+        });
+        console.log(`✅ Success with model: ${modelName}`);
+        break; // Success, exit loop
+      } catch (modelError: any) {
+        console.log(`❌ Model ${modelName} failed:`, modelError.status || modelError.message);
+        lastError = modelError;
+        // Continue to next model
+      }
+    }
+    
+    // If all models failed, throw the last error
+    if (!response) {
+      throw lastError;
+    }
   } catch (apiError: any) {
     console.error('🔥 API call failed:', apiError);
     console.error('🔥 Full error object:', JSON.stringify(apiError, null, 2));
