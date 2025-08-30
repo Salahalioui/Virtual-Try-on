@@ -417,37 +417,16 @@ URGENT: The user has specifically selected the color ${selectedColor} from their
   }
 
   const prompt = `
-**Role:**
-You are a master virtual stylist and photorealistic image editor. Your task is to take a person from a 'subject' image and realistically dress them in clothes from an 'outfit' image.
+Virtual stylist task: Replace person's clothing with outfit from second image.
 
-**Inputs:**
--   **Subject Image (First Image):** This contains the person, their pose, their face, and the background scene.
--   **Outfit Image (Second Image):** This contains the clothing item(s) to be worn. The outfit may have a white or simple background, which you must treat as transparent.
+CRITICAL RULES:
+${selectedColor ? `- PRIORITY: Recolor outfit to ${selectedColor}\n` : ''}- Body type: ${bodyBuild} - maintain exact physique, no alterations
+- Preserve: face, hair, skin, pose, background completely
+- Replace ALL original clothing with new outfit
+- Match lighting/shadows perfectly
+- Photorealistic result only
 
-${colorInstruction}**Primary Goal:**
-Create a single, photorealistic image of the person from the subject image wearing the clothes from the outfit image.
-
-**Crucial Instructions (in order of importance):**
-${selectedColor ? '0.  **ABSOLUTE PRIORITY - Color Matching:** The outfit MUST be recolored to the specified color ' + selectedColor + '. This overrides any other color considerations.\n' : ''}1.  **Unbreakable Rule #1: Body Type Fidelity.** THIS IS THE MOST IMPORTANT INSTRUCTION. The user has specified a '${bodyBuild}' body type. You MUST generate the image so the person's physique strictly matches this description. Under no circumstances should you alter their body shape. Do not make them thinner, larger, or more athletic than described. The outfit MUST realistically drape and fit this specified body type. All other instructions are secondary to this rule.
-2.  **Preserve Identity & Scene:** You ABSOLUTELY MUST preserve the subject's face, hair, skin tone, body pose, and the original background from the subject image. The final image should look like it was taken in the same location. Do not change the person's identity.
-3.  **Fit the Outfit:** Intelligently fit the outfit from the second image onto the subject's body. The outfit should follow the contours of their body and pose naturally. Pay close attention to fabric drape, folds, and wrinkles to make it look realistic.
-4.  **Realistic Integration:** Adjust the lighting, shadows, and colors of the outfit to perfectly match the lighting conditions of the subject's photo. The outfit must cast realistic shadows on the body and the environment.
-5.  **Complete Replacement:** The new outfit must completely REPLACE the clothing the subject is currently wearing. If the outfit image contains an item that corresponds to an item the subject is wearing (e.g., both images contain a hat, or the outfit has glasses and the person is wearing glasses), you MUST replace the subject's original item with the new one. Ensure a complete replacement, leaving no parts of the original item visible.
-6.  **Clean Output:** The final output must ONLY be the composed image. Do not add any text, logos, watermarks, or other artifacts.
-
-**CRITICAL NEGATIVE CONSTRAINTS (Things to ABSOLUTELY AVOID):**
-- **DO NOT** alter the subject's face, facial features, hair, or skin tone in any way
-- **DO NOT** change the background, lighting environment, or scene from the subject's photo
-- **DO NOT** add any text, logos, watermarks, branding, or digital artifacts to the final image
-- **DO NOT** generate an image where the person's body type differs from the specified '${bodyBuild}' build
-- **DO NOT** leave any part of the original clothing visible under or through the new outfit
-- **DO NOT** change the subject's pose, hand positions, or body positioning
-- **DO NOT** add accessories, jewelry, or items not present in the outfit image
-- **DO NOT** modify the subject's age, gender presentation, or physical characteristics
-- **DO NOT** create unrealistic proportions or impossible clothing fits
-- **DO NOT** generate multiple people if only one person exists in the subject image
-
-Execute this task with the highest degree of photorealism, paying special attention to the unbreakable rule of body build fidelity${selectedColor ? ' and the critical color matching requirement' : ''}.
+AVOID: changing face/hair/background, wrong body type, visible original clothes, unrealistic fit, text/logos.
 `;
 
   const textPart = { text: prompt };
