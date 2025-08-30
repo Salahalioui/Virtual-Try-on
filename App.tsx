@@ -32,6 +32,7 @@ const App: React.FC = () => {
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [customApiKey, setCustomApiKey] = useState<string>('');
+  const [openRouterApiKey, setOpenRouterApiKey] = useState<string>('');
   const [isPWAInstallable, setIsPWAInstallable] = useState<boolean>(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
@@ -78,7 +79,8 @@ const App: React.FC = () => {
         outfitImageFile, 
         bodyBuild, 
         customApiKey || undefined,
-        selectedColor || undefined
+        selectedColor || undefined,
+        openRouterApiKey || undefined
       );
       setGeneratedImageUrl(finalImageUrl);
     } catch (err) {
@@ -88,7 +90,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [subjectImageFile, outfitImageFile, bodyBuild, customApiKey, selectedColor]);
+  }, [subjectImageFile, outfitImageFile, bodyBuild, customApiKey, selectedColor, openRouterApiKey]);
 
   const handleDownload = () => {
     if (!generatedImageUrl) return;
@@ -127,15 +129,25 @@ const App: React.FC = () => {
     setSelectedColor(null);
   }, []);
 
-  const handleApiKeyChange = useCallback((apiKey: string) => {
-    console.log('📝 API key changed, length:', apiKey.length);
-    setCustomApiKey(apiKey);
-    if (apiKey) {
-      localStorage.setItem('gemini-api-key', apiKey);
-      console.log('💾 Custom API key saved to localStorage');
+  const handleApiKeyChange = useCallback((geminiApiKey: string, openRouterApiKey: string) => {
+    console.log('📝 API keys changed - Gemini length:', geminiApiKey.length, 'OpenRouter length:', openRouterApiKey.length);
+    setCustomApiKey(geminiApiKey);
+    setOpenRouterApiKey(openRouterApiKey);
+    
+    if (geminiApiKey) {
+      localStorage.setItem('gemini-api-key', geminiApiKey);
+      console.log('💾 Gemini API key saved to localStorage');
     } else {
       localStorage.removeItem('gemini-api-key');
-      console.log('🗑️ Custom API key removed from localStorage');
+      console.log('🗑️ Gemini API key removed from localStorage');
+    }
+    
+    if (openRouterApiKey) {
+      localStorage.setItem('openrouter-api-key', openRouterApiKey);
+      console.log('💾 OpenRouter API key saved to localStorage');
+    } else {
+      localStorage.removeItem('openrouter-api-key');
+      console.log('🗑️ OpenRouter API key removed from localStorage');
     }
   }, []);
 
@@ -197,14 +209,23 @@ const App: React.FC = () => {
     };
   }, []);
 
-  // Load custom API key from localStorage
+  // Load custom API keys from localStorage
   useEffect(() => {
-    const savedApiKey = localStorage.getItem('gemini-api-key');
-    if (savedApiKey) {
-      console.log('🔄 Loading saved custom API key from localStorage (length:', savedApiKey.length, 'chars)');
-      setCustomApiKey(savedApiKey);
+    const savedGeminiApiKey = localStorage.getItem('gemini-api-key');
+    const savedOpenRouterApiKey = localStorage.getItem('openrouter-api-key');
+    
+    if (savedGeminiApiKey) {
+      console.log('🔄 Loading saved Gemini API key from localStorage (length:', savedGeminiApiKey.length, 'chars)');
+      setCustomApiKey(savedGeminiApiKey);
     } else {
-      console.log('🔄 No custom API key found in localStorage, will use default');
+      console.log('🔄 No custom Gemini API key found in localStorage, will use default');
+    }
+    
+    if (savedOpenRouterApiKey) {
+      console.log('🔄 Loading saved OpenRouter API key from localStorage (length:', savedOpenRouterApiKey.length, 'chars)');
+      setOpenRouterApiKey(savedOpenRouterApiKey);
+    } else {
+      console.log('🔄 No OpenRouter API key found in localStorage');
     }
   }, []);
 
@@ -506,7 +527,8 @@ const App: React.FC = () => {
           isOpen={showSettings}
           onClose={() => setShowSettings(false)}
           onApiKeyChange={handleApiKeyChange}
-          currentApiKey={customApiKey}
+          currentGeminiApiKey={customApiKey}
+          currentOpenRouterApiKey={openRouterApiKey}
         />
         
         <MobileConsole />

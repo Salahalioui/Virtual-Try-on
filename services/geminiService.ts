@@ -358,12 +358,114 @@ const handleApiError = (error: any): string => {
   return `API Error: ${message}. If this persists, please check your API key settings or try again later.`;
 };
 
+// OpenRouter API fallback implementation
+const generateTryOnImageWithOpenRouter = async (
+    subjectImagePart: { inlineData: { mimeType: string; data: string; } },
+    outfitImagePart: { inlineData: { mimeType: string; data: string; } },
+    prompt: string,
+    openRouterApiKey: string,
+    originalWidth: number,
+    originalHeight: number,
+    MAX_DIMENSION: number
+): Promise<{ finalImageUrl: string; }> => {
+  console.log('🔄 Attempting OpenRouter fallback...');
+  
+  // Clean the API key for OpenRouter
+  const cleanApiKey = openRouterApiKey.trim().replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+  if (!cleanApiKey || cleanApiKey.length < 10) {
+    throw new Error('OpenRouter API key appears to be invalid. Please check your OpenRouter API key.');
+  }
+
+  // Prepare the OpenRouter API request
+  const requestBody = {
+    model: "google/gemini-2.5-flash-image-preview:free",
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: prompt
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: `data:${subjectImagePart.inlineData.mimeType};base64,${subjectImagePart.inlineData.data}`
+            }
+          },
+          {
+            type: "image_url", 
+            image_url: {
+              url: `data:${outfitImagePart.inlineData.mimeType};base64,${outfitImagePart.inlineData.data}`
+            }
+          }
+        ]
+      }
+    ],
+    response_format: {
+      type: "image"
+    }
+  };
+
+  try {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${cleanApiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': window.location.origin,
+        'X-Title': 'Virtual Try-On App'
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('OpenRouter API error:', response.status, errorData);
+      throw new Error(`OpenRouter API error (${response.status}): ${errorData}`);
+    }
+
+    const data = await response.json();
+    console.log('🎉 OpenRouter fallback successful!');
+    
+    // Extract the image from the response
+    if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+      const imageData = data.choices[0].message.content;
+      
+      // If the response is a base64 image
+      let generatedSquareImageUrl: string;
+      if (imageData.startsWith('data:image/')) {
+        generatedSquareImageUrl = imageData;
+      } else {
+        // Assume it's base64 without the data URL prefix
+        generatedSquareImageUrl = `data:image/jpeg;base64,${imageData}`;
+      }
+      
+      console.log('Cropping OpenRouter generated image to original aspect ratio...');
+      const finalImageUrl = await cropToOriginalAspectRatio(
+        generatedSquareImageUrl,
+        originalWidth,
+        originalHeight,
+        MAX_DIMENSION
+      );
+      
+      return { finalImageUrl };
+    }
+    
+    throw new Error("OpenRouter response did not contain valid image data");
+  } catch (openRouterError: any) {
+    console.error('🔥 OpenRouter fallback failed:', openRouterError);
+    throw new Error(`OpenRouter fallback failed: ${openRouterError.message}`);
+  }
+};
+
 export const generateTryOnImage = async (
     subjectImage: File, 
     outfitImage: File,
     bodyBuild: string,
     customApiKey?: string,
     selectedColor?: string,
+    openRouterApiKey?: string,
 ): Promise<{ finalImageUrl: string; }> => {
   console.log('Starting virtual try-on generation process...');
   
@@ -464,7 +566,7 @@ Execute this task with the highest degree of photorealism, paying special attent
       },
     });
   } catch (apiError: any) {
-    console.error('🔥 API call failed:', apiError);
+    console.error('🔥 Gemini API call failed:', apiError);
     console.error('🔥 Full error object:', JSON.stringify(apiError, null, 2));
     console.error('🔥 Error status:', apiError.status);
     console.error('🔥 Error message:', apiError.message);
@@ -479,7 +581,27 @@ Execute this task with the highest degree of photorealism, paying special attent
       console.error('- User agent:', navigator?.userAgent || 'unknown');
     }
     
-    throw new Error(handleApiError(apiError));
+    // Attempt OpenRouter fallback if API key is available
+    if (openRouterApiKey) {
+      console.log('🔄 Gemini API failed, attempting OpenRouter fallback...');
+      try {
+        return await generateTryOnImageWithOpenRouter(
+          subjectImagePart,
+          outfitImagePart,
+          prompt,
+          openRouterApiKey,
+          originalWidth,
+          originalHeight,
+          MAX_DIMENSION
+        );
+      } catch (fallbackError: any) {
+        console.error('🔥 OpenRouter fallback also failed:', fallbackError);
+        throw new Error(`Both Gemini and OpenRouter APIs failed. Gemini: ${handleApiError(apiError)}. OpenRouter: ${fallbackError.message}`);
+      }
+    } else {
+      console.log('❌ No OpenRouter API key available for fallback');
+      throw new Error(handleApiError(apiError));
+    }
   }
 
   console.log('Received response from the model.');

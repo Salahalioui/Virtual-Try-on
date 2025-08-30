@@ -7,33 +7,38 @@ import React, { useState, useEffect } from 'react';
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onApiKeyChange: (apiKey: string) => void;
-  currentApiKey: string;
+  onApiKeyChange: (geminiApiKey: string, openRouterApiKey: string) => void;
+  currentGeminiApiKey: string;
+  currentOpenRouterApiKey: string;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ 
   isOpen, 
   onClose, 
   onApiKeyChange, 
-  currentApiKey 
+  currentGeminiApiKey,
+  currentOpenRouterApiKey
 }) => {
-  const [apiKey, setApiKey] = useState(currentApiKey);
+  const [geminiApiKey, setGeminiApiKey] = useState(currentGeminiApiKey);
+  const [openRouterApiKey, setOpenRouterApiKey] = useState(currentOpenRouterApiKey);
   const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
-    setApiKey(currentApiKey);
-  }, [currentApiKey]);
+    setGeminiApiKey(currentGeminiApiKey);
+    setOpenRouterApiKey(currentOpenRouterApiKey);
+  }, [currentGeminiApiKey, currentOpenRouterApiKey]);
 
   if (!isOpen) return null;
 
   const handleSave = () => {
-    onApiKeyChange(apiKey.trim());
+    onApiKeyChange(geminiApiKey.trim(), openRouterApiKey.trim());
     onClose();
   };
 
   const handleClear = () => {
-    setApiKey('');
-    onApiKeyChange('');
+    setGeminiApiKey('');
+    setOpenRouterApiKey('');
+    onApiKeyChange('', '');
   };
 
   return (
@@ -59,15 +64,32 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               🔑 Your Gemini API Key
             </label>
             <input
-              id="api-key"
+              id="gemini-api-key"
               type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
+              value={geminiApiKey}
+              onChange={(e) => setGeminiApiKey(e.target.value)}
               placeholder="Enter your Gemini API key..."
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             />
             <p className="text-sm text-gray-500 mt-2">
               Using your own API key removes rate limits and gives you full control
+            </p>
+          </div>
+
+          <div>
+            <label htmlFor="openrouter-api-key" className="block text-lg font-semibold text-gray-700 mb-3">
+              🔄 OpenRouter API Key (Fallback)
+            </label>
+            <input
+              id="openrouter-api-key"
+              type="password"
+              value={openRouterApiKey}
+              onChange={(e) => setOpenRouterApiKey(e.target.value)}
+              placeholder="Enter your OpenRouter API key..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            />
+            <p className="text-sm text-gray-500 mt-2">
+              This will be used as a backup when the Gemini API fails
             </p>
           </div>
 
@@ -104,6 +126,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     <li>• More daily requests (1500 instead of 25)</li>
                     <li>• Priority processing</li>
                     <li>• No shared quota restrictions</li>
+                  </ul>
+                </div>
+                
+                <div className="bg-orange-50 rounded-lg p-3 border border-orange-200 mt-3">
+                  <h4 className="font-medium text-orange-800 mb-2">🔄 OpenRouter Fallback:</h4>
+                  <ul className="space-y-1 text-xs text-orange-700">
+                    <li>• Get free credits at <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-800 underline">openrouter.ai</a></li>
+                    <li>• Automatic fallback when Gemini API fails</li>
+                    <li>• Uses google/gemini-2.5-flash-image-preview:free</li>
+                    <li>• Provides redundancy for uninterrupted service</li>
                   </ul>
                 </div>
               </div>
