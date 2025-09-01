@@ -376,9 +376,9 @@ const generateTryOnImageWithOpenRouter = async (
     throw new Error('OpenRouter API key appears to be invalid. Please check your OpenRouter API key.');
   }
 
-  // Prepare the OpenRouter API request - use a working image generation model
+  // Prepare the OpenRouter API request
   const requestBody = {
-    model: "black-forest-labs/flux-1.1-pro",
+    model: "google/gemini-2.5-flash-image-preview:free",
     messages: [
       {
         role: "user", 
@@ -423,24 +423,27 @@ const generateTryOnImageWithOpenRouter = async (
     }
 
     const data = await response.json();
-    console.log('🎉 OpenRouter fallback successful!');
+    console.log('🎉 OpenRouter response received!');
     console.log('OpenRouter response structure:', JSON.stringify(data, null, 2));
     
-    // Extract the image from the response - Flux models return URLs, not base64
-    if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
-      const messageContent = data.choices[0].message.content;
-      console.log('OpenRouter message content:', messageContent);
+    // For Gemini image generation through OpenRouter, check for image data in the response
+    if (data.choices && data.choices[0] && data.choices[0].message) {
+      const message = data.choices[0].message;
+      console.log('OpenRouter message content type:', typeof message.content);
+      console.log('OpenRouter message:', message);
       
-      // Check if content is a string (URL) or object with image data
-      let imageUrl: string;
-      
-      if (typeof messageContent === 'string') {
-        // Flux models typically return image URLs
-        if (messageContent.startsWith('http')) {
-          console.log('Found image URL in response:', messageContent);
+      // Check if there's image data in the response (Gemini returns base64 image data)
+      if (message.content && typeof message.content === 'string') {
+        let imageUrl: string;
+        
+        if (message.content.startsWith('data:image/')) {
+          imageUrl = message.content;
+          console.log('Found data URL format image');
+        } else if (message.content.startsWith('http')) {
+          console.log('Found image URL in response:', message.content);
           
           // Download the image from the URL and convert to data URL
-          const imageResponse = await fetch(messageContent);
+          const imageResponse = await fetch(message.content);
           if (!imageResponse.ok) {
             throw new Error(`Failed to fetch generated image: ${imageResponse.status}`);
           }
@@ -450,25 +453,48 @@ const generateTryOnImageWithOpenRouter = async (
           const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
           imageUrl = `data:${imageBlob.type};base64,${base64}`;
           console.log('Converted URL to data URL for processing');
-        } else if (messageContent.startsWith('data:image/')) {
-          imageUrl = messageContent;
         } else {
-          // Assume it's base64 without prefix
-          imageUrl = `data:image/jpeg;base64,${messageContent}`;
+          // Check if it's pure base64 data
+          try {
+            // Test if it's valid base64
+            atob(message.content);
+            imageUrl = `data:image/jpeg;base64,${message.content}`;
+            console.log('Treated content as base64 data');
+          } catch {
+            throw new Error(`OpenRouter returned unrecognized content format: ${message.content.substring(0, 100)}...`);
+          }
         }
-      } else {
-        throw new Error("OpenRouter returned unexpected content format");
+        
+        console.log('Cropping OpenRouter generated image to original aspect ratio...');
+        const finalImageUrl = await cropToOriginalAspectRatio(
+          imageUrl,
+          originalWidth,
+          originalHeight,
+          MAX_DIMENSION
+        );
+        
+        return { finalImageUrl };
       }
       
-      console.log('Cropping OpenRouter generated image to original aspect ratio...');
-      const finalImageUrl = await cropToOriginalAspectRatio(
-        imageUrl,
-        originalWidth,
-        originalHeight,
-        MAX_DIMENSION
-      );
-      
-      return { finalImageUrl };
+      // Check if there are any image parts in the response
+      if (message.parts && Array.isArray(message.parts)) {
+        const imagePart = message.parts.find(part => part.inlineData && part.inlineData.data);
+        if (imagePart) {
+          console.log('Found image in parts array');
+          const { mimeType, data } = imagePart.inlineData;
+          const imageUrl = `data:${mimeType};base64,${data}`;
+          
+          console.log('Cropping OpenRouter generated image to original aspect ratio...');
+          const finalImageUrl = await cropToOriginalAspectRatio(
+            imageUrl,
+            originalWidth,
+            originalHeight,
+            MAX_DIMENSION
+          );
+          
+          return { finalImageUrl };
+        }
+      }
     }
     
     throw new Error("OpenRouter response did not contain valid image data");
