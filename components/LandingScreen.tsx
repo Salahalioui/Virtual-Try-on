@@ -6,9 +6,10 @@ import React from 'react';
 
 interface LandingScreenProps {
   onEnterApp: () => void;
+  onLearnMore: () => void;
 }
 
-const LandingScreen: React.FC<LandingScreenProps> = ({ onEnterApp }) => {
+const LandingScreen: React.FC<LandingScreenProps> = ({ onEnterApp, onLearnMore }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
       {/* Navigation Bar */}
@@ -98,7 +99,10 @@ const LandingScreen: React.FC<LandingScreenProps> = ({ onEnterApp }) => {
                 </svg>
               </button>
               
-              <button className="border-2 border-gray-300 text-gray-700 px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-semibold hover:border-gray-400 transition-all duration-200 hover:bg-gray-50 w-full sm:w-auto">
+              <button 
+                onClick={onLearnMore}
+                className="border-2 border-gray-300 text-gray-700 px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-semibold hover:border-gray-400 transition-all duration-200 hover:bg-gray-50 w-full sm:w-auto"
+              >
                 📖 Learn More
               </button>
             </div>

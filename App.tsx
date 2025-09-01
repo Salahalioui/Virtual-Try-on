@@ -12,6 +12,7 @@ import SettingsModal from './components/SettingsModal';
 import MobileConsole from './components/MobileConsole';
 import ColorPicker from './components/ColorPicker';
 import LandingScreen from './components/LandingScreen';
+import LearnMoreScreen from './components/LearnMoreScreen';
 
 const loadingMessages = [
     "Warming up the virtual dressing room...",
@@ -25,6 +26,7 @@ const bodyBuildOptions = ['Slim', 'Athletic', 'Average', 'Curvy', 'Plus Size'];
 
 const App: React.FC = () => {
   const [showLanding, setShowLanding] = useState<boolean>(true);
+  const [showLearnMore, setShowLearnMore] = useState<boolean>(false);
   const [subjectImageFile, setSubjectImageFile] = useState<File | null>(null);
   const [outfitImageFile, setOutfitImageFile] = useState<File | null>(null);
   const [bodyBuild, setBodyBuild] = useState<string>(bodyBuildOptions[2]); // Default to 'Average'
@@ -174,6 +176,21 @@ const App: React.FC = () => {
   const handleChangeSubject = useCallback(() => {
     setSubjectImageFile(null);
     setGeneratedImageUrl(null); // Allow new generation
+  }, []);
+
+  const handleEnterApp = useCallback(() => {
+    setShowLanding(false);
+    setShowLearnMore(false);
+  }, []);
+
+  const handleShowLearnMore = useCallback(() => {
+    setShowLanding(false);
+    setShowLearnMore(true);
+  }, []);
+
+  const handleBackToLanding = useCallback(() => {
+    setShowLanding(true);
+    setShowLearnMore(false);
   }, []);
 
   useEffect(() => {
@@ -540,7 +557,11 @@ const App: React.FC = () => {
   
   // Show landing screen first
   if (showLanding) {
-    return <LandingScreen onEnterApp={() => setShowLanding(false)} />;
+    return <LandingScreen onEnterApp={handleEnterApp} onLearnMore={handleShowLearnMore} />;
+  }
+
+  if (showLearnMore) {
+    return <LearnMoreScreen onBackToLanding={handleBackToLanding} onEnterApp={handleEnterApp} />;
   }
 
   return (
