@@ -266,16 +266,36 @@ const App: React.FC = () => {
                         <p className="text-base sm:text-lg text-amber-700 mb-6 leading-relaxed">{error}</p>
                         
                         <div className="bg-white rounded-xl p-4 mb-6 border border-amber-200">
-                            <h3 className="font-semibold text-amber-800 mb-3">📊 Gemini API Free Tier Limits:</h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
-                                <div className="flex items-center space-x-2">
-                                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                                    <span>5 requests per minute</span>
+                            <h3 className="font-semibold text-amber-800 mb-3">📊 API Rate Limits:</h3>
+                            <div className="space-y-3">
+                                <div>
+                                    <p className="font-medium text-gray-800 mb-2">Gemini API Free Tier:</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
+                                        <div className="flex items-center space-x-2">
+                                            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                            <span>5 requests per minute</span>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                                            <span>25 requests per day</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="flex items-center space-x-2">
-                                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                                    <span>25 requests per day</span>
-                                </div>
+                                {openRouterApiKey && (
+                                    <div className="border-t border-gray-200 pt-3">
+                                        <p className="font-medium text-gray-800 mb-2">OpenRouter Fallback:</p>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
+                                            <div className="flex items-center space-x-2">
+                                                <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+                                                <span>20 requests per minute</span>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                                <span>50-1000 requests per day</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             <p className="text-xs text-gray-500 mt-2">Resets at midnight Pacific Time</p>
                         </div>
@@ -287,14 +307,22 @@ const App: React.FC = () => {
                             >
                                 🔄 Try Again Later
                             </button>
-                            <div className="text-center">
+                            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                                {!openRouterApiKey && (
+                                    <button
+                                        onClick={() => setShowSettings(true)}
+                                        className="text-orange-600 hover:text-orange-700 text-sm font-medium transition-colors"
+                                    >
+                                        🔄 Set up OpenRouter Fallback
+                                    </button>
+                                )}
                                 <a 
                                     href="https://ai.google.dev/pricing" 
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
                                 >
-                                    💳 Upgrade API Plan for Higher Limits
+                                    💳 Upgrade Gemini API Plan
                                 </a>
                             </div>
                         </div>

@@ -88,9 +88,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               placeholder="Enter your OpenRouter API key..."
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
             />
-            <p className="text-sm text-gray-500 mt-2">
-              This will be used as a backup when the Gemini API fails
-            </p>
+            <div className="text-sm text-gray-500 mt-2 space-y-1">
+              <p>This will be used as a backup when the Gemini API fails</p>
+              <p className="text-xs">
+                <strong>Rate Limits:</strong> 20 requests/minute, 50 requests/day (free), 1000/day with credits
+              </p>
+            </div>
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
@@ -130,13 +133,25 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 </div>
                 
                 <div className="bg-orange-50 rounded-lg p-3 border border-orange-200 mt-3">
-                  <h4 className="font-medium text-orange-800 mb-2">🔄 OpenRouter Fallback:</h4>
-                  <ul className="space-y-1 text-xs text-orange-700">
-                    <li>• Get free credits at <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-800 underline">openrouter.ai</a></li>
-                    <li>• Automatic fallback when Gemini API fails</li>
-                    <li>• Uses google/gemini-2.5-flash-image-preview:free</li>
-                    <li>• Provides redundancy for uninterrupted service</li>
-                  </ul>
+                  <h4 className="font-medium text-orange-800 mb-2">🔄 How to get OpenRouter API Key:</h4>
+                  <div className="space-y-2 text-xs text-orange-700">
+                    <div>
+                      <p><strong>Step 1:</strong> Go to <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-800 underline">openrouter.ai</a> and sign up</p>
+                      <p><strong>Step 2:</strong> Click menu (≡) → "Keys" → "Create Key"</p>
+                      <p><strong>Step 3:</strong> Name your key and click "Create"</p>
+                      <p><strong>Step 4:</strong> Copy the key and paste it above</p>
+                    </div>
+                    <div className="border-t border-orange-200 pt-2 mt-2">
+                      <p><strong>Benefits:</strong></p>
+                      <ul className="space-y-1 ml-2">
+                        <li>• Automatic fallback when Gemini API fails</li>
+                        <li>• Uses same google/gemini-2.5-flash-image-preview model</li>
+                        <li>• 20 requests/minute, 50/day (free tier)</li>
+                        <li>• 1000/day with $1+ credits purchase</li>
+                        <li>• Uninterrupted service during rate limits</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
