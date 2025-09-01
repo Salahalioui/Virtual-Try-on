@@ -376,12 +376,13 @@ const generateTryOnImageWithOpenRouter = async (
     throw new Error('OpenRouter API key appears to be invalid. Please check your OpenRouter API key.');
   }
 
-  // Prepare the OpenRouter API request
+  // Prepare the OpenRouter API request for Gemini image generation
   const requestBody = {
     model: "google/gemini-2.5-flash-image-preview:free",
+    modalities: ["image", "text"],
     messages: [
       {
-        role: "user", 
+        role: "user",
         content: [
           {
             type: "text",
@@ -426,43 +427,33 @@ const generateTryOnImageWithOpenRouter = async (
     console.log('🎉 OpenRouter response received!');
     console.log('OpenRouter response structure:', JSON.stringify(data, null, 2));
     
-    // For Gemini image generation through OpenRouter, check for image data in the response
+    // For Gemini image generation through OpenRouter, check for images array in message
     if (data.choices && data.choices[0] && data.choices[0].message) {
       const message = data.choices[0].message;
-      console.log('OpenRouter message content type:', typeof message.content);
       console.log('OpenRouter message:', message);
       
-      // Check if there's image data in the response (Gemini returns base64 image data)
-      if (message.content && typeof message.content === 'string') {
+      // Check for images array - this is how OpenRouter returns generated images
+      if (message.images && Array.isArray(message.images) && message.images.length > 0) {
+        const firstImage = message.images[0];
+        console.log('Found images array with', message.images.length, 'images');
+        
         let imageUrl: string;
         
-        if (message.content.startsWith('data:image/')) {
-          imageUrl = message.content;
-          console.log('Found data URL format image');
-        } else if (message.content.startsWith('http')) {
-          console.log('Found image URL in response:', message.content);
-          
-          // Download the image from the URL and convert to data URL
-          const imageResponse = await fetch(message.content);
-          if (!imageResponse.ok) {
-            throw new Error(`Failed to fetch generated image: ${imageResponse.status}`);
-          }
-          
-          const imageBlob = await imageResponse.blob();
-          const arrayBuffer = await imageBlob.arrayBuffer();
-          const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-          imageUrl = `data:${imageBlob.type};base64,${base64}`;
-          console.log('Converted URL to data URL for processing');
+        // Check if it's in the expected format: { image_url: { url: "data:..." } }
+        if (firstImage.image_url && firstImage.image_url.url) {
+          imageUrl = firstImage.image_url.url;
+          console.log('Found image URL in images array:', imageUrl.substring(0, 50) + '...');
+        } else if (typeof firstImage === 'string') {
+          // Sometimes it might be a direct string
+          imageUrl = firstImage;
+          console.log('Found direct image string in images array');
         } else {
-          // Check if it's pure base64 data
-          try {
-            // Test if it's valid base64
-            atob(message.content);
-            imageUrl = `data:image/jpeg;base64,${message.content}`;
-            console.log('Treated content as base64 data');
-          } catch {
-            throw new Error(`OpenRouter returned unrecognized content format: ${message.content.substring(0, 100)}...`);
-          }
+          throw new Error(`Unexpected image format in OpenRouter response: ${JSON.stringify(firstImage)}`);
+        }
+        
+        // Validate that we have a proper data URL
+        if (!imageUrl.startsWith('data:image/')) {
+          throw new Error(`Expected data URL format, got: ${imageUrl.substring(0, 50)}...`);
         }
         
         console.log('Cropping OpenRouter generated image to original aspect ratio...');
@@ -476,22 +467,16 @@ const generateTryOnImageWithOpenRouter = async (
         return { finalImageUrl };
       }
       
-      // Check if there are any image parts in the response
-      if (message.parts && Array.isArray(message.parts)) {
-        const imagePart = message.parts.find(part => part.inlineData && part.inlineData.data);
-        if (imagePart) {
-          console.log('Found image in parts array');
-          const { mimeType, data } = imagePart.inlineData;
-          const imageUrl = `data:${mimeType};base64,${data}`;
-          
-          console.log('Cropping OpenRouter generated image to original aspect ratio...');
+      // Fallback: check if content contains image data (older format)
+      if (message.content && typeof message.content === 'string') {
+        if (message.content.startsWith('data:image/')) {
+          console.log('Found image in content field as fallback');
           const finalImageUrl = await cropToOriginalAspectRatio(
-            imageUrl,
+            message.content,
             originalWidth,
             originalHeight,
             MAX_DIMENSION
           );
-          
           return { finalImageUrl };
         }
       }
