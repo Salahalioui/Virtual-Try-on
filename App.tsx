@@ -11,6 +11,7 @@ import Spinner from './components/Spinner';
 import SettingsModal from './components/SettingsModal';
 import MobileConsole from './components/MobileConsole';
 import ColorPicker from './components/ColorPicker';
+import LandingScreen from './components/LandingScreen';
 
 const loadingMessages = [
     "Warming up the virtual dressing room...",
@@ -23,6 +24,7 @@ const loadingMessages = [
 const bodyBuildOptions = ['Slim', 'Athletic', 'Average', 'Curvy', 'Plus Size'];
 
 const App: React.FC = () => {
+  const [showLanding, setShowLanding] = useState<boolean>(true);
   const [subjectImageFile, setSubjectImageFile] = useState<File | null>(null);
   const [outfitImageFile, setOutfitImageFile] = useState<File | null>(null);
   const [bodyBuild, setBodyBuild] = useState<string>(bodyBuildOptions[2]); // Default to 'Average'
@@ -536,6 +538,11 @@ const App: React.FC = () => {
     );
   };
   
+  // Show landing screen first
+  if (showLanding) {
+    return <LandingScreen onEnterApp={() => setShowLanding(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 text-gray-800">
       <div className="flex flex-col min-h-screen">
