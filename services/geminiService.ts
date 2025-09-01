@@ -430,7 +430,13 @@ const generateTryOnImageWithOpenRouter = async (
     // For Gemini image generation through OpenRouter, check for images array in message
     if (data.choices && data.choices[0] && data.choices[0].message) {
       const message = data.choices[0].message;
+      const choice = data.choices[0];
       console.log('OpenRouter message:', message);
+      
+      // Check for content filter blocking
+      if (choice.finish_reason === 'content_filter' || choice.native_finish_reason === 'PROHIBITED_CONTENT') {
+        throw new Error("Content filter blocked the request. OpenRouter's safety system flagged this virtual try-on as inappropriate content. This is a false positive - please try using your own Gemini API key instead of the OpenRouter fallback.");
+      }
       
       // Check for images array - this is how OpenRouter returns generated images
       if (message.images && Array.isArray(message.images) && message.images.length > 0) {

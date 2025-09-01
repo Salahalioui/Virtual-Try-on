@@ -51,36 +51,24 @@ const LandingScreen: React.FC<LandingScreenProps> = ({ onEnterApp, onLearnMore }
             {/* Features */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 my-8">
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-lg overflow-hidden">
-                  <img 
-                    src="/attached_assets/generated_images/Speed_icon_instant_results_9ab4ca48.png" 
-                    alt="Instant Results"
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-2xl">⚡</span>
                 </div>
                 <h3 className="font-semibold text-gray-800 mb-2 text-center">Instant Results</h3>
                 <p className="text-sm text-gray-600 text-center leading-relaxed">See how clothes look on you in seconds with AI magic</p>
               </div>
               
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-lg overflow-hidden">
-                  <img 
-                    src="/attached_assets/generated_images/Quality_AI_icon_a8ddf5ef.png" 
-                    alt="Photorealistic Quality"
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-2xl">💎</span>
                 </div>
                 <h3 className="font-semibold text-gray-800 mb-2 text-center">Photorealistic</h3>
                 <p className="text-sm text-gray-600 text-center leading-relaxed">AI-powered realistic clothing overlay with perfect lighting</p>
               </div>
               
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 sm:col-span-2 lg:col-span-1">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-lg overflow-hidden">
-                  <img 
-                    src="/attached_assets/generated_images/Multi_device_compatibility_icon_897c0f06.png" 
-                    alt="Any Device"
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-2xl">📱</span>
                 </div>
                 <h3 className="font-semibold text-gray-800 mb-2 text-center">Any Device</h3>
                 <p className="text-sm text-gray-600 text-center leading-relaxed">Works perfectly on mobile, tablet, and desktop</p>
@@ -116,17 +104,40 @@ const LandingScreen: React.FC<LandingScreenProps> = ({ onEnterApp, onLearnMore }
               <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-3xl opacity-10 transform -rotate-2 hidden lg:block"></div>
               
               {/* Main visual container */}
-              <div className="relative bg-white rounded-2xl lg:rounded-3xl shadow-xl lg:shadow-2xl overflow-hidden border border-gray-100">
-                <img 
-                  src="/attached_assets/generated_images/Virtual_try-on_concept_hero_e2a24dc4.png" 
-                  alt="Virtual Try-On Concept"
-                  className="w-full h-48 sm:h-64 lg:h-80 object-cover"
-                />
-                <div className="p-4 lg:p-6">
-                  <div className="text-center">
-                    <div className="inline-flex items-center space-x-2 bg-green-100 text-green-800 px-3 py-2 rounded-full text-xs lg:text-sm font-medium">
-                      <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                      <span>AI Magic at Work</span>
+              <div className="relative bg-gradient-to-br from-blue-50 via-purple-25 to-pink-50 rounded-2xl lg:rounded-3xl shadow-xl lg:shadow-2xl overflow-hidden border border-gray-100 p-6 lg:p-8">
+                {/* Mobile-friendly visual representation */}
+                <div className="text-center space-y-6">
+                  <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                    {/* Before - User Photo */}
+                    <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-200">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xl sm:text-2xl">📸</span>
+                      </div>
+                      <p className="text-xs sm:text-sm font-medium text-gray-700">Your Photo</p>
+                    </div>
+                    
+                    {/* After - AI Result */}
+                    <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-200">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xl sm:text-2xl">✨</span>
+                      </div>
+                      <p className="text-xs sm:text-sm font-medium text-gray-700">AI Result</p>
+                    </div>
+                  </div>
+                  
+                  {/* Arrow and Magic */}
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg">→</span>
+                    </div>
+                    <span className="text-sm font-medium text-gray-600">AI Magic</span>
+                  </div>
+                  
+                  {/* Status indicator */}
+                  <div className="bg-white/90 backdrop-blur-sm rounded-lg p-3 border border-gray-200">
+                    <div className="flex items-center justify-center space-x-2 text-sm">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-green-600 font-medium">Ready to Try</span>
                     </div>
                   </div>
                 </div>
