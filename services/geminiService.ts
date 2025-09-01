@@ -376,12 +376,12 @@ const generateTryOnImageWithOpenRouter = async (
     throw new Error('OpenRouter API key appears to be invalid. Please check your OpenRouter API key.');
   }
 
-  // Prepare the OpenRouter API request
+  // Prepare the OpenRouter API request - use a working image generation model
   const requestBody = {
-    model: "google/gemini-2.5-flash-image-preview:free",
+    model: "black-forest-labs/flux-1.1-pro",
     messages: [
       {
-        role: "user",
+        role: "user", 
         content: [
           {
             type: "text",
@@ -394,17 +394,14 @@ const generateTryOnImageWithOpenRouter = async (
             }
           },
           {
-            type: "image_url", 
+            type: "image_url",
             image_url: {
               url: `data:${outfitImagePart.inlineData.mimeType};base64,${outfitImagePart.inlineData.data}`
             }
           }
         ]
       }
-    ],
-    response_format: {
-      type: "image"
-    }
+    ]
   };
 
   try {
@@ -427,23 +424,45 @@ const generateTryOnImageWithOpenRouter = async (
 
     const data = await response.json();
     console.log('🎉 OpenRouter fallback successful!');
+    console.log('OpenRouter response structure:', JSON.stringify(data, null, 2));
     
-    // Extract the image from the response
+    // Extract the image from the response - Flux models return URLs, not base64
     if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
-      const imageData = data.choices[0].message.content;
+      const messageContent = data.choices[0].message.content;
+      console.log('OpenRouter message content:', messageContent);
       
-      // If the response is a base64 image
-      let generatedSquareImageUrl: string;
-      if (imageData.startsWith('data:image/')) {
-        generatedSquareImageUrl = imageData;
+      // Check if content is a string (URL) or object with image data
+      let imageUrl: string;
+      
+      if (typeof messageContent === 'string') {
+        // Flux models typically return image URLs
+        if (messageContent.startsWith('http')) {
+          console.log('Found image URL in response:', messageContent);
+          
+          // Download the image from the URL and convert to data URL
+          const imageResponse = await fetch(messageContent);
+          if (!imageResponse.ok) {
+            throw new Error(`Failed to fetch generated image: ${imageResponse.status}`);
+          }
+          
+          const imageBlob = await imageResponse.blob();
+          const arrayBuffer = await imageBlob.arrayBuffer();
+          const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+          imageUrl = `data:${imageBlob.type};base64,${base64}`;
+          console.log('Converted URL to data URL for processing');
+        } else if (messageContent.startsWith('data:image/')) {
+          imageUrl = messageContent;
+        } else {
+          // Assume it's base64 without prefix
+          imageUrl = `data:image/jpeg;base64,${messageContent}`;
+        }
       } else {
-        // Assume it's base64 without the data URL prefix
-        generatedSquareImageUrl = `data:image/jpeg;base64,${imageData}`;
+        throw new Error("OpenRouter returned unexpected content format");
       }
       
       console.log('Cropping OpenRouter generated image to original aspect ratio...');
       const finalImageUrl = await cropToOriginalAspectRatio(
-        generatedSquareImageUrl,
+        imageUrl,
         originalWidth,
         originalHeight,
         MAX_DIMENSION
