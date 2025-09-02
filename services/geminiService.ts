@@ -595,7 +595,7 @@ Execute this task with the highest degree of photorealism, paying special attent
   let response: GenerateContentResponse;
   try {
     response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image-preview',
+      model: 'gemini-1.5-flash',
       contents: { parts: [subjectImagePart, outfitImagePart, textPart] },
       config: {
           responseModalities: [Modality.IMAGE, Modality.TEXT],
