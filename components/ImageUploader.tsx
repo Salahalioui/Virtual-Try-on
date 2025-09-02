@@ -199,10 +199,12 @@ interface ImageUploaderProps {
   imageUrl: string | null;
 }
 
-const UploadIcon: React.FC = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-    </svg>
+const UploadIcon: React.FC<{isHovered?: boolean}> = ({isHovered = false}) => (
+    <div className={`transition-all duration-300 ${isHovered ? 'scale-110' : ''}`}>
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 sm:h-16 sm:w-16 text-blue-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+    </div>
 );
 
 const WarningIcon: React.FC = () => (
@@ -215,7 +217,9 @@ const WarningIcon: React.FC = () => (
 const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, imageUrl }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
   const [fileTypeError, setFileTypeError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   
   const [uncroppedImage, setUncroppedImage] = useState<string | null>(null);
   const [originalFile, setOriginalFile] = useState<File | null>(null);
@@ -375,15 +379,24 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
       setOriginalFile(null);
   };
   
-  const uploaderClasses = `w-full aspect-[4/3] sm:aspect-video bg-gray-50 border-2 border-dashed rounded-xl flex items-center justify-center transition-all duration-300 relative overflow-hidden group ${
-      isDraggingOver ? 'border-blue-400 bg-blue-50 shadow-lg scale-105'
-    : imageUrl ? 'border-green-300 hover:border-green-400'
-    : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50 cursor-pointer'
+  const uploaderClasses = `w-full aspect-[4/3] sm:aspect-video rounded-2xl flex items-center justify-center transition-all duration-300 relative overflow-hidden group cursor-pointer ${
+      isDraggingOver 
+        ? 'bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-dashed border-blue-400 shadow-2xl scale-[1.02] ring-4 ring-blue-200/50'
+      : imageUrl 
+        ? 'bg-white border-2 border-solid border-green-300 hover:border-green-400 shadow-lg hover:shadow-xl'
+      : isHovering
+        ? 'bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-dashed border-blue-400 shadow-xl'
+        : 'bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 shadow-md hover:shadow-lg'
   }`;
 
   return (
     <div className="flex flex-col items-center w-full">
-      {label && <h3 className="text-xl font-semibold mb-4 text-zinc-700">{label}</h3>}
+      {label && (
+        <div className="mb-6">
+          <h3 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">{label}</h3>
+          <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
+        </div>
+      )}
       {uncroppedImage && originalFile && (
         <ImageCropModal 
           imageSrc={uncroppedImage}
@@ -398,6 +411,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
       >
         <input
           type="file"
@@ -433,20 +448,46 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
             }}
           />
         ) : (
-          <div className="text-center text-gray-500 p-4 sm:p-6">
-            <UploadIcon />
-            <div className="space-y-2">
-              <p className="text-sm sm:text-base font-medium text-gray-700">Upload your image</p>
-              <p className="text-xs sm:text-sm text-gray-500">Tap to browse{/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? '' : ' or drag & drop'}</p>
-              <p className="text-xs text-gray-400">PNG, JPG, JPEG (Max 10MB)</p>
+          <div className="text-center p-6 sm:p-8">
+            <UploadIcon isHovered={isHovering || isDraggingOver} />
+            <div className="space-y-3">
+              <h4 className={`text-lg sm:text-xl font-bold transition-colors ${
+                isDraggingOver ? 'text-blue-600' : isHovering ? 'text-blue-700' : 'text-gray-800'
+              }`}>
+                {isDraggingOver ? 'Drop your image here!' : 'Upload your image'}
+              </h4>
+              <p className={`text-sm sm:text-base font-medium transition-colors ${
+                isDraggingOver ? 'text-blue-600' : isHovering ? 'text-blue-600' : 'text-gray-600'
+              }`}>
+                {isDraggingOver ? 'Release to upload' : 'Tap to browse' + (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? '' : ' or drag & drop')}
+              </p>
+              <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
+                <span className="bg-white/80 px-3 py-1 rounded-full border">PNG</span>
+                <span className="bg-white/80 px-3 py-1 rounded-full border">JPG</span>
+                <span className="bg-white/80 px-3 py-1 rounded-full border">Max 10MB</span>
+              </div>
             </div>
+            {uploadProgress !== null && (
+              <div className="mt-6">
+                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300 ease-out"
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
+                </div>
+                <p className="text-sm text-gray-600 mt-2">Uploading... {uploadProgress}%</p>
+              </div>
+            )}
           </div>
         )}
       </div>
       {fileTypeError && (
-        <div className="w-full mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-3 flex items-center animate-fade-in" role="alert">
+        <div className="w-full mt-4 text-sm text-red-700 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-4 flex items-start shadow-md animate-fade-in" role="alert">
             <WarningIcon />
-            <span>{fileTypeError}</span>
+            <div>
+              <p className="font-semibold">Upload Error</p>
+              <p>{fileTypeError}</p>
+            </div>
         </div>
       )}
     </div>

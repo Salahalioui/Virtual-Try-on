@@ -40,6 +40,7 @@ const App: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [loadingStartTime, setLoadingStartTime] = useState<number | null>(null);
 
   const subjectImageUrl = useMemo(() => {
     if (subjectImageFile) {
@@ -75,6 +76,7 @@ const App: React.FC = () => {
       return;
     }
     setIsLoading(true);
+    setLoadingStartTime(Date.now());
     setError(null);
     try {
       const { finalImageUrl } = await generateTryOnImage(
@@ -329,14 +331,36 @@ const App: React.FC = () => {
                     </>
                 ) : (
                     <>
-                        <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-red-800">Oops! Something went wrong</h2>
-                        <p className="text-base sm:text-lg text-red-700 mb-6 leading-relaxed">{error}</p>
-                        <button
-                            onClick={handleReset}
-                            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 sm:px-8 rounded-xl text-base sm:text-lg transition-all duration-200 shadow-md hover:shadow-lg"
-                        >
-                            🔄 Try Again
-                        </button>
+                        <div className="w-16 h-16 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
+                            <span className="text-3xl">⚠️</span>
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-red-800">Something Went Wrong</h2>
+                        <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-6">
+                            <h4 className="font-semibold text-red-700 mb-2">Error Details:</h4>
+                            <p className="text-base text-red-600 leading-relaxed">{error}</p>
+                        </div>
+                        <div className="space-y-3">
+                            <button
+                                onClick={handleReset}
+                                className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                            >
+                                🔄 Try Again
+                            </button>
+                            <div className="flex flex-col sm:flex-row gap-3 justify-center text-sm">
+                                <button
+                                    onClick={() => setShowSettings(true)}
+                                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                                >
+                                    ⚙️ Check Settings
+                                </button>
+                                <button
+                                    onClick={() => window.location.reload()}
+                                    className="text-gray-600 hover:text-gray-700 font-medium transition-colors"
+                                >
+                                    🔄 Refresh Page
+                                </button>
+                            </div>
+                        </div>
                     </>
                 )}
             </div>
@@ -345,15 +369,30 @@ const App: React.FC = () => {
     }
 
     if (isLoading) {
+        const estimatedProgress = Math.min(((Date.now() - (loadingStartTime || Date.now())) / 30000) * 100, 95);
         return (
-            <div className="text-center animate-fade-in w-full max-w-lg mx-auto px-4">
-                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-200">
-                    <Spinner />
-                    <p className="text-lg sm:text-xl mt-6 text-gray-700 transition-opacity duration-500 leading-relaxed">{loadingMessages[loadingMessageIndex]}</p>
-                    <div className="mt-4 w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                        <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-full rounded-full animate-pulse" style={{width: '60%'}}></div>
+            <div className="text-center animate-fade-in w-full max-w-2xl mx-auto px-4">
+                <div className="bg-white rounded-3xl shadow-2xl p-8 sm:p-12 border border-gray-100">
+                    <div className="mb-8">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">✨ Creating Your Virtual Try-On</h2>
+                        <p className="text-gray-600">Our AI is working its magic...</p>
                     </div>
-                    <p className="text-sm text-gray-500 mt-3">This may take 10-30 seconds</p>
+                    
+                    <Spinner showProgress={true} progress={Math.round(estimatedProgress)} />
+                    
+                    <div className="mt-8 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100">
+                        <p className="text-lg font-medium text-gray-700 mb-3">{loadingMessages[loadingMessageIndex]}</p>
+                        <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                            <span>Processing with AI</span>
+                            <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                        </div>
+                    </div>
+                    
+                    <div className="mt-6 text-sm text-gray-500">
+                        <p>This typically takes 10-30 seconds</p>
+                        <p className="mt-1">Please keep this tab open</p>
+                    </div>
                 </div>
             </div>
         );
@@ -417,16 +456,19 @@ const App: React.FC = () => {
 
                 <div className="mt-8 lg:mt-12 space-y-6">
                     {/* Color Picker Section */}
-                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
-                        <div className="text-center mb-4">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-2">🎨 Color Customization</h3>
-                            <p className="text-sm text-gray-600">Pick a color from your photo to recolor the outfit</p>
+                    <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 rounded-2xl p-6 sm:p-8 border border-purple-200/50 shadow-lg">
+                        <div className="text-center mb-6">
+                            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-xl">🎨</span>
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Color Customization</h3>
+                            <p className="text-sm sm:text-base text-gray-600">Pick a color from your photo to recolor the outfit</p>
                         </div>
                         
                         <div className="flex items-center justify-center gap-4 flex-wrap">
                             <button
                                 onClick={handleOpenColorPicker}
-                                className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+                                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                             >
                                 👁️ Pick a Color
                             </button>
@@ -456,15 +498,21 @@ const App: React.FC = () => {
                         )}
                     </div>
 
-                    <div className="text-center">
-                        <label htmlFor="body-build-select" className="block text-lg font-semibold text-gray-700 mb-4">
-                            Select Your Body Build
-                        </label>
+                    <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200 shadow-md">
+                        <div className="text-center mb-6">
+                            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-xl">👤</span>
+                            </div>
+                            <label htmlFor="body-build-select" className="block text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                                Select Your Body Build
+                            </label>
+                            <p className="text-sm text-gray-600">Choose the option that best matches your body type</p>
+                        </div>
                         <select
                             id="body-build-select"
                             value={bodyBuild}
                             onChange={(e) => setBodyBuild(e.target.value)}
-                            className="bg-white border border-gray-300 text-gray-900 text-base sm:text-lg rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full max-w-xs mx-auto px-4 py-3 shadow-sm transition-all"
+                            className="bg-gradient-to-r from-gray-50 to-white border-2 border-gray-300 text-gray-900 text-lg font-medium rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 block w-full max-w-sm mx-auto px-6 py-4 shadow-lg transition-all hover:shadow-xl"
                         >
                             {bodyBuildOptions.map(option => (
                                 <option key={option} value={option}>{option}</option>
@@ -475,10 +523,12 @@ const App: React.FC = () => {
                     <div className="text-center">
                         <button
                             onClick={handleGenerateTryOn}
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 sm:px-12 rounded-xl text-lg sm:text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                            className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white font-black py-5 px-10 sm:px-16 rounded-2xl text-xl sm:text-2xl transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-110 hover:-translate-y-1 relative overflow-hidden group"
                         >
-                            ✨ Try It On!
+                            <span className="relative z-10">✨ Try It On!</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-yellow-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                         </button>
+                        <p className="text-sm text-gray-500 mt-4">Ready to see the magic? Click to generate your virtual try-on!</p>
                     </div>
                 </div>
             </div>
@@ -486,12 +536,12 @@ const App: React.FC = () => {
     }
 
     return (
-        <div className="w-full max-w-6xl mx-auto animate-fade-in px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Upload Your Photo</h2>
+        <div className="w-full max-w-7xl mx-auto animate-fade-in px-3 sm:px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+            <div className="space-y-4 sm:space-y-6">
+              <div className="flex items-center justify-center space-x-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full flex items-center justify-center text-sm sm:text-base font-bold shadow-lg">1</div>
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Upload Your Photo</h2>
               </div>
               <ImageUploader 
                 id="subject-uploader"
@@ -499,10 +549,10 @@ const App: React.FC = () => {
                 imageUrl={subjectImageUrl}
               />
             </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Upload The Outfit</h2>
+            <div className="space-y-4 sm:space-y-6">
+              <div className="flex items-center justify-center space-x-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-full flex items-center justify-center text-sm sm:text-base font-bold shadow-lg">2</div>
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Upload The Outfit</h2>
               </div>
               <ImageUploader 
                 id="outfit-uploader"
