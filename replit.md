@@ -26,7 +26,8 @@ Preferred communication style: Simple, everyday language.
 - **Modal Components**: AddProductModal and DebugModal for enhanced user interactions
 
 ### AI Integration
-- **Service Layer**: Dedicated geminiService.ts for Google Gemini API integration
+- **Service Layer**: Dedicated geminiService.ts for AI model integration via OpenRouter
+- **Primary Method**: OpenRouter API as the main pathway to Google's Gemini 2.5 Flash Image Preview model
 - **Image Processing Pipeline**: 
   - Automatic image dimension detection and aspect ratio preservation
   - Square padding for consistent AI input format
@@ -48,8 +49,9 @@ Preferred communication style: Simple, everyday language.
 - **Vite**: Development server and build tooling (v6.2.0)
 
 ### AI Services
-- **Google Gemini AI**: Image generation and virtual try-on processing via @google/genai package
-- **API Key Management**: Environment variable configuration for secure API access
+- **OpenRouter**: Primary API gateway for accessing Google's Gemini 2.5 Flash Image Preview model
+- **Google Gemini AI**: Image generation and virtual try-on processing (accessed via OpenRouter)
+- **API Key Management**: OpenRouter API key as primary authentication method
 
 ### UI Libraries
 - **Tailwind CSS**: Utility-first CSS framework loaded via CDN

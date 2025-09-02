@@ -60,25 +60,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
         <div className="p-6 space-y-6">
           <div>
-            <label htmlFor="api-key" className="block text-lg font-semibold text-gray-700 mb-3">
-              🔑 Your Gemini API Key
-            </label>
-            <input
-              id="gemini-api-key"
-              type="password"
-              value={geminiApiKey}
-              onChange={(e) => setGeminiApiKey(e.target.value)}
-              placeholder="Enter your Gemini API key..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-            />
-            <p className="text-sm text-gray-500 mt-2">
-              Using your own API key removes rate limits and gives you full control
-            </p>
-          </div>
-
-          <div>
             <label htmlFor="openrouter-api-key" className="block text-lg font-semibold text-gray-700 mb-3">
-              🔄 OpenRouter API Key (Fallback)
+              🚀 OpenRouter API Key (Primary)
             </label>
             <input
               id="openrouter-api-key"
@@ -86,14 +69,31 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               value={openRouterApiKey}
               onChange={(e) => setOpenRouterApiKey(e.target.value)}
               placeholder="Enter your OpenRouter API key..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+              className="w-full px-4 py-3 border border-orange-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
             />
-            <div className="text-sm text-gray-500 mt-2 space-y-1">
-              <p>This will be used as a backup when the Gemini API fails</p>
-              <p className="text-xs">
+            <div className="text-sm text-orange-600 mt-2 space-y-1">
+              <p><strong>Required:</strong> This is now the primary method for virtual try-on generation</p>
+              <p className="text-xs text-gray-500">
                 <strong>Rate Limits:</strong> 20 requests/minute, 50 requests/day (free), 1000/day with credits
               </p>
             </div>
+          </div>
+
+          <div>
+            <label htmlFor="api-key" className="block text-lg font-semibold text-gray-700 mb-3">
+              🔑 Gemini API Key (Optional)
+            </label>
+            <input
+              id="gemini-api-key"
+              type="password"
+              value={geminiApiKey}
+              onChange={(e) => setGeminiApiKey(e.target.value)}
+              placeholder="Enter your Gemini API key (optional)..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            />
+            <p className="text-sm text-gray-500 mt-2">
+              Optional: Currently not used due to free tier quota limitations
+            </p>
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
@@ -102,7 +102,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               className="flex items-center justify-between w-full text-left"
             >
               <h3 className="font-semibold text-blue-800">
-                📋 How to get your Gemini API key
+                📋 How to get your API keys
               </h3>
               <svg 
                 className={`w-5 h-5 text-blue-600 transition-transform ${showInstructions ? 'rotate-180' : ''}`}
@@ -122,18 +122,18 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   <p><strong>Step 5:</strong> Paste it above and click Save</p>
                 </div>
                 
-                <div className="bg-white rounded-lg p-3 border border-blue-200">
-                  <h4 className="font-medium text-blue-800 mb-2">💡 Benefits of your own API key:</h4>
-                  <ul className="space-y-1 text-xs">
-                    <li>• Higher rate limits (15 RPM instead of 5)</li>
-                    <li>• More daily requests (1500 instead of 25)</li>
-                    <li>• Priority processing</li>
-                    <li>• No shared quota restrictions</li>
+                <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                  <h4 className="font-medium text-gray-800 mb-2">ℹ️ About Gemini API Key:</h4>
+                  <ul className="space-y-1 text-xs text-gray-600">
+                    <li>• Currently not used due to free tier quota limitations</li>
+                    <li>• Direct Google API hits rate limits quickly</li>
+                    <li>• OpenRouter provides better reliability</li>
+                    <li>• May be re-enabled in future updates</li>
                   </ul>
                 </div>
                 
                 <div className="bg-orange-50 rounded-lg p-3 border border-orange-200 mt-3">
-                  <h4 className="font-medium text-orange-800 mb-2">🔄 How to get OpenRouter API Key:</h4>
+                  <h4 className="font-medium text-orange-800 mb-2">🚀 How to get OpenRouter API Key (Required):</h4>
                   <div className="space-y-2 text-xs text-orange-700">
                     <div>
                       <p><strong>Step 1:</strong> Go to <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-800 underline">openrouter.ai</a> and sign up</p>
@@ -144,11 +144,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     <div className="border-t border-orange-200 pt-2 mt-2">
                       <p><strong>Benefits:</strong></p>
                       <ul className="space-y-1 ml-2">
-                        <li>• Automatic fallback when Gemini API fails</li>
-                        <li>• Uses same google/gemini-2.5-flash-image-preview model</li>
+                        <li>• Primary method for virtual try-on generation</li>
+                        <li>• Uses google/gemini-2.5-flash-image-preview model</li>
                         <li>• 20 requests/minute, 50/day (free tier)</li>
                         <li>• 1000/day with $1+ credits purchase</li>
-                        <li>• Uninterrupted service during rate limits</li>
+                        <li>• Reliable service without Google API quota issues</li>
                       </ul>
                     </div>
                   </div>

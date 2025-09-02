@@ -505,30 +505,10 @@ export const generateTryOnImage = async (
 ): Promise<{ finalImageUrl: string; }> => {
   console.log('Starting virtual try-on generation process...');
   
-  // Use custom API key if provided, otherwise fall back to environment variable
-  let apiKey = customApiKey || process.env.GEMINI_API_KEY;
-  
-  // Debug logging to verify which API key is being used
-  if (customApiKey) {
-    console.log('🔑 Using custom API key (length:', customApiKey.length, 'chars)');
-  } else if (process.env.GEMINI_API_KEY) {
-    console.log('🔑 Using default environment API key');
-  } else {
-    console.log('❌ No API key found');
+  // Check if OpenRouter API key is available - this is now the primary method
+  if (!openRouterApiKey) {
+    throw new Error('OpenRouter API key is required. Please set up your OpenRouter API key in Settings.');
   }
-  
-  if (!apiKey) {
-    throw new Error('No API key available. Please set up your Gemini API key in Settings.');
-  }
-
-  // Mobile-specific: Clean API key more carefully to prevent header encoding issues
-  apiKey = apiKey.trim().replace(/[\u0000-\u001F\u007F-\u009F]/g, ''); // Remove only control characters, keep valid ASCII
-  if (!apiKey || apiKey.length < 20) {
-    throw new Error('API key appears to be corrupted or invalid after cleaning. Please check your API key.');
-  }
-  
-  console.log('🧹 Cleaned API key for mobile compatibility (removed control characters only)');
-  const ai = new GoogleGenAI({ apiKey });
 
   // Get original scene dimensions for final cropping
   const { width: originalWidth, height: originalHeight } = await getImageDimensions(subjectImage);
@@ -588,78 +568,21 @@ ${selectedColor ? '0.  **ABSOLUTE PRIORITY - Color Matching:** The outfit MUST b
 Execute this task with the highest degree of photorealism, paying special attention to the unbreakable rule of body build fidelity${selectedColor ? ' and the critical color matching requirement' : ''}.
 `;
 
-  const textPart = { text: prompt };
+  console.log('Sending images and prompt to OpenRouter...');
   
-  console.log('Sending images and prompt to the model...');
-  
-  let response: GenerateContentResponse;
+  // Use OpenRouter as the primary method
   try {
-    response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash',
-      contents: { parts: [subjectImagePart, outfitImagePart, textPart] },
-      config: {
-          responseModalities: [Modality.IMAGE, Modality.TEXT],
-      },
-    });
-  } catch (apiError: any) {
-    console.error('🔥 Gemini API call failed:', apiError);
-    console.error('🔥 Full error object:', JSON.stringify(apiError, null, 2));
-    console.error('🔥 Error status:', apiError.status);
-    console.error('🔥 Error message:', apiError.message);
-    console.error('🔥 Error details:', apiError.error);
-    
-    // Log additional debugging info for 429 errors
-    if (apiError.status === 429) {
-      console.error('🔍 429 Debug Info:');
-      console.error('- Using custom API key:', !!customApiKey);
-      console.error('- API key length:', apiKey?.length || 'undefined');
-      console.error('- Request timestamp:', new Date().toISOString());
-      console.error('- User agent:', navigator?.userAgent || 'unknown');
-    }
-    
-    // Attempt OpenRouter fallback if API key is available
-    if (openRouterApiKey) {
-      console.log('🔄 Gemini API failed, attempting OpenRouter fallback...');
-      try {
-        return await generateTryOnImageWithOpenRouter(
-          subjectImagePart,
-          outfitImagePart,
-          prompt,
-          openRouterApiKey,
-          originalWidth,
-          originalHeight,
-          MAX_DIMENSION
-        );
-      } catch (fallbackError: any) {
-        console.error('🔥 OpenRouter fallback also failed:', fallbackError);
-        throw new Error(`Both Gemini and OpenRouter APIs failed. Gemini: ${handleApiError(apiError)}. OpenRouter: ${fallbackError.message}`);
-      }
-    } else {
-      console.log('❌ No OpenRouter API key available for fallback');
-      throw new Error(handleApiError(apiError));
-    }
-  }
-
-  console.log('Received response from the model.');
-  
-  const imagePartFromResponse = response.candidates?.[0]?.content?.parts?.find(part => part.inlineData);
-
-  if (imagePartFromResponse?.inlineData) {
-    const { mimeType, data } = imagePartFromResponse.inlineData;
-    console.log(`Received image data (${mimeType}), length:`, data.length);
-    const generatedSquareImageUrl = `data:${mimeType};base64,${data}`;
-    
-    console.log('Cropping generated image to original aspect ratio...');
-    const finalImageUrl = await cropToOriginalAspectRatio(
-        generatedSquareImageUrl,
-        originalWidth,
-        originalHeight,
-        MAX_DIMENSION
+    return await generateTryOnImageWithOpenRouter(
+      subjectImagePart,
+      outfitImagePart,
+      prompt,
+      openRouterApiKey,
+      originalWidth,
+      originalHeight,
+      MAX_DIMENSION
     );
-    
-    return { finalImageUrl };
+  } catch (openRouterError: any) {
+    console.error('🔥 OpenRouter API failed:', openRouterError);
+    throw new Error(`Virtual try-on generation failed: ${openRouterError.message}`);
   }
-
-  console.error("Model response did not contain an image part.", response);
-  throw new Error("The AI model did not return an image. This might be due to content restrictions or processing issues. Please try with different images or try again later.");
 };
