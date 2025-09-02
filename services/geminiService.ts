@@ -4,7 +4,7 @@
 */
 
 
-import { GoogleGenAI, GenerateContentResponse, Modality } from "@google/genai";
+// Service for virtual try-on image generation using OpenRouter API
 
 // Helper to get intrinsic image dimensions from a File object
 const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
@@ -499,13 +499,12 @@ export const generateTryOnImage = async (
     subjectImage: File, 
     outfitImage: File,
     bodyBuild: string,
-    customApiKey?: string,
     selectedColor?: string,
     openRouterApiKey?: string,
 ): Promise<{ finalImageUrl: string; }> => {
   console.log('Starting virtual try-on generation process...');
   
-  // Check if OpenRouter API key is available - this is now the primary method
+  // Check if OpenRouter API key is available
   if (!openRouterApiKey) {
     throw new Error('OpenRouter API key is required. Please set up your OpenRouter API key in Settings.');
   }

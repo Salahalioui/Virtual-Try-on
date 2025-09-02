@@ -7,8 +7,7 @@ import React, { useState, useEffect } from 'react';
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onApiKeyChange: (geminiApiKey: string, openRouterApiKey: string) => void;
-  currentGeminiApiKey: string;
+  onApiKeyChange: (openRouterApiKey: string) => void;
   currentOpenRouterApiKey: string;
 }
 
@@ -16,29 +15,25 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen, 
   onClose, 
   onApiKeyChange, 
-  currentGeminiApiKey,
   currentOpenRouterApiKey
 }) => {
-  const [geminiApiKey, setGeminiApiKey] = useState(currentGeminiApiKey);
   const [openRouterApiKey, setOpenRouterApiKey] = useState(currentOpenRouterApiKey);
   const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
-    setGeminiApiKey(currentGeminiApiKey);
     setOpenRouterApiKey(currentOpenRouterApiKey);
-  }, [currentGeminiApiKey, currentOpenRouterApiKey]);
+  }, [currentOpenRouterApiKey]);
 
   if (!isOpen) return null;
 
   const handleSave = () => {
-    onApiKeyChange(geminiApiKey.trim(), openRouterApiKey.trim());
+    onApiKeyChange(openRouterApiKey.trim());
     onClose();
   };
 
   const handleClear = () => {
-    setGeminiApiKey('');
     setOpenRouterApiKey('');
-    onApiKeyChange('', '');
+    onApiKeyChange('');
   };
 
   return (
@@ -61,7 +56,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="p-6 space-y-6">
           <div>
             <label htmlFor="openrouter-api-key" className="block text-lg font-semibold text-gray-700 mb-3">
-              🚀 OpenRouter API Key (Primary)
+              🚀 OpenRouter API Key
             </label>
             <input
               id="openrouter-api-key"
@@ -72,40 +67,23 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               className="w-full px-4 py-3 border border-orange-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
             />
             <div className="text-sm text-orange-600 mt-2 space-y-1">
-              <p><strong>Required:</strong> This is now the primary method for virtual try-on generation</p>
+              <p><strong>Required:</strong> This app uses OpenRouter to access Google's Gemini model</p>
               <p className="text-xs text-gray-500">
                 <strong>Rate Limits:</strong> 20 requests/minute, 50 requests/day (free), 1000/day with credits
               </p>
             </div>
           </div>
 
-          <div>
-            <label htmlFor="api-key" className="block text-lg font-semibold text-gray-700 mb-3">
-              🔑 Gemini API Key (Optional)
-            </label>
-            <input
-              id="gemini-api-key"
-              type="password"
-              value={geminiApiKey}
-              onChange={(e) => setGeminiApiKey(e.target.value)}
-              placeholder="Enter your Gemini API key (optional)..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-            />
-            <p className="text-sm text-gray-500 mt-2">
-              Optional: Currently not used due to free tier quota limitations
-            </p>
-          </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
             <button
               onClick={() => setShowInstructions(!showInstructions)}
               className="flex items-center justify-between w-full text-left"
             >
-              <h3 className="font-semibold text-blue-800">
-                📋 How to get your API keys
+              <h3 className="font-semibold text-orange-800">
+                📋 How to get your OpenRouter API key
               </h3>
               <svg 
-                className={`w-5 h-5 text-blue-600 transition-transform ${showInstructions ? 'rotate-180' : ''}`}
+                className={`w-5 h-5 text-orange-600 transition-transform ${showInstructions ? 'rotate-180' : ''}`}
                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -113,45 +91,24 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             </button>
             
             {showInstructions && (
-              <div className="mt-4 space-y-3 text-sm text-blue-700">
+              <div className="mt-4 space-y-3 text-sm text-orange-700">
                 <div className="space-y-2">
-                  <p><strong>Step 1:</strong> Go to <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Google AI Studio</a></p>
-                  <p><strong>Step 2:</strong> Sign in with your Google account</p>
-                  <p><strong>Step 3:</strong> Click "Get API key" in the left sidebar</p>
-                  <p><strong>Step 4:</strong> Create a new API key or copy an existing one</p>
-                  <p><strong>Step 5:</strong> Paste it above and click Save</p>
+                  <p><strong>Step 1:</strong> Go to <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-800 underline">openrouter.ai</a> and sign up</p>
+                  <p><strong>Step 2:</strong> Click menu (≡) → "Keys" → "Create Key"</p>
+                  <p><strong>Step 3:</strong> Name your key and click "Create"</p>
+                  <p><strong>Step 4:</strong> Copy the key and paste it above</p>
+                  <p><strong>Step 5:</strong> Click Save to store your key</p>
                 </div>
                 
-                <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                  <h4 className="font-medium text-gray-800 mb-2">ℹ️ About Gemini API Key:</h4>
-                  <ul className="space-y-1 text-xs text-gray-600">
-                    <li>• Currently not used due to free tier quota limitations</li>
-                    <li>• Direct Google API hits rate limits quickly</li>
-                    <li>• OpenRouter provides better reliability</li>
-                    <li>• May be re-enabled in future updates</li>
+                <div className="bg-white rounded-lg p-3 border border-orange-200">
+                  <h4 className="font-medium text-orange-800 mb-2">💡 Benefits of OpenRouter:</h4>
+                  <ul className="space-y-1 text-xs">
+                    <li>• Access to Google's Gemini 2.5 Flash Image Preview model</li>
+                    <li>• 20 requests/minute, 50/day (free tier)</li>
+                    <li>• 1000/day with $1+ credits purchase</li>
+                    <li>• Reliable service without quota limitations</li>
+                    <li>• Works consistently for virtual try-on generation</li>
                   </ul>
-                </div>
-                
-                <div className="bg-orange-50 rounded-lg p-3 border border-orange-200 mt-3">
-                  <h4 className="font-medium text-orange-800 mb-2">🚀 How to get OpenRouter API Key (Required):</h4>
-                  <div className="space-y-2 text-xs text-orange-700">
-                    <div>
-                      <p><strong>Step 1:</strong> Go to <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-800 underline">openrouter.ai</a> and sign up</p>
-                      <p><strong>Step 2:</strong> Click menu (≡) → "Keys" → "Create Key"</p>
-                      <p><strong>Step 3:</strong> Name your key and click "Create"</p>
-                      <p><strong>Step 4:</strong> Copy the key and paste it above</p>
-                    </div>
-                    <div className="border-t border-orange-200 pt-2 mt-2">
-                      <p><strong>Benefits:</strong></p>
-                      <ul className="space-y-1 ml-2">
-                        <li>• Primary method for virtual try-on generation</li>
-                        <li>• Uses google/gemini-2.5-flash-image-preview model</li>
-                        <li>• 20 requests/minute, 50/day (free tier)</li>
-                        <li>• 1000/day with $1+ credits purchase</li>
-                        <li>• Reliable service without Google API quota issues</li>
-                      </ul>
-                    </div>
-                  </div>
                 </div>
               </div>
             )}

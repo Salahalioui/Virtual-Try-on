@@ -2,7 +2,7 @@
 
 ## Overview
 
-Virtual Try-On is a React-based AI application that allows users to upload their photo and an outfit image to generate photorealistic try-on visualizations. The app leverages Google's Gemini AI to create realistic clothing overlays on user photos, supporting different body types and providing an interactive virtual dressing room experience.
+Virtual Try-On is a React-based AI application that allows users to upload their photo and an outfit image to generate photorealistic try-on visualizations. The app uses OpenRouter to access Google's Gemini 2.5 Flash Image Preview model, creating realistic clothing overlays on user photos, supporting different body types and providing an interactive virtual dressing room experience.
 
 ## User Preferences
 
@@ -49,9 +49,9 @@ Preferred communication style: Simple, everyday language.
 - **Vite**: Development server and build tooling (v6.2.0)
 
 ### AI Services
-- **OpenRouter**: Primary API gateway for accessing Google's Gemini 2.5 Flash Image Preview model
-- **Google Gemini AI**: Image generation and virtual try-on processing (accessed via OpenRouter)
-- **API Key Management**: OpenRouter API key as primary authentication method
+- **OpenRouter**: API gateway for accessing Google's Gemini 2.5 Flash Image Preview model
+- **Google Gemini 2.5 Flash Image Preview**: AI model for image generation and virtual try-on processing
+- **API Key Management**: OpenRouter API key required for authentication
 
 ### UI Libraries
 - **Tailwind CSS**: Utility-first CSS framework loaded via CDN

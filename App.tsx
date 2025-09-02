@@ -35,7 +35,6 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [showSettings, setShowSettings] = useState<boolean>(false);
-  const [customApiKey, setCustomApiKey] = useState<string>('');
   const [openRouterApiKey, setOpenRouterApiKey] = useState<string>('');
   const [isPWAInstallable, setIsPWAInstallable] = useState<boolean>(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -81,8 +80,7 @@ const App: React.FC = () => {
       const { finalImageUrl } = await generateTryOnImage(
         subjectImageFile, 
         outfitImageFile, 
-        bodyBuild, 
-        customApiKey || undefined,
+        bodyBuild,
         selectedColor || undefined,
         openRouterApiKey || undefined
       );
@@ -94,7 +92,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [subjectImageFile, outfitImageFile, bodyBuild, customApiKey, selectedColor, openRouterApiKey]);
+  }, [subjectImageFile, outfitImageFile, bodyBuild, selectedColor, openRouterApiKey]);
 
   const handleDownload = () => {
     if (!generatedImageUrl) return;
@@ -133,18 +131,9 @@ const App: React.FC = () => {
     setSelectedColor(null);
   }, []);
 
-  const handleApiKeyChange = useCallback((geminiApiKey: string, openRouterApiKey: string) => {
-    console.log('📝 API keys changed - Gemini length:', geminiApiKey.length, 'OpenRouter length:', openRouterApiKey.length);
-    setCustomApiKey(geminiApiKey);
+  const handleApiKeyChange = useCallback((openRouterApiKey: string) => {
+    console.log('📝 OpenRouter API key changed, length:', openRouterApiKey.length);
     setOpenRouterApiKey(openRouterApiKey);
-    
-    if (geminiApiKey) {
-      localStorage.setItem('gemini-api-key', geminiApiKey);
-      console.log('💾 Gemini API key saved to localStorage');
-    } else {
-      localStorage.removeItem('gemini-api-key');
-      console.log('🗑️ Gemini API key removed from localStorage');
-    }
     
     if (openRouterApiKey) {
       localStorage.setItem('openrouter-api-key', openRouterApiKey);
@@ -228,17 +217,9 @@ const App: React.FC = () => {
     };
   }, []);
 
-  // Load custom API keys from localStorage
+  // Load OpenRouter API key from localStorage
   useEffect(() => {
-    const savedGeminiApiKey = localStorage.getItem('gemini-api-key');
     const savedOpenRouterApiKey = localStorage.getItem('openrouter-api-key');
-    
-    if (savedGeminiApiKey) {
-      console.log('🔄 Loading saved Gemini API key from localStorage (length:', savedGeminiApiKey.length, 'chars)');
-      setCustomApiKey(savedGeminiApiKey);
-    } else {
-      console.log('🔄 No custom Gemini API key found in localStorage, will use default');
-    }
     
     if (savedOpenRouterApiKey) {
       console.log('🔄 Loading saved OpenRouter API key from localStorage (length:', savedOpenRouterApiKey.length, 'chars)');
@@ -571,7 +552,7 @@ const App: React.FC = () => {
           onOpenSettings={() => setShowSettings(true)}
           onInstallPWA={handleInstallPWA}
           showInstallButton={isPWAInstallable}
-          hasCustomApiKey={!!customApiKey}
+          hasOpenRouterApiKey={!!openRouterApiKey}
         />
         <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
           <div className="w-full">
@@ -583,7 +564,6 @@ const App: React.FC = () => {
           isOpen={showSettings}
           onClose={() => setShowSettings(false)}
           onApiKeyChange={handleApiKeyChange}
-          currentGeminiApiKey={customApiKey}
           currentOpenRouterApiKey={openRouterApiKey}
         />
         
