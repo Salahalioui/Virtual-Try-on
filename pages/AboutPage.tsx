@@ -1,9 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { FiGithub, FiUser, FiHeart, FiStar, FiCode, FiZap } from 'react-icons/fi';
 import { FaFacebook } from 'react-icons/fa';
 
 const AboutPage: React.FC = () => {
+  const { t } = useTranslation('pages');
+  
   const handleGitHubClick = () => {
     window.open('https://github.com/Salahalioui', '_blank');
   };
@@ -22,7 +25,7 @@ const AboutPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          About StyleAI
+          {t('about.title')}
         </motion.h1>
         <motion.p 
           className="text-purple-100"
@@ -30,7 +33,7 @@ const AboutPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          Your AI-Powered Virtual Styling Assistant
+          {t('about.subtitle')}
         </motion.p>
       </div>
 

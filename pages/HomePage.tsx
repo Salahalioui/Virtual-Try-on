@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FiUser, FiScissors, FiImage, FiStar, FiZap, FiHeart } from 'react-icons/fi';
 
 const featureCards = [
@@ -34,7 +35,38 @@ const featureCards = [
 ];
 
 const HomePage: React.FC = () => {
+  const { t } = useTranslation('pages');
   const navigate = useNavigate();
+
+  const featureCards = [
+    {
+      id: 'virtual-tryon',
+      title: t('home.features.virtualTryOn.title'),
+      description: t('home.features.virtualTryOn.description'),
+      icon: FiUser,
+      gradient: 'from-purple-500 to-pink-500',
+      path: '/virtual-tryon',
+      features: t('home.features.virtualTryOn.points', { returnObjects: true }) as string[]
+    },
+    {
+      id: 'hair-style',
+      title: t('home.features.hairStyling.title'),
+      description: t('home.features.hairStyling.description'),
+      icon: FiScissors,
+      gradient: 'from-blue-500 to-cyan-500',
+      path: '/hair-style',
+      features: t('home.features.hairStyling.points', { returnObjects: true }) as string[]
+    },
+    {
+      id: 'background',
+      title: t('home.features.backgroundChanger.title'),
+      description: t('home.features.backgroundChanger.description'),
+      icon: FiImage,
+      gradient: 'from-green-500 to-teal-500',
+      path: '/background',
+      features: t('home.features.backgroundChanger.points', { returnObjects: true }) as string[]
+    }
+  ];
 
   return (
     <div className="bg-gradient-to-br from-slate-50 to-gray-100 pb-20 overflow-y-auto h-full">
@@ -55,14 +87,14 @@ const HomePage: React.FC = () => {
                 <FiZap className="text-white text-xl" />
               </motion.div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                StyleAI
+                {t('home.title')}
               </h1>
             </div>
             <p className="text-gray-600 text-lg">
-              Your AI-powered styling assistant
+              {t('home.subtitle')}
             </p>
             <p className="text-sm text-gray-500 mt-2">
-              Transform your look with artificial intelligence
+              {t('home.description')}
             </p>
           </motion.div>
         </div>

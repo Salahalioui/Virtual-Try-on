@@ -1,62 +1,64 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FiHome, FiUser, FiScissors, FiImage, FiSettings, FiInfo } from 'react-icons/fi';
 
-const tabs = [
-  { 
-    id: 'home', 
-    label: 'Home', 
-    icon: FiHome, 
-    path: '/',
-    gradient: 'from-indigo-500 to-purple-600',
-    inactiveColor: 'text-indigo-600 hover:text-indigo-700'
-  },
-  { 
-    id: 'virtual-tryon', 
-    label: 'Try On', 
-    icon: FiUser, 
-    path: '/virtual-tryon',
-    gradient: 'from-purple-500 to-pink-500',
-    inactiveColor: 'text-purple-600 hover:text-purple-700'
-  },
-  { 
-    id: 'hair-style', 
-    label: 'Hair Style', 
-    icon: FiScissors, 
-    path: '/hair-style',
-    gradient: 'from-blue-500 to-cyan-500',
-    inactiveColor: 'text-blue-600 hover:text-blue-700'
-  },
-  { 
-    id: 'background', 
-    label: 'Background', 
-    icon: FiImage, 
-    path: '/background',
-    gradient: 'from-green-500 to-teal-500',
-    inactiveColor: 'text-green-600 hover:text-green-700'
-  },
-  { 
-    id: 'about', 
-    label: 'About', 
-    icon: FiInfo, 
-    path: '/about',
-    gradient: 'from-orange-500 to-red-500',
-    inactiveColor: 'text-orange-600 hover:text-orange-700'
-  },
-  { 
-    id: 'settings', 
-    label: 'Settings', 
-    icon: FiSettings, 
-    path: '/settings',
-    gradient: 'from-gray-500 to-slate-500',
-    inactiveColor: 'text-gray-600 hover:text-gray-700'
-  }
-];
-
 const TabNavigation: React.FC = () => {
+  const { t } = useTranslation('common');
   const location = useLocation();
   const navigate = useNavigate();
+
+  const tabs = [
+    { 
+      id: 'home', 
+      label: t('nav.home'), 
+      icon: FiHome, 
+      path: '/',
+      gradient: 'from-indigo-500 to-purple-600',
+      inactiveColor: 'text-indigo-600 hover:text-indigo-700'
+    },
+    { 
+      id: 'virtual-tryon', 
+      label: t('nav.tryOn'), 
+      icon: FiUser, 
+      path: '/virtual-tryon',
+      gradient: 'from-purple-500 to-pink-500',
+      inactiveColor: 'text-purple-600 hover:text-purple-700'
+    },
+    { 
+      id: 'hair-style', 
+      label: t('nav.hairStyle'), 
+      icon: FiScissors, 
+      path: '/hair-style',
+      gradient: 'from-blue-500 to-cyan-500',
+      inactiveColor: 'text-blue-600 hover:text-blue-700'
+    },
+    { 
+      id: 'background', 
+      label: t('nav.background'), 
+      icon: FiImage, 
+      path: '/background',
+      gradient: 'from-green-500 to-teal-500',
+      inactiveColor: 'text-green-600 hover:text-green-700'
+    },
+    { 
+      id: 'about', 
+      label: t('nav.about'), 
+      icon: FiInfo, 
+      path: '/about',
+      gradient: 'from-orange-500 to-red-500',
+      inactiveColor: 'text-orange-600 hover:text-orange-700'
+    },
+    { 
+      id: 'settings', 
+      label: t('nav.settings'), 
+      icon: FiSettings, 
+      path: '/settings',
+      gradient: 'from-gray-500 to-slate-500',
+      inactiveColor: 'text-gray-600 hover:text-gray-700'
+    }
+  ];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe z-50">

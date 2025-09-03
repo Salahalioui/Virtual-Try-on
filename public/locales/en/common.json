@@ -1,0 +1,56 @@
+{
+  "nav": {
+    "home": "Home",
+    "tryOn": "Try On",
+    "hairStyle": "Hair Style",
+    "background": "Background",
+    "about": "About",
+    "settings": "Settings"
+  },
+  "buttons": {
+    "save": "Save",
+    "clear": "Clear",
+    "cancel": "Cancel",
+    "upload": "Upload",
+    "crop": "Crop & Continue",
+    "generate": "Generate",
+    "tryItOn": "Try It On!",
+    "applyStyle": "Apply Style",
+    "changeBackground": "Change Background",
+    "extractOutfit": "Extract Outfit from My Photo",
+    "saveExtracted": "Save Extracted Outfit",
+    "backToHome": "← Back to Home",
+    "startTryOn": "🎯 Start Virtual Try-On",
+    "learnMore": "Learn More",
+    "tryNow": "Try Now →"
+  },
+  "loading": {
+    "loading": "Loading...",
+    "initializing": "Initializing AI models...",
+    "settingUp": "Setting up virtual dressing room...",
+    "preparing": "Preparing styling tools...",
+    "almostReady": "Almost ready!",
+    "generating": "Generating...",
+    "styling": "Styling...",
+    "transforming": "Transforming...",
+    "uploading": "Uploading..."
+  },
+  "errors": {
+    "uploadError": "Upload Error",
+    "formatError": "Please use PNG, JPG, or JPEG formats.",
+    "sizeError": "File size too large. Please use an image under 10MB.",
+    "mobileImageError": "Image preview issue on mobile. The upload should still work.",
+    "mobileProcessingError": "Error processing image on mobile device. Please try a different file.",
+    "mobileTimeoutError": "File reading timeout on mobile. Please try a smaller image.",
+    "mobileFormatError": "Cannot read this image file on mobile. Please try a different format.",
+    "noImageError": "No image found for color picker",
+    "noStyleError": "No hairstyle selected"
+  },
+  "fileUpload": {
+    "dragDrop": "Tap to browse or drag & drop",
+    "formats": "PNG, JPG",
+    "maxSize": "Max 10MB",
+    "cropImage": "Crop Your Image",
+    "uploadImage": "Upload your image"
+  }
+}

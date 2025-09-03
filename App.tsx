@@ -4,6 +4,9 @@
 */
 
 import React, { useState, useEffect } from 'react';
+import './src/i18n/config';
+import './src/styles/rtl-support.css';
+import { useAppContext } from './contexts/AppContext';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './contexts/AppContext';
 import SplashScreen from './components/SplashScreen';
@@ -16,9 +19,10 @@ import AboutPage from './pages/AboutPage';
 import SettingsPage from './pages/SettingsPage';
 import LandingScreen from './components/LandingScreen';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [showSplash, setShowSplash] = useState<boolean>(true);
   const [showLanding, setShowLanding] = useState<boolean>(false);
+  const { state } = useAppContext();
 
   useEffect(() => {
     // Check if this is the first visit
@@ -57,22 +61,28 @@ const App: React.FC = () => {
 
   // Main app with routing
   return (
-    <AppProvider>
-      <Router>
-        <div className="flex flex-col h-screen bg-gray-50">
-          <div className="flex-1 overflow-hidden">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/virtual-tryon" element={<VirtualTryOnPage />} />
-              <Route path="/hair-style" element={<HairStylePage />} />
-              <Route path="/background" element={<BackgroundPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-            </Routes>
-          </div>
-          <TabNavigation />
+    <Router>
+      <div className={`flex flex-col h-screen bg-gray-50 ${state.direction === 'rtl' ? 'text-right' : 'text-left'}`} dir={state.direction}>
+        <div className="flex-1 overflow-hidden">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/virtual-tryon" element={<VirtualTryOnPage />} />
+            <Route path="/hair-style" element={<HairStylePage />} />
+            <Route path="/background" element={<BackgroundPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Routes>
         </div>
-      </Router>
+        <TabNavigation />
+      </div>
+    </Router>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <AppProvider>
+      <AppContent />
     </AppProvider>
   );
 };

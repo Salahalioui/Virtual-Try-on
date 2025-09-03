@@ -1,0 +1,150 @@
+{
+  "colorPicker": {
+    "title": "🎨 Color Picker",
+    "instruction": "Select a color from your photo to customize the outfit",
+    "clickInstruction": "👁️ Click on the image to pick a color",
+    "selectedColor": "Selected Color",
+    "reset": "Reset",
+    "clickAnywhere": "👆 Click anywhere on your photo to pick a color",
+    "useColor": "Use This Color"
+  },
+  "landing": {
+    "aiMagic": "AI Magic",
+    "yourPhoto": "Your Photo",
+    "aiResult": "AI Result",
+    "readyToTry": "Ready to Try",
+    "tryOnClothes": "Try On Clothes",
+    "withAiMagic": "With AI Magic",
+    "description": "Upload your photo and any outfit to see how it looks on you. Powered by advanced AI for photorealistic results.",
+    "features": {
+      "instantResults": {
+        "title": "Instant Results",
+        "description": "See how clothes look on you in seconds with AI magic"
+      },
+      "photorealistic": {
+        "title": "Photorealistic",
+        "description": "AI-powered realistic clothing overlay with perfect lighting"
+      },
+      "anyDevice": {
+        "title": "Any Device",
+        "description": "Works perfectly on mobile, tablet, and desktop"
+      }
+    },
+    "howItWorks": {
+      "title": "How Virtual Try-On Works",
+      "subtitle": "Discover the magic behind our AI-powered virtual dressing room technology",
+      "simpleProcess": "Simple 3-Step Process",
+      "steps": {
+        "step1": {
+          "title": "1. Upload Your Photo",
+          "description": "Take or upload a clear photo of yourself. Our AI works with any pose or background."
+        },
+        "step2": {
+          "title": "2. Choose Outfit",
+          "description": "Upload any clothing image or select from our collection. The AI adapts to any style."
+        },
+        "step3": {
+          "title": "3. See Magic Happen",
+          "description": "Watch as AI creates a photorealistic image of you wearing the new outfit!"
+        }
+      }
+    },
+    "advancedTech": {
+      "title": "Advanced AI Technology",
+      "gemini": {
+        "title": "Google Gemini 2.5 Flash Image",
+        "description": "Latest AI model specialized in image generation and understanding"
+      },
+      "computerVision": {
+        "title": "Computer Vision",
+        "description": "Understands body shapes, poses, and clothing fit for realistic results"
+      },
+      "machineLearning": {
+        "title": "Machine Learning",
+        "description": "Learns from millions of images to create perfect lighting and shadows"
+      }
+    },
+    "privacy": {
+      "title": "Privacy & Security",
+      "localProcessing": {
+        "title": "Local Processing",
+        "description": "Images are processed securely and are not stored on our servers"
+      },
+      "dataProtection": {
+        "title": "Data Protection",
+        "description": "Your photos are never saved or shared with third parties"
+      },
+      "realTimeProcessing": {
+        "title": "Real-time Processing",
+        "description": "Fast AI processing with results in under 30 seconds"
+      }
+    },
+    "powerfulFeatures": {
+      "title": "Powerful Features",
+      "colorCustomization": {
+        "title": "Color Customization",
+        "description": "Change outfit colors to match your preferences and style"
+      },
+      "bodyTypeSupport": {
+        "title": "Body Type Support",
+        "description": "Works with all body types: Slim, Athletic, Average, Curvy, Plus Size"
+      },
+      "smartCropping": {
+        "title": "Smart Cropping",
+        "description": "Automatic image cropping and resizing for optimal results"
+      },
+      "realisticLighting": {
+        "title": "Realistic Lighting",
+        "description": "AI matches lighting conditions for natural-looking results"
+      },
+      "multipleAttempts": {
+        "title": "Multiple Attempts",
+        "description": "Try different outfits and colors as many times as you want"
+      },
+      "downloadResults": {
+        "title": "Download Results",
+        "description": "Save your virtual try-on images directly to your device"
+      }
+    },
+    "perfectFor": {
+      "title": "Perfect For",
+      "onlineShopping": "Online Shopping - See how clothes fit before buying",
+      "workOutfits": "Work Outfits - Plan professional looks for meetings",
+      "specialEvents": "Special Events - Try party dresses and formal wear",
+      "casualStyle": "Casual Style - Experiment with everyday fashion"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "accuracy": {
+        "question": "How accurate are the virtual try-on results?",
+        "answer": "Our AI creates highly realistic results by understanding body shapes, clothing physics, and lighting. While not 100% perfect, it gives you an excellent preview of how outfits will look."
+      },
+      "photoTypes": {
+        "question": "What types of photos work best?",
+        "answer": "Clear, well-lit photos work best. You can be in any pose, but make sure your body is visible. Photos with good lighting and minimal background clutter give the best results."
+      },
+      "dataSafety": {
+        "question": "Is my data safe and private?",
+        "answer": "Absolutely! Your photos are processed securely and are not stored on our servers. All processing happens through encrypted connections and your images are deleted after processing."
+      },
+      "account": {
+        "question": "Do I need to create an account?",
+        "answer": "No account needed! You can start using the virtual try-on feature immediately. Just upload your photos and begin trying on outfits."
+      },
+      "rateLimits": {
+        "question": "What if I hit rate limits?",
+        "answer": "The free tier has limits (15 requests/minute, 1500/day). You can add your own API key in Settings for unlimited usage, or wait for the limits to reset at midnight Pacific Time."
+      }
+    },
+    "readyToTransform": "Ready to Transform Your Style?",
+    "aiPoweredAssistant": "AI-Powered Virtual Styling Assistant"
+  },
+  "productSelector": {
+    "scrollLeft": "Scroll left",
+    "scrollRight": "Scroll right",
+    "addProduct": "Add Your Own Product!"
+  },
+  "spinner": {
+    "percentage": "%"
+  }
+}
