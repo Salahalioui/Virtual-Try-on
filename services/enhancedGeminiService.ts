@@ -71,23 +71,108 @@ async function urlToFile(url: string, filename: string): Promise<File> {
   }
 }
 
-// Extract clothing/outfit from image (placeholder for now)
+// Extract clothing/outfit from image using Gemini 2.5 Flash Image Generation
 export const extractOutfitFromImage = async (
   imageUrl: string,
   apiKey: string
 ): Promise<{ success: boolean; extractedOutfit?: string; message: string }> => {
   try {
-    // This would integrate with a cloth segmentation service
-    // For now, return a placeholder response
-    return {
-      success: true,
-      message: 'Outfit extraction is coming soon! For now, you can upload a separate outfit image.'
+    console.log('🎽 Starting outfit extraction from user photo...');
+    
+    // Convert image URL to base64 if needed
+    let base64Image: string;
+    let mimeType: string;
+    
+    if (imageUrl.startsWith('data:')) {
+      // Already a data URL
+      const [header, data] = imageUrl.split(',');
+      base64Image = data;
+      mimeType = header.match(/data:([^;]+)/)?.[1] || 'image/jpeg';
+    } else {
+      // Convert URL to base64
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const buffer = await blob.arrayBuffer();
+      base64Image = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+      mimeType = blob.type || 'image/jpeg';
+    }
+
+    // Craft a specific prompt for outfit extraction
+    const extractionPrompt = `Extract and isolate the clothing/outfit items worn by the person in this image. Create a clean, professional product-style image showing only the clothes (shirt, pants, dress, jacket, etc.) without the person wearing them. The extracted clothing should be:
+
+- Laid out flat or displayed as if on an invisible mannequin
+- Against a clean white or transparent background
+- Maintaining the original colors, patterns, and textures
+- Clearly visible with good lighting
+- Suitable for virtual try-on applications
+
+Focus only on the main clothing items visible on the person. Ignore accessories like shoes, jewelry, or bags unless they're integral to the outfit.`;
+
+    const requestBody = {
+      contents: [{
+        parts: [
+          { text: extractionPrompt },
+          {
+            inline_data: {
+              mime_type: mimeType,
+              data: base64Image
+            }
+          }
+        ]
+      }]
     };
+
+    console.log('🚀 Sending outfit extraction request to Gemini API...');
+
+    const response = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey
+        },
+        body: JSON.stringify(requestBody)
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ API request failed:', response.status, errorText);
+      throw new Error(`API request failed: ${response.status} ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log('📦 Received response from Gemini API');
+
+    // Extract the generated image
+    if (result.candidates && result.candidates[0] && result.candidates[0].content && result.candidates[0].content.parts) {
+      for (const part of result.candidates[0].content.parts) {
+        if (part.inline_data && part.inline_data.data) {
+          // Convert base64 to data URL
+          const extractedOutfitUrl = `data:${part.inline_data.mime_type || 'image/png'};base64,${part.inline_data.data}`;
+          
+          console.log('✅ Successfully extracted outfit from photo!');
+          return {
+            success: true,
+            extractedOutfit: extractedOutfitUrl,
+            message: 'Outfit successfully extracted from your photo! You can now use it for virtual try-on.'
+          };
+        }
+        
+        if (part.text) {
+          console.log('📝 Gemini response text:', part.text);
+        }
+      }
+    }
+
+    throw new Error('No image data received from API');
+
   } catch (error) {
-    console.error('Outfit extraction failed:', error);
+    console.error('❌ Outfit extraction failed:', error);
     return {
       success: false,
-      message: 'Failed to extract outfit from image.'
+      message: 'Failed to extract outfit from image. Please try uploading a clear photo with visible clothing.'
     };
   }
 };

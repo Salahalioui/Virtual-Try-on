@@ -20,6 +20,8 @@ const VirtualTryOnPage: React.FC = () => {
   
   const [editPrompt, setEditPrompt] = useState('');
   const [showOutfitExtractor, setShowOutfitExtractor] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
 
   const handleGenerate = useCallback(async () => {
     if (!virtualTryOn.subjectImage || !virtualTryOn.outfitImage) {
@@ -72,15 +74,29 @@ const VirtualTryOnPage: React.FC = () => {
       return;
     }
 
+    if (!state.apiKey) {
+      alert('Please configure your API key in Settings to use outfit extraction.');
+      return;
+    }
+
+    setIsLoading(true);
+    setLoadingMessage('🎽 Extracting outfit from your photo...');
+
     try {
       const result = await extractOutfitFromImage(virtualTryOn.subjectImage, state.apiKey);
-      alert(result.message);
       
       if (result.success && result.extractedOutfit) {
         updateVirtualTryOn({ outfitImage: result.extractedOutfit });
+        alert('✅ ' + result.message);
+      } else {
+        alert('⚠️ ' + result.message);
       }
     } catch (error) {
-      alert('Failed to extract outfit. Please try uploading a separate outfit image.');
+      console.error('Outfit extraction error:', error);
+      alert('❌ Failed to extract outfit. Please try uploading a clear photo with visible clothing.');
+    } finally {
+      setIsLoading(false);
+      setLoadingMessage('');
     }
   };
 
@@ -253,6 +269,17 @@ const VirtualTryOnPage: React.FC = () => {
           </motion.div>
         )}
       </div>
+
+      {/* Loading Overlay for Outfit Extraction */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-8 max-w-sm mx-4 text-center">
+            <Spinner />
+            <p className="mt-4 text-lg font-semibold text-gray-800">{loadingMessage}</p>
+            <p className="mt-2 text-sm text-gray-600">This may take a moment...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

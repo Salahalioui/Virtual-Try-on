@@ -27,7 +27,7 @@ Preferred communication style: Simple, everyday language.
 - **ImageUploader.tsx**: Enhanced file upload component with drag-and-drop and cropping
 
 **Page Components:**
-- **VirtualTryOnPage.tsx**: Complete virtual try-on experience with multiple angles and outfit extraction
+- **VirtualTryOnPage.tsx**: Complete virtual try-on experience with multiple angles and AI-powered outfit extraction
 - **HairStylePage.tsx**: Hair and beard styling with preset styles and custom prompts  
 - **BackgroundPage.tsx**: Background replacement with automatic and manual placement options
 - **SettingsPage.tsx**: API key management and user preferences
@@ -43,7 +43,7 @@ Preferred communication style: Simple, everyday language.
   - Virtual Try-On with multiple angle views (front, side, 3/4, back)
   - Hair & Beard Styling with gender-specific presets and custom descriptions
   - Background Replacement with automatic placement and custom prompts
-  - Outfit Extraction (placeholder for future cloth segmentation)
+  - AI-Powered Outfit Extraction using Gemini 2.5 Flash Image Generation
 - **Enhanced Features**:
   - Natural language editing prompts for fine-tuning results
   - Progressive loading with contextual messages for each feature
