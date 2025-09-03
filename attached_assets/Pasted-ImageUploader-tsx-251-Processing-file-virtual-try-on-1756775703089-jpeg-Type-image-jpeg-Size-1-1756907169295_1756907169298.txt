@@ -1,0 +1,339 @@
+ImageUploader.tsx:251 📁 Processing file: virtual-try-on-1756775703089.jpeg Type: image/jpeg Size: 123429
+ImageUploader.tsx:334 🚀 Starting FileReader.readAsDataURL() on mobile
+ImageUploader.tsx:323 🔄 Starting to read file...
+ImageUploader.tsx:329 📊 File reading progress: 100%
+ImageUploader.tsx:277 📖 FileReader onload triggered on mobile
+ImageUploader.tsx:280 ✅ File read successfully, data URL length: 164595
+ImageUploader.tsx:287 ✅ Valid base64 data detected for mobile
+ImageUploader.tsx:292 ✅ Image set for cropping on mobile
+ImageUploader.tsx:388 ✅ Crop completed, file size: 57682
+ImageUploader.tsx:463 ✅ Image loaded successfully on mobile
+TabNavigation.tsx:67 Navigating to: /settings
+TabNavigation.tsx:67 Navigating to: /virtual-tryon
+ImageUploader.tsx:463 ✅ Image loaded successfully on mobile
+enhancedGeminiService.ts:80 🎽 Starting outfit extraction from user photo...
+enhancedGeminiService.ts:125 🚀 Sending outfit extraction request to OpenRouter API...
+enhancedGeminiService.ts:165 📦 Received response from OpenRouter API: {
+  "id": "gen-1756906843-Nk0gN0LEq5bqEMvpGXmP",
+  "provider": "Google AI Studio",
+  "model": "google/gemini-2.5-flash-image-preview",
+  "object": "chat.completion",
+  "created": 1756906843,
+  "choices": [
+    {
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "STOP",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Here is the isolated clothing from the image, displayed in a product-style format: ",
+        "refusal": null,
+        "reasoning": null,
+        "images": [
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": "data:image/png;base64,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
+enhancedGeminiService.ts:175 ✅ Successfully extracted outfit from photo!
+ImageUploader.tsx:463 ✅ Image loaded successfully on mobile
+TabNavigation.tsx:67 Navigating to: /settings
+TabNavigation.tsx:67 Navigating to: /virtual-tryon
+ImageUploader.tsx:463 ✅ Image loaded successfully on mobile
+ImageUploader.tsx:463 ✅ Image loaded successfully on mobile
+ImageUploader.tsx:251 📁 Processing file: generation-0a9279fe-dd3b-4fca-8b14-f034ae101391.png Type: image/png Size: 1726446
+ImageUploader.tsx:334 🚀 Starting FileReader.readAsDataURL() on mobile
+ImageUploader.tsx:323 🔄 Starting to read file...
+ImageUploader.tsx:329 📊 File reading progress: 100%
+ImageUploader.tsx:277 📖 FileReader onload triggered on mobile
+ImageUploader.tsx:280 ✅ File read successfully, data URL length: 2301950
+ImageUploader.tsx:287 ✅ Valid base64 data detected for mobile
+ImageUploader.tsx:292 ✅ Image set for cropping on mobile
+ImageUploader.tsx:388 ✅ Crop completed, file size: 190663
+ImageUploader.tsx:463 ✅ Image loaded successfully on mobile
+optimizedGeminiService.ts:125   POST https://openrouter.ai/api/v1/chat/completions 400 (Bad Request)
+generateOptimizedImage @ optimizedGeminiService.ts:125
+await in generateOptimizedImage
+generateEnhancedImage @ enhancedGeminiService.ts:28
+(anonymous) @ VirtualTryOnPage.tsx:39
+executeDispatch @ react-dom-client.development.js:16368
+runWithFiberInDEV @ react-dom-client.development.js:1519
+processDispatchQueue @ react-dom-client.development.js:16418
+(anonymous) @ react-dom-client.development.js:17016
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16572
+dispatchEvent @ react-dom-client.development.js:20658
+dispatchDiscreteEvent @ react-dom-client.development.js:20626
+<button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+VirtualTryOnPage @ VirtualTryOnPage.tsx:232
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopConcurrentByScheduler @ react-dom-client.development.js:15126
+renderRootConcurrent @ react-dom-client.development.js:15101
+performWorkOnRoot @ react-dom-client.development.js:14418
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+optimizedGeminiService.ts:167  virtual-tryon generation failed: Error: API request failed: 400 - {"error":{"message":"Input must have at least 1 token.","code":400,"metadata":{"provider_name":null}}}
+    at generateOptimizedImage (optimizedGeminiService.ts:146:13)
+    at async generateEnhancedImage (enhancedGeminiService.ts:28:12)
+    at async VirtualTryOnPage.tsx:39:22
+generateOptimizedImage @ optimizedGeminiService.ts:167
+await in generateOptimizedImage
+generateEnhancedImage @ enhancedGeminiService.ts:28
+(anonymous) @ VirtualTryOnPage.tsx:39
+executeDispatch @ react-dom-client.development.js:16368
+runWithFiberInDEV @ react-dom-client.development.js:1519
+processDispatchQueue @ react-dom-client.development.js:16418
+(anonymous) @ react-dom-client.development.js:17016
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16572
+dispatchEvent @ react-dom-client.development.js:20658
+dispatchDiscreteEvent @ react-dom-client.development.js:20626
+<button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+VirtualTryOnPage @ VirtualTryOnPage.tsx:232
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopConcurrentByScheduler @ react-dom-client.development.js:15126
+renderRootConcurrent @ react-dom-client.development.js:15101
+performWorkOnRoot @ react-dom-client.development.js:14418
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+enhancedGeminiService.ts:39  virtual-tryon generation failed with optimized service, falling back to original: Error: API request failed: 400 - {"error":{"message":"Input must have at least 1 token.","code":400,"metadata":{"provider_name":null}}}
+    at generateOptimizedImage (optimizedGeminiService.ts:146:13)
+    at async generateEnhancedImage (enhancedGeminiService.ts:28:12)
+    at async VirtualTryOnPage.tsx:39:22
+generateEnhancedImage @ enhancedGeminiService.ts:39
+await in generateEnhancedImage
+(anonymous) @ VirtualTryOnPage.tsx:39
+executeDispatch @ react-dom-client.development.js:16368
+runWithFiberInDEV @ react-dom-client.development.js:1519
+processDispatchQueue @ react-dom-client.development.js:16418
+(anonymous) @ react-dom-client.development.js:17016
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16572
+dispatchEvent @ react-dom-client.development.js:20658
+dispatchDiscreteEvent @ react-dom-client.development.js:20626
+<button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+VirtualTryOnPage @ VirtualTryOnPage.tsx:232
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopConcurrentByScheduler @ react-dom-client.development.js:15126
+renderRootConcurrent @ react-dom-client.development.js:15101
+performWorkOnRoot @ react-dom-client.development.js:14418
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+geminiService.ts:505 Starting virtual try-on generation process...
+geminiService.ts:12 📐 Getting dimensions for: user-image.jpg Size: 190663 Type: image/jpeg
+geminiService.ts:20 📱 Using object URL method for mobile dimension analysis
+geminiService.ts:25 ✅ Mobile dimensions loaded: 729 x 730
+geminiService.ts:518 Resizing subject and outfit images...
+geminiService.ts:570 Sending images and prompt to OpenRouter...
+geminiService.ts:371 🔄 Attempting OpenRouter fallback...
+geminiService.ts:427 🎉 OpenRouter response received!
+geminiService.ts:428 OpenRouter response structure: {
+  "id": "gen-1756906982-CwiE6Zpaqw3vdqGM7Cba",
+  "provider": "Google AI Studio",
+  "model": "google/gemini-2.5-flash-image-preview:free",
+  "object": "chat.completion",
+  "created": 1756906982,
+  "choices": [
+    {
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "STOP",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "refusal": null,
+        "reasoning": null,
+        "images": [
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": "data:image/png;base64,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
+geminiService.ts:434 OpenRouter message: {role: 'assistant', content: '', refusal: null, reasoning: null, images: Array(1)}
+geminiService.ts:444 Found images array with 1 images
+geminiService.ts:451 Found image URL in images array: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAA...
+geminiService.ts:465 Cropping OpenRouter generated image to original aspect ratio...
+TabNavigation.tsx:67 Navigating to: /settings
+TabNavigation.tsx:67 Navigating to: /background
+TabNavigation.tsx:67 Navigating to: /settings
+TabNavigation.tsx:67 Navigating to: /background
+ImageUploader.tsx:251 📁 Processing file: styleai-image-2.png Type: image/png Size: 307656
+ImageUploader.tsx:334 🚀 Starting FileReader.readAsDataURL() on mobile
+ImageUploader.tsx:323 🔄 Starting to read file...
+ImageUploader.tsx:329 📊 File reading progress: 100%
+ImageUploader.tsx:277 📖 FileReader onload triggered on mobile
+ImageUploader.tsx:280 ✅ File read successfully, data URL length: 410230
+ImageUploader.tsx:287 ✅ Valid base64 data detected for mobile
+ImageUploader.tsx:292 ✅ Image set for cropping on mobile
+ImageUploader.tsx:388 ✅ Crop completed, file size: 140418
+ImageUploader.tsx:463 ✅ Image loaded successfully on mobile
+optimizedGeminiService.ts:125   POST https://openrouter.ai/api/v1/chat/completions 400 (Bad Request)
+generateOptimizedImage @ optimizedGeminiService.ts:125
+await in generateOptimizedImage
+generateEnhancedImage @ enhancedGeminiService.ts:28
+(anonymous) @ BackgroundPage.tsx:71
+executeDispatch @ react-dom-client.development.js:16368
+runWithFiberInDEV @ react-dom-client.development.js:1519
+processDispatchQueue @ react-dom-client.development.js:16418
+(anonymous) @ react-dom-client.development.js:17016
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16572
+dispatchEvent @ react-dom-client.development.js:20658
+dispatchDiscreteEvent @ react-dom-client.development.js:20626
+<button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+BackgroundPage @ BackgroundPage.tsx:263
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopConcurrentByScheduler @ react-dom-client.development.js:15126
+renderRootConcurrent @ react-dom-client.development.js:15101
+performWorkOnRoot @ react-dom-client.development.js:14418
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+optimizedGeminiService.ts:167  background generation failed: Error: API request failed: 400 - {"error":{"message":"Input must have at least 1 token.","code":400,"metadata":{"provider_name":null}}}
+    at generateOptimizedImage (optimizedGeminiService.ts:146:13)
+    at async generateEnhancedImage (enhancedGeminiService.ts:28:12)
+    at async BackgroundPage.tsx:71:22
+generateOptimizedImage @ optimizedGeminiService.ts:167
+await in generateOptimizedImage
+generateEnhancedImage @ enhancedGeminiService.ts:28
+(anonymous) @ BackgroundPage.tsx:71
+executeDispatch @ react-dom-client.development.js:16368
+runWithFiberInDEV @ react-dom-client.development.js:1519
+processDispatchQueue @ react-dom-client.development.js:16418
+(anonymous) @ react-dom-client.development.js:17016
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16572
+dispatchEvent @ react-dom-client.development.js:20658
+dispatchDiscreteEvent @ react-dom-client.development.js:20626
+<button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+BackgroundPage @ BackgroundPage.tsx:263
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopConcurrentByScheduler @ react-dom-client.development.js:15126
+renderRootConcurrent @ react-dom-client.development.js:15101
+performWorkOnRoot @ react-dom-client.development.js:14418
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+enhancedGeminiService.ts:39  background generation failed with optimized service, falling back to original: Error: API request failed: 400 - {"error":{"message":"Input must have at least 1 token.","code":400,"metadata":{"provider_name":null}}}
+    at generateOptimizedImage (optimizedGeminiService.ts:146:13)
+    at async generateEnhancedImage (enhancedGeminiService.ts:28:12)
+    at async BackgroundPage.tsx:71:22
+generateEnhancedImage @ enhancedGeminiService.ts:39
+await in generateEnhancedImage
+(anonymous) @ BackgroundPage.tsx:71
+executeDispatch @ react-dom-client.development.js:16368
+runWithFiberInDEV @ react-dom-client.development.js:1519
+processDispatchQueue @ react-dom-client.development.js:16418
+(anonymous) @ react-dom-client.development.js:17016
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16572
+dispatchEvent @ react-dom-client.development.js:20658
+dispatchDiscreteEvent @ react-dom-client.development.js:20626
+<button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+BackgroundPage @ BackgroundPage.tsx:263
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopConcurrentByScheduler @ react-dom-client.development.js:15126
+renderRootConcurrent @ react-dom-client.development.js:15101
+performWorkOnRoot @ react-dom-client.development.js:14418
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+geminiService.ts:505 Starting virtual try-on generation process...
+geminiService.ts:12 📐 Getting dimensions for: user-image.jpg Size: 140418 Type: image/jpeg
+geminiService.ts:20 📱 Using object URL method for mobile dimension analysis
+geminiService.ts:25 ✅ Mobile dimensions loaded: 656 x 657
+geminiService.ts:518 Resizing subject and outfit images...
+enhancedGeminiService.ts:56  background generation failed with fallback service: Error: Image load error: [object Event]
+    at img.onerror (geminiService.ts:202:28)
+generateEnhancedImage @ enhancedGeminiService.ts:56
+await in generateEnhancedImage
+(anonymous) @ BackgroundPage.tsx:71
+executeDispatch @ react-dom-client.development.js:16368
+runWithFiberInDEV @ react-dom-client.development.js:1519
+processDispatchQueue @ react-dom-client.development.js:16418
+(anonymous) @ react-dom-client.development.js:17016
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16572
+dispatchEvent @ react-dom-client.development.js:20658
+dispatchDiscreteEvent @ react-dom-client.development.js:20626
+<button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+BackgroundPage @ BackgroundPage.tsx:263
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopConcurrentByScheduler @ react-dom-client.development.js:15126
+renderRootConcurrent @ react-dom-client.development.js:15101
+performWorkOnRoot @ react-dom-client.development.js:14418
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+BackgroundPage.tsx:86  Background change failed: Error: Image load error: [object Event]
+    at img.onerror (geminiService.ts:202:28)
+(anonymous) @ BackgroundPage.tsx:86
+await in (anonymous)
+executeDispatch @ react-dom-client.development.js:16368
+runWithFiberInDEV @ react-dom-client.development.js:1519
+processDispatchQueue @ react-dom-client.development.js:16418
+(anonymous) @ react-dom-client.development.js:17016
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16572
+dispatchEvent @ react-dom-client.development.js:20658
+dispatchDiscreteEvent @ react-dom-client.development.js:20626
+<button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+BackgroundPage @ BackgroundPage.tsx:263
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopConcurrentByScheduler @ react-dom-client.development.js:15126
+renderRootConcurrent @ react-dom-client.development.js:15101
+performWorkOnRoot @ react-dom-client.development.js:14418
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45

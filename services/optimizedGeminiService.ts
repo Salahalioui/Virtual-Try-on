@@ -97,26 +97,26 @@ export const generateOptimizedImage = async (
         break;
     }
 
-    // Prepare request payload following official format
-    const contents = [];
+    // Prepare request payload for OpenRouter chat completions format
+    const content = [];
     
     // Add the text prompt
-    contents.push({ text: prompt });
+    content.push({ type: 'text', text: prompt });
     
     // Add user image
-    contents.push({
-      inlineData: {
-        mimeType: getMimeTypeFromBase64(userImageBase64),
-        data: userImageBase64
+    content.push({
+      type: 'image_url',
+      image_url: {
+        url: `data:${getMimeTypeFromBase64(userImageBase64)};base64,${userImageBase64}`
       }
     });
     
     // Add reference image if provided
     if (referenceImageBase64) {
-      contents.push({
-        inlineData: {
-          mimeType: getMimeTypeFromBase64(referenceImageBase64),
-          data: referenceImageBase64
+      content.push({
+        type: 'image_url',
+        image_url: {
+          url: `data:${getMimeTypeFromBase64(referenceImageBase64)};base64,${referenceImageBase64}`
         }
       });
     }
@@ -134,8 +134,9 @@ export const generateOptimizedImage = async (
         model: 'google/gemini-2.5-flash-image-preview',
         messages: [{
           role: 'user',
-          content: contents
+          content: content
         }],
+        modalities: ["image", "text"],
         max_tokens: 4096,
         temperature: 0.7
       })
@@ -148,17 +149,20 @@ export const generateOptimizedImage = async (
 
     const data = await response.json();
     
-    // Extract image from response
-    const message = data.choices?.[0]?.message?.content;
-    if (!message) {
-      throw new Error('No image generated in response');
-    }
-
-    // Look for inline image data in the response
-    // This is a simplified extraction - adjust based on actual OpenRouter response format
-    const imageMatch = message.match(/data:image\/[^;]+;base64,([^"'\s]+)/);
-    if (imageMatch) {
-      return `data:image/png;base64,${imageMatch[1]}`;
+    // Extract image from OpenRouter response format
+    if (data.choices && data.choices[0] && data.choices[0].message) {
+      const message = data.choices[0].message;
+      
+      // Check for images in the response
+      if (message.images && message.images.length > 0) {
+        const imageData = message.images[0].image_url.url;
+        return imageData; // Already a data URL
+      }
+      
+      // Also check if content contains image data (alternative format)
+      if (message.content && typeof message.content === 'string' && message.content.includes('data:image')) {
+        return message.content;
+      }
     }
 
     throw new Error('No image data found in response');
