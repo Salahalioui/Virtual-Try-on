@@ -51,6 +51,21 @@
     "formats": "PNG, JPG",
     "maxSize": "Max 10MB",
     "cropImage": "Crop Your Image",
-    "uploadImage": "Upload your image"
+    "uploadImage": "Upload your image",
+    "dropHere": "Drop your image here!",
+    "releaseToUpload": "Release to upload"
+  },
+  "loading": {
+    "loading": "Loading...",
+    "initializing": "Initializing AI models...",
+    "settingUp": "Setting up virtual dressing room...",
+    "preparing": "Preparing styling tools...",
+    "almostReady": "Almost ready!",
+    "generating": "Generating...",
+    "styling": "Styling...",
+    "transforming": "Transforming...",
+    "uploading": "Uploading...",
+    "cropping": "Cropping...",
+    "takeMoment": "This may take a moment..."
   }
 }

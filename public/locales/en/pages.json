@@ -4,7 +4,7 @@
     "subtitle": "Your AI-powered styling assistant",
     "description": "Transform your look with artificial intelligence",
     "chooseJourney": "Choose Your Style Journey",
-    "readyToTry": "Ready to Try",
+    "readyToTry": "Ready to Transform Your Style?",
     "pickFeature": "Pick any feature above to get started with AI-powered styling",
     "features": {
       "virtualTryOn": {
@@ -59,7 +59,11 @@
     },
     "success": {
       "imageSaved": "Image saved to your gallery!"
-    }
+    },
+    "extractOutfit": "Extract Outfit from My Photo",
+    "saveExtracted": "💾 Save Extracted Outfit",
+    "generateTryOn": "Generate Try-On",
+    "resultAlt": "Virtual try-on result"
   },
   "hairStyle": {
     "title": "Hair & Beard Styling",

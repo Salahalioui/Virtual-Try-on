@@ -4,6 +4,7 @@
 */
 
 import React, { useCallback, useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import ReactCrop, {
   centerCrop,
   makeAspectCrop,
@@ -82,6 +83,7 @@ const aspectOptions = [
 ];
 
 const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile, onClose, onCropComplete }) => {
+  const { t } = useTranslation('common');
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const imgRef = useRef<HTMLImageElement>(null);
@@ -191,14 +193,14 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile,
             onClick={onClose}
             className="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-bold py-2 px-6 rounded-lg transition-colors"
           >
-            Cancel
+            {t('buttons.cancel')}
           </button>
           <button
             onClick={handleCrop}
             disabled={!completedCrop || isCropping}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isCropping ? 'Cropping...' : 'Crop & Continue'}
+            {isCropping ? t('loading.cropping') || 'Cropping...' : t('buttons.crop')}
           </button>
         </div>
       </div>
@@ -232,6 +234,7 @@ const WarningIcon: React.FC = () => (
 
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, imageUrl }) => {
+  const { t } = useTranslation('common');
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
@@ -253,7 +256,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
         console.warn('❌ File type not allowed:', file.type);
-        setFileTypeError('Please use PNG, JPG, or JPEG formats.');
+        setFileTypeError(t('errors.formatError'));
         return;
     }
     
@@ -261,7 +264,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
         console.warn('❌ File too large:', file.size);
-        setFileTypeError('File size too large. Please use an image under 10MB.');
+        setFileTypeError(t('errors.sizeError'));
         return;
     }
     
@@ -471,17 +474,17 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
               <h4 className={`text-lg sm:text-xl font-bold transition-colors ${
                 isDraggingOver ? 'text-blue-600' : isHovering ? 'text-blue-700' : 'text-gray-800'
               }`}>
-                {isDraggingOver ? 'Drop your image here!' : 'Upload your image'}
+                {isDraggingOver ? t('fileUpload.dropHere') || 'Drop your image here!' : t('fileUpload.uploadImage')}
               </h4>
               <p className={`text-sm sm:text-base font-medium transition-colors ${
                 isDraggingOver ? 'text-blue-600' : isHovering ? 'text-blue-600' : 'text-gray-600'
               }`}>
-                {isDraggingOver ? 'Release to upload' : 'Tap to browse' + (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? '' : ' or drag & drop')}
+                {isDraggingOver ? t('fileUpload.releaseToUpload') || 'Release to upload' : t('fileUpload.dragDrop')}
               </p>
               <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
-                <span className="bg-white/80 px-3 py-1 rounded-full border">PNG</span>
-                <span className="bg-white/80 px-3 py-1 rounded-full border">JPG</span>
-                <span className="bg-white/80 px-3 py-1 rounded-full border">Max 10MB</span>
+                <span className="bg-white/80 px-3 py-1 rounded-full border">{t('fileUpload.formats').split(',')[0]}</span>
+                <span className="bg-white/80 px-3 py-1 rounded-full border">{t('fileUpload.formats').split(',')[1]}</span>
+                <span className="bg-white/80 px-3 py-1 rounded-full border">{t('fileUpload.maxSize')}</span>
               </div>
             </div>
             {uploadProgress !== null && (
@@ -502,7 +505,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, onFileSelect, 
         <div className="w-full mt-4 text-sm text-red-700 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-4 flex items-start shadow-md animate-fade-in" role="alert">
             <WarningIcon />
             <div>
-              <p className="font-semibold">Upload Error</p>
+              <p className="font-semibold">{t('errors.uploadError')}</p>
               <p>{fileTypeError}</p>
             </div>
         </div>

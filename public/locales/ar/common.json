@@ -51,6 +51,21 @@
     "formats": "PNG، JPG",
     "maxSize": "الحد الأقصى 10 ميجابايت",
     "cropImage": "قص صورتك",
-    "uploadImage": "رفع صورتك"
+    "uploadImage": "رفع صورتك",
+    "dropHere": "ضع صورتك هنا!",
+    "releaseToUpload": "أفلت للرفع"
+  },
+  "loading": {
+    "loading": "جاري التحميل...",
+    "initializing": "تهيئة نماذج الذكاء الاصطناعي...",
+    "settingUp": "إعداد غرفة القياس الافتراضية...",
+    "preparing": "تحضير أدوات التصميم...",
+    "almostReady": "تقريباً جاهز!",
+    "generating": "جاري الإنشاء...",
+    "styling": "جاري التصفيف...",
+    "transforming": "جاري التحويل...",
+    "uploading": "جاري الرفع...",
+    "cropping": "جاري القص...",
+    "takeMoment": "قد يستغرق هذا بضع لحظات..."
   }
 }
