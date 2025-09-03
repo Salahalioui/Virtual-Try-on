@@ -2,7 +2,7 @@
 
 ## Overview
 
-StyleAI is a comprehensive mobile-first React application that provides AI-powered styling services. The app features multiple tabs for different styling needs: Virtual Try-On for clothing visualization, Hair & Beard Styling for hairstyle transformations, and Background Changer for environment modifications. Built with modern web technologies and powered by Google's Gemini 2.5 Flash Image Preview model via OpenRouter API.
+StyleAI is a comprehensive mobile-first React application that provides AI-powered styling services. The app features multiple tabs for different styling needs: Virtual Try-On for clothing visualization, Outfit Extraction for clothing isolation, Hair & Beard Styling for hairstyle transformations, Background Changer for environment modifications, and an About page with developer credits. Built with modern web technologies and powered by Google's Gemini 2.5 Flash Image Preview model via OpenRouter API.
 
 ## User Preferences
 
@@ -27,33 +27,41 @@ Preferred communication style: Simple, everyday language.
 - **ImageUploader.tsx**: Enhanced file upload component with drag-and-drop and cropping
 
 **Page Components:**
+- **HomePage.tsx**: Welcome screen with feature overview and quick access to all styling tools
 - **VirtualTryOnPage.tsx**: Complete virtual try-on experience with multiple angles and AI-powered outfit extraction
 - **HairStylePage.tsx**: Hair and beard styling with preset styles and custom prompts  
 - **BackgroundPage.tsx**: Background replacement with automatic and manual placement options
-- **SettingsPage.tsx**: API key management and user preferences
+- **AboutPage.tsx**: Comprehensive app information and developer credits with social media links
+- **SettingsPage.tsx**: API key management, user preferences, and saved outfit gallery
 
 **Context & State:**
 - **AppContext.tsx**: Global state management for all features and user data
 
 ### AI Integration
-- **Original Service**: geminiService.ts for core AI model integration via OpenRouter
-- **Enhanced Service**: enhancedGeminiService.ts for multi-feature support (virtual try-on, hair styling, background changes)
+- **Core Service**: geminiService.ts for foundational AI model integration via OpenRouter
+- **Optimized Service**: optimizedGeminiService.ts with professional prompt templates and enhanced error handling
+- **Enhanced Service**: enhancedGeminiService.ts for multi-feature support across all styling tools
 - **Primary Model**: Google's Gemini 2.5 Flash Image Preview via OpenRouter API
 - **Multi-Feature Support**:
-  - Virtual Try-On with multiple angle views (front, side, 3/4, back)
-  - Hair & Beard Styling with gender-specific presets and custom descriptions
-  - Background Replacement with automatic placement and custom prompts
-  - AI-Powered Outfit Extraction using Gemini 2.5 Flash Image Generation
+  - Virtual Try-On with multiple angle views (front, side, 3/4, back) and color customization
+  - AI-Powered Outfit Extraction with product-style clean results and save functionality
+  - Hair & Beard Styling with reference images, gender-specific presets, and custom descriptions
+  - Background Replacement with automatic placement, manual positioning, and custom prompts
 - **Enhanced Features**:
+  - Professional photography terminology for photorealistic results
   - Natural language editing prompts for fine-tuning results
   - Progressive loading with contextual messages for each feature
   - Body type support for virtual try-on accuracy
+  - Comprehensive error handling with user-friendly messages
 
 ### Data Flow
-- **File Handling**: Browser File API for image uploads and processing
-- **Image Rendering**: Object URLs for efficient client-side image display
-- **Error Handling**: Comprehensive error states with user-friendly messaging
-- **Loading States**: Progressive feedback system with contextual loading messages
+- **File Handling**: Browser File API for image uploads and processing with drag-and-drop support
+- **Image Rendering**: Object URLs for efficient client-side image display and management
+- **State Management**: Global context for sharing data across all tabs and features
+- **Storage**: LocalStorage for API keys and user preferences, with gallery for saved outfit extractions
+- **Error Handling**: Comprehensive error states with user-friendly messaging and recovery options
+- **Loading States**: Progressive feedback system with contextual loading messages for each feature
+- **Navigation**: React Router DOM with bottom tab navigation and smooth transitions
 
 ## External Dependencies
 
