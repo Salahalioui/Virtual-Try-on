@@ -37,7 +37,7 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 pb-20">
+    <div className="bg-gradient-to-br from-slate-50 to-gray-100 pb-20 overflow-y-auto h-full">
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="px-6 py-8">
