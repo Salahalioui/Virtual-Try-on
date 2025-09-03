@@ -108,20 +108,6 @@ export const extractOutfitFromImage = async (
 
 Focus only on the main clothing items visible on the person. Ignore accessories like shoes, jewelry, or bags unless they're integral to the outfit.`;
 
-    const requestBody = {
-      contents: [{
-        parts: [
-          { text: extractionPrompt },
-          {
-            inline_data: {
-              mime_type: mimeType,
-              data: base64Image
-            }
-          }
-        ]
-      }]
-    };
-
     console.log('🚀 Sending outfit extraction request to OpenRouter API...');
 
     const response = await fetch(

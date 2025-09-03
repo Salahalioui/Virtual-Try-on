@@ -225,8 +225,8 @@ const resizeImage = (file: File, targetDimension: number): Promise<File> => {
     });
 };
 
-// Helper function to convert a File object to a Gemini API Part
-const fileToPart = async (file: File): Promise<{ inlineData: { mimeType: string; data: string; } }> => {
+// Helper function to convert a File object to base64 data
+const fileToPart = async (file: File): Promise<{ mimeType: string; data: string; }> => {
     const dataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         
@@ -273,7 +273,7 @@ const fileToPart = async (file: File): Promise<{ inlineData: { mimeType: string;
             throw new Error("No image data found in file");
         }
         
-        return { inlineData: { mimeType, data } };
+        return { mimeType, data };
     } catch (error) {
         throw new Error(`Data URL processing error: ${error}`);
     }
@@ -360,8 +360,8 @@ const handleApiError = (error: any): string => {
 
 // OpenRouter API fallback implementation
 const generateTryOnImageWithOpenRouter = async (
-    subjectImagePart: { inlineData: { mimeType: string; data: string; } },
-    outfitImagePart: { inlineData: { mimeType: string; data: string; } },
+    subjectImagePart: { mimeType: string; data: string; },
+    outfitImagePart: { mimeType: string; data: string; },
     prompt: string,
     openRouterApiKey: string,
     originalWidth: number,
@@ -391,13 +391,13 @@ const generateTryOnImageWithOpenRouter = async (
           {
             type: "image_url",
             image_url: {
-              url: `data:${subjectImagePart.inlineData.mimeType};base64,${subjectImagePart.inlineData.data}`
+              url: `data:${subjectImagePart.mimeType};base64,${subjectImagePart.data}`
             }
           },
           {
             type: "image_url",
             image_url: {
-              url: `data:${outfitImagePart.inlineData.mimeType};base64,${outfitImagePart.inlineData.data}`
+              url: `data:${outfitImagePart.mimeType};base64,${outfitImagePart.data}`
             }
           }
         ]
