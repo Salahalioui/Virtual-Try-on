@@ -9,28 +9,32 @@ const tabs = [
     label: 'Try On', 
     icon: FiUser, 
     path: '/virtual-tryon',
-    gradient: 'from-purple-500 to-pink-500'
+    gradient: 'from-purple-500 to-pink-500',
+    inactiveColor: 'text-purple-600 hover:text-purple-700'
   },
   { 
     id: 'hair-style', 
     label: 'Hair Style', 
     icon: FiScissors, 
     path: '/hair-style',
-    gradient: 'from-blue-500 to-cyan-500'
+    gradient: 'from-blue-500 to-cyan-500',
+    inactiveColor: 'text-blue-600 hover:text-blue-700'
   },
   { 
     id: 'background', 
     label: 'Background', 
     icon: FiImage, 
     path: '/background',
-    gradient: 'from-green-500 to-teal-500'
+    gradient: 'from-green-500 to-teal-500',
+    inactiveColor: 'text-green-600 hover:text-green-700'
   },
   { 
     id: 'settings', 
     label: 'Settings', 
     icon: FiSettings, 
     path: '/settings',
-    gradient: 'from-gray-500 to-slate-500'
+    gradient: 'from-gray-500 to-slate-500',
+    inactiveColor: 'text-gray-600 hover:text-gray-700'
   }
 ];
 
@@ -51,7 +55,7 @@ const TabNavigation: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate(tab.path)}
               className={`flex flex-col items-center py-2 px-4 rounded-xl transition-all duration-200 ${
-                isActive ? 'text-white' : 'text-gray-500 hover:text-gray-700'
+                isActive ? 'text-white' : tab.inactiveColor
               }`}
             >
               {isActive && (
@@ -68,11 +72,11 @@ const TabNavigation: React.FC = () => {
                 <Icon 
                   size={24} 
                   className={`mb-1 transition-all duration-200 ${
-                    isActive ? 'text-white' : 'text-gray-500'
+                    isActive ? 'text-white' : tab.inactiveColor.split(' hover:')[0]
                   }`}
                 />
                 <span className={`text-xs font-medium transition-all duration-200 ${
-                  isActive ? 'text-white' : 'text-gray-500'
+                  isActive ? 'text-white' : tab.inactiveColor.split(' hover:')[0]
                 }`}>
                   {tab.label}
                 </span>
