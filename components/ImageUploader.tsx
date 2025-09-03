@@ -88,6 +88,16 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile,
   const [isCropping, setIsCropping] = useState(false);
   const [aspect, setAspect] = useState<number | undefined>(aspectOptions[0].value);
 
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
     const newCrop = aspect
@@ -122,13 +132,20 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile,
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 animate-fade-in"
+      className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto"
       aria-modal="true"
       role="dialog"
+      onClick={(e) => {
+        // Close modal if clicking the backdrop
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
     >
       <div
-        className="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6 md:p-8 relative transform transition-all flex flex-col"
+        className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] p-6 md:p-8 relative transform transition-all flex flex-col overflow-hidden my-auto"
         role="document"
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="text-center mb-4">
           <h2 className="text-2xl font-extrabold text-zinc-800">Crop Your Image</h2>
@@ -150,7 +167,7 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile,
             ))}
         </div>
 
-        <div className="flex justify-center bg-zinc-100 p-4 rounded-lg">
+        <div className="flex justify-center bg-zinc-100 p-4 rounded-lg overflow-auto flex-1 min-h-0">
           <ReactCrop
             crop={crop}
             onChange={(_, percentCrop) => setCrop(percentCrop)}
@@ -164,12 +181,12 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile,
               alt="Crop me"
               src={imageSrc}
               onLoad={onImageLoad}
-              style={{ maxHeight: '60vh', objectFit: 'contain' }}
+              style={{ maxHeight: '50vh', maxWidth: '100%', objectFit: 'contain' }}
             />
           </ReactCrop>
         </div>
 
-        <div className="mt-6 flex flex-wrap justify-end gap-3">
+        <div className="mt-6 flex flex-wrap justify-end gap-3 flex-shrink-0">
           <button
             onClick={onClose}
             className="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-bold py-2 px-6 rounded-lg transition-colors"
