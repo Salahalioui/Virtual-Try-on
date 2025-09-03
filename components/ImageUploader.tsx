@@ -143,7 +143,7 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile,
       }}
     >
       <div
-        className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] p-6 md:p-8 relative transform transition-all flex flex-col overflow-hidden my-auto"
+        className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[95vh] p-4 md:p-6 relative transform transition-all flex flex-col overflow-hidden my-auto"
         role="document"
         onClick={(e) => e.stopPropagation()}
       >
@@ -167,7 +167,7 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile,
             ))}
         </div>
 
-        <div className="flex justify-center bg-zinc-100 p-4 rounded-lg overflow-auto flex-1 min-h-0">
+        <div className="flex justify-center bg-zinc-100 p-4 rounded-lg overflow-auto flex-1 min-h-0 max-h-[75vh]">
           <ReactCrop
             crop={crop}
             onChange={(_, percentCrop) => setCrop(percentCrop)}
@@ -175,13 +175,21 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile,
             aspect={aspect}
             minWidth={50}
             minHeight={50}
+            className="max-h-full"
+            ruleOfThirds
           >
             <img
               ref={imgRef}
               alt="Crop me"
               src={imageSrc}
               onLoad={onImageLoad}
-              style={{ maxHeight: '70vh', maxWidth: '100%', objectFit: 'contain' }}
+              style={{ 
+                maxHeight: '100%', 
+                maxWidth: '100%', 
+                height: 'auto',
+                width: 'auto',
+                display: 'block'
+              }}
             />
           </ReactCrop>
         </div>
