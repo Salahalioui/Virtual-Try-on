@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../contexts/AppContext';
 import { generateEnhancedImage } from '../services/enhancedGeminiService';
 import ImageUploader from '../components/ImageUploader';
@@ -42,6 +43,7 @@ const popularStyles = {
 };
 
 const HairStylePage: React.FC = () => {
+  const { t } = useTranslation('pages');
   const { state, updateHairStyle, saveImage, clearFeatureState } = useAppContext();
   const { hairStyle } = state;
   
@@ -50,12 +52,12 @@ const HairStylePage: React.FC = () => {
 
   const handleGenerate = useCallback(async () => {
     if (!hairStyle.userPhoto) {
-      alert('Please upload your photo first.');
+      alert(t('hairStyle.errors.uploadPhoto') || 'Please upload your photo first.');
       return;
     }
 
     if (!hairStyle.hairStyleImage && !hairStyle.hairStylePrompt && !selectedStyle) {
-      alert('Please either upload a hair style image, write a description, or select a popular style.');
+      alert(t('hairStyle.errors.selectStyle') || 'Please either upload a hair style image, write a description, or select a popular style.');
       return;
     }
 

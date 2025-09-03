@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../contexts/AppContext';
 import { generateEnhancedImage, extractOutfitFromImage } from '../services/enhancedGeminiService';
 import ImageUploader from '../components/ImageUploader';
@@ -15,6 +16,7 @@ const angleOptions = [
 ];
 
 const VirtualTryOnPage: React.FC = () => {
+  const { t } = useTranslation('pages');
   const { state, updateVirtualTryOn, saveImage, clearFeatureState } = useAppContext();
   const { virtualTryOn } = state;
   
@@ -25,7 +27,7 @@ const VirtualTryOnPage: React.FC = () => {
 
   const handleGenerate = useCallback(async () => {
     if (!virtualTryOn.subjectImage || !virtualTryOn.outfitImage) {
-      alert('Please upload both your photo and an outfit image.');
+      alert(t('virtualTryOn.errors.uploadBoth') || 'Please upload both your photo and an outfit image.');
       return;
     }
 
@@ -52,14 +54,14 @@ const VirtualTryOnPage: React.FC = () => {
     } catch (error) {
       console.error('Virtual try-on failed:', error);
       updateVirtualTryOn({ isProcessing: false });
-      alert('Failed to generate try-on image. Please try again.');
+      alert(t('virtualTryOn.errors.generateFailed') || 'Failed to generate try-on image. Please try again.');
     }
   }, [virtualTryOn, editPrompt, state.apiKey, updateVirtualTryOn]);
 
   const handleSaveImage = () => {
     if (virtualTryOn.resultImage) {
       saveImage(virtualTryOn.resultImage);
-      alert('Image saved to your gallery!');
+      alert(t('virtualTryOn.success.imageSaved') || 'Image saved to your gallery!');
     }
   };
 
@@ -70,7 +72,7 @@ const VirtualTryOnPage: React.FC = () => {
 
   const handleExtractOutfit = async () => {
     if (!virtualTryOn.subjectImage) {
-      alert('Please upload your photo first to extract outfit from it.');
+      alert(t('virtualTryOn.errors.uploadPhotoFirst') || 'Please upload your photo first to extract outfit from it.');
       return;
     }
 
