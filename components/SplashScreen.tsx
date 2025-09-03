@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 
 interface SplashScreenProps {
   onComplete: () => void;
 }
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
-  const { t } = useTranslation('common');
-  const [loadingText, setLoadingText] = useState(t('loading.loading'));
+  const [loadingText, setLoadingText] = useState('Loading...');
   
   useEffect(() => {
     const loadingSteps = [
-      t('loading.initializing'),
-      t('loading.settingUp'),
-      t('loading.preparing'),
-      t('loading.almostReady')
+      'Initializing AI models...',
+      'Setting up virtual dressing room...',
+      'Preparing styling tools...',
+      'Almost ready!'
     ];
 
     let currentStep = 0;
@@ -41,8 +39,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         className="text-center"
       >
         <div className="text-6xl mb-8">✨</div>
-        <h1 className="text-4xl font-bold text-white mb-4">{t('loading.loading').includes('...') ? 'StyleAI' : 'ستايل إيه آي'}</h1>
-        <p className="text-xl text-white/80 mb-8">{t('loading.subtitle') || 'Virtual Styling Assistant'}</p>
+        <h1 className="text-4xl font-bold text-white mb-4">StyleAI</h1>
+        <p className="text-xl text-white/80 mb-8">Virtual Styling Assistant</p>
         
         <motion.div
           animate={{ rotate: 360 }}

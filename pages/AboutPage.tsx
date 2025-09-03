@@ -1,12 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { FiGithub, FiUser, FiHeart, FiStar, FiCode, FiZap } from 'react-icons/fi';
 import { FaFacebook } from 'react-icons/fa';
 
 const AboutPage: React.FC = () => {
-  const { t } = useTranslation('pages');
-  
   const handleGitHubClick = () => {
     window.open('https://github.com/Salahalioui', '_blank');
   };
@@ -25,7 +22,7 @@ const AboutPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {t('about.title')}
+          About StyleAI
         </motion.h1>
         <motion.p 
           className="text-purple-100"
@@ -33,7 +30,7 @@ const AboutPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          {t('about.subtitle')}
+          Your AI-Powered Virtual Styling Assistant
         </motion.p>
       </div>
 
@@ -47,10 +44,10 @@ const AboutPage: React.FC = () => {
         >
           <div className="flex items-center mb-4">
             <FiZap className="text-purple-600 mr-3" size={24} />
-            <h2 className="text-2xl font-bold text-gray-800">{t('about.whatIs.title')}</h2>
+            <h2 className="text-2xl font-bold text-gray-800">What is StyleAI?</h2>
           </div>
           <p className="text-gray-600 leading-relaxed">
-            {t('about.whatIs.description')}
+            StyleAI is a comprehensive mobile-first AI styling assistant that brings the power of artificial intelligence to your personal styling needs. Whether you want to try on new outfits, experiment with different hairstyles, or change your photo backgrounds, StyleAI makes it all possible with cutting-edge AI technology.
           </p>
         </motion.div>
 
@@ -63,14 +60,14 @@ const AboutPage: React.FC = () => {
         >
           <div className="flex items-center mb-4">
             <FiStar className="text-blue-600 mr-3" size={24} />
-            <h2 className="text-2xl font-bold text-gray-800">{t('about.features.title')}</h2>
+            <h2 className="text-2xl font-bold text-gray-800">Features</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-start space-x-3">
               <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
               <div>
-                <h3 className="font-semibold text-gray-800">{t('about.features.virtualTryOn.title')}</h3>
-                <p className="text-sm text-gray-600">{t('about.features.virtualTryOn.description')}</p>
+                <h3 className="font-semibold text-gray-800">Virtual Try-On</h3>
+                <p className="text-sm text-gray-600">See how clothes look on you with multiple viewing angles</p>
               </div>
             </div>
             <div className="flex items-start space-x-3">

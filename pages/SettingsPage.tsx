@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../contexts/AppContext';
 import { FiSettings, FiKey, FiImage, FiTrash2, FiDownload } from 'react-icons/fi';
-import LanguageSwitcher from '../components/LanguageSwitcher';
 
 const SettingsPage: React.FC = () => {
-  const { t } = useTranslation('pages');
   const { state, updateApiKey } = useAppContext();
   const [localApiKey, setLocalApiKey] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
@@ -64,8 +61,6 @@ const SettingsPage: React.FC = () => {
       </div>
 
       <div className="flex-1 overflow-auto p-4 space-y-6">
-        {/* Language Settings */}
-        <LanguageSwitcher />
         {/* API Key Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../contexts/AppContext';
 import { generateEnhancedImage } from '../services/enhancedGeminiService';
 import ImageUploader from '../components/ImageUploader';
@@ -26,7 +25,6 @@ const backgroundPresets = [
 ];
 
 const BackgroundPage: React.FC = () => {
-  const { t } = useTranslation('pages');
   const { state, updateBackground, saveImage, clearFeatureState } = useAppContext();
   const { background } = state;
   
@@ -36,12 +34,12 @@ const BackgroundPage: React.FC = () => {
 
   const handleGenerate = useCallback(async () => {
     if (!background.userPhoto) {
-      alert(t('background.errors.uploadPhoto') || 'Please upload your photo first.');
+      alert('Please upload your photo first.');
       return;
     }
 
     if (!background.backgroundImage && !background.backgroundPrompt && !selectedPreset) {
-      alert(t('background.errors.selectBackground') || 'Please either upload a background image, write a description, or select a preset background.');
+      alert('Please either upload a background image, write a description, or select a preset background.');
       return;
     }
 

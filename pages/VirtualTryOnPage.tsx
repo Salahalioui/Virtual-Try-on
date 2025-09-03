@@ -1,32 +1,22 @@
 import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../contexts/AppContext';
 import { generateEnhancedImage, extractOutfitFromImage } from '../services/enhancedGeminiService';
 import ImageUploader from '../components/ImageUploader';
 import Spinner from '../components/Spinner';
 import { FiRotateCw, FiDownload, FiTrash2 } from 'react-icons/fi';
 
+const bodyBuildOptions = ['Slim', 'Athletic', 'Average', 'Curvy', 'Plus Size'];
+const angleOptions = [
+  { value: 'front', label: 'Front View' },
+  { value: 'side', label: 'Side View' },
+  { value: '3quarter', label: '3/4 View' },
+  { value: 'back', label: 'Back View' }
+];
 
 const VirtualTryOnPage: React.FC = () => {
-  const { t } = useTranslation('pages');
   const { state, updateVirtualTryOn, saveImage, clearFeatureState } = useAppContext();
   const { virtualTryOn } = state;
-
-  const bodyBuildOptions = [
-    t('virtualTryOn.bodyBuild.slim'),
-    t('virtualTryOn.bodyBuild.athletic'),
-    t('virtualTryOn.bodyBuild.average'),
-    t('virtualTryOn.bodyBuild.curvy'),
-    t('virtualTryOn.bodyBuild.plusSize')
-  ];
-  
-  const angleOptions = [
-    { value: 'front', label: t('virtualTryOn.viewAngle.front') },
-    { value: 'side', label: t('virtualTryOn.viewAngle.side') },
-    { value: '3quarter', label: t('virtualTryOn.viewAngle.threeFourth') },
-    { value: 'back', label: t('virtualTryOn.viewAngle.back') }
-  ];
   
   const [editPrompt, setEditPrompt] = useState('');
   const [showOutfitExtractor, setShowOutfitExtractor] = useState(false);
@@ -35,7 +25,7 @@ const VirtualTryOnPage: React.FC = () => {
 
   const handleGenerate = useCallback(async () => {
     if (!virtualTryOn.subjectImage || !virtualTryOn.outfitImage) {
-      alert(t('virtualTryOn.errors.uploadBoth') || 'Please upload both your photo and an outfit image.');
+      alert('Please upload both your photo and an outfit image.');
       return;
     }
 
@@ -62,14 +52,14 @@ const VirtualTryOnPage: React.FC = () => {
     } catch (error) {
       console.error('Virtual try-on failed:', error);
       updateVirtualTryOn({ isProcessing: false });
-      alert(t('virtualTryOn.errors.generateFailed') || 'Failed to generate try-on image. Please try again.');
+      alert('Failed to generate try-on image. Please try again.');
     }
   }, [virtualTryOn, editPrompt, state.apiKey, updateVirtualTryOn]);
 
   const handleSaveImage = () => {
     if (virtualTryOn.resultImage) {
       saveImage(virtualTryOn.resultImage);
-      alert(t('virtualTryOn.success.imageSaved') || 'Image saved to your gallery!');
+      alert('Image saved to your gallery!');
     }
   };
 
@@ -80,7 +70,7 @@ const VirtualTryOnPage: React.FC = () => {
 
   const handleExtractOutfit = async () => {
     if (!virtualTryOn.subjectImage) {
-      alert(t('virtualTryOn.errors.uploadPhotoFirst') || 'Please upload your photo first to extract outfit from it.');
+      alert('Please upload your photo first to extract outfit from it.');
       return;
     }
 
@@ -121,8 +111,8 @@ const VirtualTryOnPage: React.FC = () => {
     <div className="flex flex-col h-full bg-gray-50 pb-20">
       {/* Header */}
       <div className="bg-white shadow-sm p-4">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">{t('virtualTryOn.title')}</h1>
-        <p className="text-gray-600">{t('virtualTryOn.subtitle')}</p>
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">Virtual Try-On</h1>
+        <p className="text-gray-600">Upload your photo and an outfit to see how it looks!</p>
       </div>
 
       <div className="flex-1 overflow-auto p-4 space-y-6">
@@ -135,7 +125,7 @@ const VirtualTryOnPage: React.FC = () => {
           >
             <ImageUploader
               id="subject-image"
-              label={t('virtualTryOn.sections.yourPhoto')}
+              label="Your Photo"
               onFileSelect={(file) => {
                 const imageUrl = URL.createObjectURL(file);
                 updateVirtualTryOn({ subjectImage: imageUrl });
@@ -152,7 +142,7 @@ const VirtualTryOnPage: React.FC = () => {
             <div className="space-y-3">
               <ImageUploader
                 id="outfit-image"
-                label={t('virtualTryOn.sections.outfitImage')}
+                label="Outfit Image"
                 onFileSelect={(file) => {
                   const imageUrl = URL.createObjectURL(file);
                   updateVirtualTryOn({ outfitImage: imageUrl });
@@ -165,14 +155,14 @@ const VirtualTryOnPage: React.FC = () => {
                   className="text-sm px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors block w-full"
                   disabled={!virtualTryOn.subjectImage}
                 >
-                  {t('virtualTryOn.extractOutfit') || 'Extract Outfit from My Photo'}
+                  Extract Outfit from My Photo
                 </button>
                 {virtualTryOn.outfitImage && virtualTryOn.outfitImage.startsWith('data:image') && (
                   <button
                     onClick={handleSaveExtractedOutfit}
                     className="text-sm px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors block w-full"
                   >
-                    {t('virtualTryOn.saveExtracted') || '💾 Save Extracted Outfit'}
+                    💾 Save Extracted Outfit
                   </button>
                 )}
               </div>
@@ -187,12 +177,12 @@ const VirtualTryOnPage: React.FC = () => {
           transition={{ delay: 0.3 }}
           className="bg-white rounded-xl p-4 shadow-sm"
         >
-          <h3 className="font-semibold text-gray-800 mb-4">{t('virtualTryOn.sections.settings')}</h3>
+          <h3 className="font-semibold text-gray-800 mb-4">Settings</h3>
           
           <div className="space-y-4">
             {/* Body Build */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">{t('virtualTryOn.bodyBuild.label')}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Body Build</label>
               <select
                 value={virtualTryOn.bodyBuild}
                 onChange={(e) => updateVirtualTryOn({ bodyBuild: e.target.value })}
@@ -206,7 +196,7 @@ const VirtualTryOnPage: React.FC = () => {
 
             {/* Angle Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">{t('virtualTryOn.viewAngle.label')}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">View Angle</label>
               <select
                 value={virtualTryOn.selectedAngle}
                 onChange={(e) => updateVirtualTryOn({ selectedAngle: e.target.value })}
@@ -220,11 +210,11 @@ const VirtualTryOnPage: React.FC = () => {
 
             {/* Edit Prompt */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">{t('virtualTryOn.additionalInstructions.label')}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Additional Instructions (Optional)</label>
               <textarea
                 value={editPrompt}
                 onChange={(e) => setEditPrompt(e.target.value)}
-                placeholder={t('virtualTryOn.additionalInstructions.placeholder')}
+                placeholder="e.g., adjust the fit, change color, add accessories..."
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
                 rows={3}
               />
@@ -247,12 +237,12 @@ const VirtualTryOnPage: React.FC = () => {
             {virtualTryOn.isProcessing ? (
               <>
                 <Spinner />
-                <span>{t('common.generating') || 'Generating...'}</span>
+                <span>Generating...</span>
               </>
             ) : (
               <>
                 <FiRotateCw size={20} />
-                <span>{t('virtualTryOn.generateTryOn') || 'Generate Try-On'}</span>
+                <span>Generate Try-On</span>
               </>
             )}
           </button>
@@ -262,7 +252,7 @@ const VirtualTryOnPage: React.FC = () => {
             className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 flex items-center justify-center space-x-2"
           >
             <FiTrash2 size={20} />
-            <span>{t('common.clear') || 'Clear'}</span>
+            <span>Clear</span>
           </button>
         </motion.div>
 
@@ -275,19 +265,19 @@ const VirtualTryOnPage: React.FC = () => {
             className="bg-white rounded-xl p-4 shadow-sm"
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-800">{t('virtualTryOn.sections.result')}</h3>
+              <h3 className="font-semibold text-gray-800">Result</h3>
               <button
                 onClick={handleSaveImage}
                 className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
               >
                 <FiDownload size={16} />
-                <span>{t('common.save') || 'Save'}</span>
+                <span>Save</span>
               </button>
             </div>
             <div className="rounded-lg overflow-hidden">
               <img
                 src={virtualTryOn.resultImage}
-                alt={t('virtualTryOn.resultAlt') || 'Virtual try-on result'}
+                alt="Virtual try-on result"
                 className="w-full h-auto"
               />
             </div>
@@ -301,7 +291,7 @@ const VirtualTryOnPage: React.FC = () => {
           <div className="bg-white rounded-2xl p-8 max-w-sm mx-4 text-center">
             <Spinner />
             <p className="mt-4 text-lg font-semibold text-gray-800">{loadingMessage}</p>
-            <p className="mt-2 text-sm text-gray-600">{t('common.loading.takeMoment') || 'This may take a moment...'}</p>
+            <p className="mt-2 text-sm text-gray-600">This may take a moment...</p>
           </div>
         </div>
       )}

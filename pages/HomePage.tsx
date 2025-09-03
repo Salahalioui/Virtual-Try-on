@@ -1,43 +1,40 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { FiUser, FiScissors, FiImage, FiStar, FiZap, FiHeart } from 'react-icons/fi';
 
+const featureCards = [
+  {
+    id: 'virtual-tryon',
+    title: 'Virtual Try-On',
+    description: 'See how clothes look on you with AI magic',
+    icon: FiUser,
+    gradient: 'from-purple-500 to-pink-500',
+    path: '/virtual-tryon',
+    features: ['Multiple angles', 'Any body type', 'Realistic fit']
+  },
+  {
+    id: 'hair-style',
+    title: 'Hair & Beard Styling',
+    description: 'Transform your look with AI hairstyling',
+    icon: FiScissors,
+    gradient: 'from-blue-500 to-cyan-500',
+    path: '/hair-style',
+    features: ['Custom styles', 'Gender-specific', 'Natural results']
+  },
+  {
+    id: 'background',
+    title: 'Background Changer',
+    description: 'Place yourself in any environment',
+    icon: FiImage,
+    gradient: 'from-green-500 to-teal-500',
+    path: '/background',
+    features: ['Auto placement', 'Any location', 'Perfect lighting']
+  }
+];
 
 const HomePage: React.FC = () => {
-  const { t } = useTranslation('pages');
   const navigate = useNavigate();
-
-  const featureCards = [
-    {
-      id: 'virtual-tryon',
-      title: t('home.features.virtualTryOn.title'),
-      description: t('home.features.virtualTryOn.description'),
-      icon: FiUser,
-      gradient: 'from-purple-500 to-pink-500',
-      path: '/virtual-tryon',
-      features: t('home.features.virtualTryOn.points', { returnObjects: true }) as string[]
-    },
-    {
-      id: 'hair-style',
-      title: t('home.features.hairStyling.title'),
-      description: t('home.features.hairStyling.description'),
-      icon: FiScissors,
-      gradient: 'from-blue-500 to-cyan-500',
-      path: '/hair-style',
-      features: t('home.features.hairStyling.points', { returnObjects: true }) as string[]
-    },
-    {
-      id: 'background',
-      title: t('home.features.backgroundChanger.title'),
-      description: t('home.features.backgroundChanger.description'),
-      icon: FiImage,
-      gradient: 'from-green-500 to-teal-500',
-      path: '/background',
-      features: t('home.features.backgroundChanger.points', { returnObjects: true }) as string[]
-    }
-  ];
 
   return (
     <div className="bg-gradient-to-br from-slate-50 to-gray-100 pb-20 overflow-y-auto h-full">
@@ -58,14 +55,14 @@ const HomePage: React.FC = () => {
                 <FiZap className="text-white text-xl" />
               </motion.div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                {t('home.title')}
+                StyleAI
               </h1>
             </div>
             <p className="text-gray-600 text-lg">
-              {t('home.subtitle')}
+              Your AI-powered styling assistant
             </p>
             <p className="text-sm text-gray-500 mt-2">
-              {t('home.description')}
+              Transform your look with artificial intelligence
             </p>
           </motion.div>
         </div>
@@ -80,7 +77,7 @@ const HomePage: React.FC = () => {
         >
           <div className="flex items-center justify-center mb-6">
             <FiStar className="text-yellow-500 mr-2" />
-            <h2 className="text-xl font-semibold text-gray-800">{t('home.chooseJourney')}</h2>
+            <h2 className="text-xl font-semibold text-gray-800">Choose Your Style Journey</h2>
             <FiHeart className="text-red-500 ml-2" />
           </div>
         </motion.div>
@@ -149,9 +146,9 @@ const HomePage: React.FC = () => {
         className="px-6 py-4"
       >
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 text-center text-white">
-          <h3 className="text-lg font-bold mb-2">{t('home.readyToTry')}</h3>
+          <h3 className="text-lg font-bold mb-2">Ready to Transform Your Style?</h3>
           <p className="text-sm text-indigo-100 mb-4">
-            {t('home.pickFeature')}
+            Pick any feature above to get started with AI-powered styling
           </p>
           <div className="flex justify-center">
             <motion.div

@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Types for different features
 export interface VirtualTryOnState {
@@ -31,8 +30,6 @@ export interface BackgroundState {
 
 export interface AppState {
   apiKey: string;
-  language: string;
-  direction: 'ltr' | 'rtl';
   user: {
     name: string;
     savedImages: string[];
@@ -45,7 +42,6 @@ export interface AppState {
 interface AppContextType {
   state: AppState;
   updateApiKey: (key: string) => void;
-  updateLanguage: (language: string) => void;
   updateVirtualTryOn: (updates: Partial<VirtualTryOnState>) => void;
   updateHairStyle: (updates: Partial<HairStyleState>) => void;
   updateBackground: (updates: Partial<BackgroundState>) => void;
@@ -55,8 +51,6 @@ interface AppContextType {
 
 const initialState: AppState = {
   apiKey: '',
-  language: 'en',
-  direction: 'ltr',
   user: {
     name: '',
     savedImages: []
@@ -103,51 +97,9 @@ interface AppProviderProps {
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [state, setState] = useState<AppState>(initialState);
-  const { i18n } = useTranslation();
-
-  // Initialize language and direction from localStorage or browser settings
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('styleai-language') || i18n.language || 'en';
-    const direction = savedLanguage === 'ar' ? 'rtl' : 'ltr';
-    
-    setState(prev => ({
-      ...prev,
-      language: savedLanguage,
-      direction
-    }));
-    
-    // Set document direction and language
-    document.documentElement.dir = direction;
-    document.documentElement.lang = savedLanguage;
-    
-    // Change i18n language if different
-    if (i18n.language !== savedLanguage) {
-      i18n.changeLanguage(savedLanguage);
-    }
-  }, [i18n]);
 
   const updateApiKey = (key: string) => {
     setState(prev => ({ ...prev, apiKey: key }));
-  };
-
-  const updateLanguage = (language: string) => {
-    const direction = language === 'ar' ? 'rtl' : 'ltr';
-    
-    setState(prev => ({
-      ...prev,
-      language,
-      direction
-    }));
-    
-    // Update i18n language
-    i18n.changeLanguage(language);
-    
-    // Update document direction and language
-    document.documentElement.dir = direction;
-    document.documentElement.lang = language;
-    
-    // Save to localStorage
-    localStorage.setItem('styleai-language', language);
   };
 
   const updateVirtualTryOn = (updates: Partial<VirtualTryOnState>) => {
@@ -191,7 +143,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const contextValue: AppContextType = {
     state,
     updateApiKey,
-    updateLanguage,
     updateVirtualTryOn,
     updateHairStyle,
     updateBackground,
