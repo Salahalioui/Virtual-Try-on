@@ -167,31 +167,30 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile,
             ))}
         </div>
 
-        <div className="flex justify-center bg-zinc-100 p-4 rounded-lg overflow-auto flex-1 min-h-0 max-h-[75vh]">
-          <ReactCrop
-            crop={crop}
-            onChange={(_, percentCrop) => setCrop(percentCrop)}
-            onComplete={(c) => setCompletedCrop(c)}
-            aspect={aspect}
-            minWidth={50}
-            minHeight={50}
-            className="max-h-full"
-            ruleOfThirds
-          >
-            <img
-              ref={imgRef}
-              alt="Crop me"
-              src={imageSrc}
-              onLoad={onImageLoad}
-              style={{ 
-                maxHeight: '100%', 
-                maxWidth: '100%', 
-                height: 'auto',
-                width: 'auto',
-                display: 'block'
-              }}
-            />
-          </ReactCrop>
+        <div className="bg-zinc-100 p-4 rounded-lg overflow-auto flex-1 min-h-0" style={{ maxHeight: '60vh' }}>
+          <div className="flex justify-center">
+            <ReactCrop
+              crop={crop}
+              onChange={(_, percentCrop) => setCrop(percentCrop)}
+              onComplete={(c) => setCompletedCrop(c)}
+              aspect={aspect}
+              minWidth={50}
+              minHeight={50}
+              ruleOfThirds
+            >
+              <img
+                ref={imgRef}
+                alt="Crop me"
+                src={imageSrc}
+                onLoad={onImageLoad}
+                style={{ 
+                  maxWidth: '100%', 
+                  height: 'auto',
+                  display: 'block'
+                }}
+              />
+            </ReactCrop>
+          </div>
         </div>
 
         <div className="mt-6 flex flex-wrap justify-end gap-3 flex-shrink-0">
