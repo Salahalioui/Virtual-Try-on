@@ -22,7 +22,7 @@ const tabs = [
   },
   { 
     id: 'hair-style', 
-    label: 'Hair Style', 
+    label: 'Hair', 
     icon: FiScissors, 
     path: '/hair-style',
     gradient: 'from-blue-500 to-cyan-500',
@@ -59,8 +59,8 @@ const TabNavigation: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe z-50">
-      <div className="flex justify-around items-center py-3 px-2">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe z-50 safe-area-inset-bottom">
+      <div className="flex justify-around items-center py-2 px-1 sm:py-3 sm:px-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = location.pathname === tab.path;
@@ -75,24 +75,24 @@ const TabNavigation: React.FC = () => {
                 console.log('Navigating to:', tab.path);
                 navigate(tab.path);
               }}
-              className={`relative flex flex-col items-center py-3 px-3 rounded-2xl transition-all duration-200 min-w-0 flex-1 max-w-[80px] touch-manipulation ${
+              className={`relative flex flex-col items-center py-2 px-1 sm:py-3 sm:px-2 rounded-xl transition-all duration-200 min-w-0 flex-1 touch-manipulation ${
                 isActive ? 'text-white' : tab.inactiveColor
               }`}
             >
               {isActive && (
                 <div
-                  className={`absolute inset-0 bg-gradient-to-r ${tab.gradient} rounded-2xl pointer-events-none`}
+                  className={`absolute inset-0 bg-gradient-to-r ${tab.gradient} rounded-xl pointer-events-none`}
                 />
               )}
               
               <div className="relative z-10 flex flex-col items-center">
                 <Icon 
-                  size={22} 
-                  className={`mb-1 transition-all duration-200 ${
+                  size={20} 
+                  className={`mb-0.5 sm:mb-1 transition-all duration-200 ${
                     isActive ? 'text-white' : tab.inactiveColor.split(' hover:')[0]
                   }`}
                 />
-                <span className={`text-xs font-medium transition-all duration-200 truncate w-full text-center ${
+                <span className={`text-[10px] sm:text-xs font-medium transition-all duration-200 leading-tight text-center max-w-full overflow-hidden whitespace-nowrap text-ellipsis ${
                   isActive ? 'text-white' : tab.inactiveColor.split(' hover:')[0]
                 }`}>
                   {tab.label}
