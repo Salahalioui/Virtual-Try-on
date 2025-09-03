@@ -7,11 +7,6 @@ import ImageUploader from '../components/ImageUploader';
 import Spinner from '../components/Spinner';
 import { FiScissors, FiDownload, FiTrash2, FiUser } from 'react-icons/fi';
 
-const genderOptions = [
-  { value: 'male', label: 'Male Styles' },
-  { value: 'female', label: 'Female Styles' },
-  { value: 'unisex', label: 'Unisex Styles' }
-];
 
 const popularStyles = {
   male: [
@@ -46,6 +41,12 @@ const HairStylePage: React.FC = () => {
   const { t } = useTranslation('pages');
   const { state, updateHairStyle, saveImage, clearFeatureState } = useAppContext();
   const { hairStyle } = state;
+
+  const genderOptions = [
+    { value: 'male', label: t('hairStyle.gender.male') },
+    { value: 'female', label: t('hairStyle.gender.female') },
+    { value: 'unisex', label: t('hairStyle.gender.unisex') }
+  ];
   
   const [selectedStyle, setSelectedStyle] = useState('');
   const [showStylePicker, setShowStylePicker] = useState(false);
@@ -96,14 +97,14 @@ const HairStylePage: React.FC = () => {
     } catch (error) {
       console.error('Hair styling failed:', error);
       updateHairStyle({ isProcessing: false });
-      alert('Failed to generate hair style. Please try again.');
+      alert(t('hairStyle.errors.generateFailed') || 'Failed to generate hair style. Please try again.');
     }
   }, [hairStyle, selectedStyle, state.apiKey, updateHairStyle]);
 
   const handleSaveImage = () => {
     if (hairStyle.resultImage) {
       saveImage(hairStyle.resultImage);
-      alert('Image saved to your gallery!');
+      alert(t('hairStyle.success.imageSaved') || 'Image saved to your gallery!');
     }
   };
 
@@ -121,8 +122,8 @@ const HairStylePage: React.FC = () => {
     <div className="flex flex-col h-full bg-gray-50 pb-20">
       {/* Header */}
       <div className="bg-white shadow-sm p-4">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Hair & Beard Styling</h1>
-        <p className="text-gray-600">Transform your look with AI-powered hair styling!</p>
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">{t('hairStyle.title')}</h1>
+        <p className="text-gray-600">{t('hairStyle.subtitle')}</p>
       </div>
 
       <div className="flex-1 overflow-auto p-4 space-y-6">
@@ -135,7 +136,7 @@ const HairStylePage: React.FC = () => {
           >
             <ImageUploader
               id="user-photo"
-              label="Your Photo"
+              label={t('hairStyle.sections.yourPhoto')}
               onFileSelect={(file) => {
                 const imageUrl = URL.createObjectURL(file);
                 updateHairStyle({ userPhoto: imageUrl });
@@ -151,7 +152,7 @@ const HairStylePage: React.FC = () => {
           >
             <ImageUploader
               id="hair-style-image"
-              label="Hair Style Reference (Optional)"
+              label={t('hairStyle.sections.hairReference')}
               onFileSelect={(file) => {
                 const imageUrl = URL.createObjectURL(file);
                 updateHairStyle({ hairStyleImage: imageUrl });
@@ -168,12 +169,12 @@ const HairStylePage: React.FC = () => {
           transition={{ delay: 0.3 }}
           className="bg-white rounded-xl p-4 shadow-sm"
         >
-          <h3 className="font-semibold text-gray-800 mb-4">Style Options</h3>
+          <h3 className="font-semibold text-gray-800 mb-4">{t('hairStyle.sections.styleOptions')}</h3>
           
           <div className="space-y-4">
             {/* Gender Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Style Category</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('hairStyle.styleCategory')}</label>
               <select
                 value={hairStyle.selectedGender}
                 onChange={(e) => updateHairStyle({ selectedGender: e.target.value as 'male' | 'female' | 'unisex' })}
@@ -188,12 +189,12 @@ const HairStylePage: React.FC = () => {
             {/* Popular Styles */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-700">Popular Styles</label>
+                <label className="block text-sm font-medium text-gray-700">{t('hairStyle.popularStyles.label')}</label>
                 <button
                   onClick={() => setShowStylePicker(!showStylePicker)}
                   className="text-blue-500 text-sm hover:text-blue-600"
                 >
-                  {showStylePicker ? 'Hide' : 'Show'} Styles
+                  {showStylePicker ? t('hairStyle.popularStyles.hide') : t('hairStyle.popularStyles.show')}
                 </button>
               </div>
               
@@ -217,12 +218,12 @@ const HairStylePage: React.FC = () => {
               
               {selectedStyle && (
                 <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                  <span className="text-sm text-blue-800">Selected: {selectedStyle}</span>
+                  <span className="text-sm text-blue-800">{t('hairStyle.popularStyles.selected')}: {selectedStyle}</span>
                   <button
                     onClick={() => setSelectedStyle('')}
                     className="ml-2 text-blue-600 hover:text-blue-800 text-sm"
                   >
-                    Clear
+                    {t('common.clear') || 'Clear'}
                   </button>
                 </div>
               )}
@@ -230,11 +231,11 @@ const HairStylePage: React.FC = () => {
 
             {/* Custom Prompt */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Custom Description (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('hairStyle.customDescription.label')}</label>
               <textarea
                 value={hairStyle.hairStylePrompt}
                 onChange={(e) => updateHairStyle({ hairStylePrompt: e.target.value })}
-                placeholder="Describe the hairstyle you want... e.g., 'shoulder-length wavy hair with bangs'"
+                placeholder={t('hairStyle.customDescription.placeholder')}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 rows={3}
               />
@@ -257,12 +258,12 @@ const HairStylePage: React.FC = () => {
             {hairStyle.isProcessing ? (
               <>
                 <Spinner />
-                <span>Styling...</span>
+                <span>{t('common.loading.styling') || 'Styling...'}</span>
               </>
             ) : (
               <>
                 <FiScissors size={20} />
-                <span>Apply Style</span>
+                <span>{t('hairStyle.applyStyle') || 'Apply Style'}</span>
               </>
             )}
           </button>
@@ -272,7 +273,7 @@ const HairStylePage: React.FC = () => {
             className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 flex items-center justify-center space-x-2"
           >
             <FiTrash2 size={20} />
-            <span>Clear</span>
+            <span>{t('common.clear') || 'Clear'}</span>
           </button>
         </motion.div>
 
@@ -285,19 +286,19 @@ const HairStylePage: React.FC = () => {
             className="bg-white rounded-xl p-4 shadow-sm"
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-800">Your New Look</h3>
+              <h3 className="font-semibold text-gray-800">{t('hairStyle.sections.result')}</h3>
               <button
                 onClick={handleSaveImage}
                 className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
               >
                 <FiDownload size={16} />
-                <span>Save</span>
+                <span>{t('common.save') || 'Save'}</span>
               </button>
             </div>
             <div className="rounded-lg overflow-hidden">
               <img
                 src={hairStyle.resultImage}
-                alt="Hair styling result"
+                alt={t('hairStyle.resultAlt') || 'Hair styling result'}
                 className="w-full h-auto"
               />
             </div>

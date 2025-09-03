@@ -66,6 +66,7 @@
     "transforming": "Transforming...",
     "uploading": "Uploading...",
     "cropping": "Cropping...",
-    "takeMoment": "This may take a moment..."
+    "takeMoment": "This may take a moment...",
+    "subtitle": "Virtual Styling Assistant"
   }
 }

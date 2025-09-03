@@ -42,7 +42,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       >
         <div className="text-6xl mb-8">✨</div>
         <h1 className="text-4xl font-bold text-white mb-4">{t('loading.loading').includes('...') ? 'StyleAI' : 'ستايل إيه آي'}</h1>
-        <p className="text-xl text-white/80 mb-8">Virtual Styling Assistant</p>
+        <p className="text-xl text-white/80 mb-8">{t('loading.subtitle') || 'Virtual Styling Assistant'}</p>
         
         <motion.div
           animate={{ rotate: 360 }}

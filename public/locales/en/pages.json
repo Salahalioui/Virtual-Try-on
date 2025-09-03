@@ -70,6 +70,42 @@
     "subtitle": "Transform your look with AI-powered hair styling!",
     "sections": {
       "yourPhoto": "Your Photo",
+      "hairReference": "Hair Style Reference (Optional)",
+      "styleOptions": "Style Options",
+      "result": "Your New Look"
+    },
+    "styleCategory": "Style Category",
+    "gender": {
+      "male": "Male Styles",
+      "female": "Female Styles",
+      "unisex": "Unisex Styles"
+    },
+    "popularStyles": {
+      "label": "Popular Styles",
+      "show": "Show",
+      "hide": "Hide",
+      "selected": "Selected"
+    },
+    "customDescription": {
+      "label": "Custom Description (Optional)",
+      "placeholder": "Describe the hairstyle you want... e.g., 'shoulder-length wavy hair with bangs'"
+    },
+    "applyStyle": "Apply Style",
+    "resultAlt": "Hair styling result",
+    "errors": {
+      "uploadPhoto": "Please upload your photo first.",
+      "selectStyle": "Please either upload a hair style image, write a description, or select a popular style.",
+      "generateFailed": "Failed to generate hair style. Please try again."
+    },
+    "success": {
+      "imageSaved": "Image saved to your gallery!"
+    }
+  },
+  "hairStyle": {
+    "title": "Hair & Beard Styling",
+    "subtitle": "Transform your look with AI-powered hair styling!",
+    "sections": {
+      "yourPhoto": "Your Photo",
       "styleReference": "Hair Style Reference (Optional)",
       "styleOptions": "Style Options"
     },
