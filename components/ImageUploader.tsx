@@ -102,11 +102,11 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile,
     const { width, height } = e.currentTarget;
     const newCrop = aspect
       ? centerCrop(
-          makeAspectCrop({ unit: '%', width: 90 }, aspect, width, height),
+          makeAspectCrop({ unit: '%', width: 95 }, aspect, width, height),
           width,
           height
         )
-      : { unit: '%' as 'px', width: 90, height: 90, x: 5, y: 5 };
+      : { unit: '%' as 'px', width: 95, height: 95, x: 2.5, y: 2.5 };
     setCrop(newCrop);
   };
 
@@ -173,15 +173,15 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({ imageSrc, originalFile,
             onChange={(_, percentCrop) => setCrop(percentCrop)}
             onComplete={(c) => setCompletedCrop(c)}
             aspect={aspect}
-            minWidth={100}
-            minHeight={100}
+            minWidth={50}
+            minHeight={50}
           >
             <img
               ref={imgRef}
               alt="Crop me"
               src={imageSrc}
               onLoad={onImageLoad}
-              style={{ maxHeight: '50vh', maxWidth: '100%', objectFit: 'contain' }}
+              style={{ maxHeight: '70vh', maxWidth: '100%', objectFit: 'contain' }}
             />
           </ReactCrop>
         </div>
