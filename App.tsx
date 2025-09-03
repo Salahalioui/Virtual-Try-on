@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AppProvider } from './contexts/AppContext';
 import SplashScreen from './components/SplashScreen';
 import TabNavigation from './components/TabNavigation';
+import HomePage from './pages/HomePage';
 import VirtualTryOnPage from './pages/VirtualTryOnPage';
 import HairStylePage from './pages/HairStylePage';
 import BackgroundPage from './pages/BackgroundPage';
@@ -60,7 +61,7 @@ const App: React.FC = () => {
         <div className="flex flex-col h-screen bg-gray-50">
           <div className="flex-1 overflow-hidden">
             <Routes>
-              <Route path="/" element={<Navigate to="/virtual-tryon" replace />} />
+              <Route path="/" element={<HomePage />} />
               <Route path="/virtual-tryon" element={<VirtualTryOnPage />} />
               <Route path="/hair-style" element={<HairStylePage />} />
               <Route path="/background" element={<BackgroundPage />} />

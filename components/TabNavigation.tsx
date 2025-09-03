@@ -1,9 +1,17 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FiUser, FiScissors, FiImage, FiSettings } from 'react-icons/fi';
+import { FiHome, FiUser, FiScissors, FiImage, FiSettings } from 'react-icons/fi';
 
 const tabs = [
+  { 
+    id: 'home', 
+    label: 'Home', 
+    icon: FiHome, 
+    path: '/',
+    gradient: 'from-indigo-500 to-purple-600',
+    inactiveColor: 'text-indigo-600 hover:text-indigo-700'
+  },
   { 
     id: 'virtual-tryon', 
     label: 'Try On', 
@@ -44,7 +52,7 @@ const TabNavigation: React.FC = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe">
-      <div className="flex justify-around items-center py-2">
+      <div className="flex justify-around items-center py-3 px-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = location.pathname === tab.path;
@@ -54,7 +62,7 @@ const TabNavigation: React.FC = () => {
               key={tab.id}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate(tab.path)}
-              className={`flex flex-col items-center py-2 px-4 rounded-xl transition-all duration-200 ${
+              className={`flex flex-col items-center py-3 px-3 rounded-2xl transition-all duration-200 min-w-0 flex-1 max-w-[80px] ${
                 isActive ? 'text-white' : tab.inactiveColor
               }`}
             >
@@ -70,12 +78,12 @@ const TabNavigation: React.FC = () => {
               
               <div className="relative z-10 flex flex-col items-center">
                 <Icon 
-                  size={24} 
+                  size={22} 
                   className={`mb-1 transition-all duration-200 ${
                     isActive ? 'text-white' : tab.inactiveColor.split(' hover:')[0]
                   }`}
                 />
-                <span className={`text-xs font-medium transition-all duration-200 ${
+                <span className={`text-xs font-medium transition-all duration-200 truncate w-full text-center ${
                   isActive ? 'text-white' : tab.inactiveColor.split(' hover:')[0]
                 }`}>
                   {tab.label}
