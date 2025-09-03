@@ -1,0 +1,202 @@
+(index):64  cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+(anonymous) @ (index):64
+(anonymous) @ (index):64
+chunk-X4QARNC5.js?v=9042a205:8 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+manifest.json:1  Manifest: Enctype should be set to either application/x-www-form-urlencoded or multipart/form-data. It currently defaults to application/x-www-form-urlencoded
+manifest.json:1  Manifest: files are only supported with multipart/form-data POST.
+settings:1  <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+TabNavigation.tsx:67 Navigating to: /
+TabNavigation.tsx:67 Navigating to: /virtual-tryon
+ImageUploader.tsx:251 📁 Processing file: virtual-try-on-1756775703089.jpeg Type: image/jpeg Size: 123429
+ImageUploader.tsx:334 🚀 Starting FileReader.readAsDataURL() on mobile
+ImageUploader.tsx:323 🔄 Starting to read file...
+ImageUploader.tsx:329 📊 File reading progress: 100%
+ImageUploader.tsx:277 📖 FileReader onload triggered on mobile
+ImageUploader.tsx:280 ✅ File read successfully, data URL length: 164595
+ImageUploader.tsx:287 ✅ Valid base64 data detected for mobile
+ImageUploader.tsx:292 ✅ Image set for cropping on mobile
+ImageUploader.tsx:388 ✅ Crop completed, file size: 107779
+ImageUploader.tsx:463 ✅ Image loaded successfully on mobile
+enhancedGeminiService.ts:80 🎽 Starting outfit extraction from user photo...
+enhancedGeminiService.ts:125 🚀 Sending outfit extraction request to Gemini API...
+enhancedGeminiService.ts:127   POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent 400 (Bad Request)
+extractOutfitFromImage @ enhancedGeminiService.ts:127
+await in extractOutfitFromImage
+handleExtractOutfit @ VirtualTryOnPage.tsx:86
+executeDispatch @ react-dom-client.development.js:16368
+runWithFiberInDEV @ react-dom-client.development.js:1519
+processDispatchQueue @ react-dom-client.development.js:16418
+(anonymous) @ react-dom-client.development.js:17016
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16572
+dispatchEvent @ react-dom-client.development.js:20658
+dispatchDiscreteEvent @ react-dom-client.development.js:20626
+<button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+VirtualTryOnPage @ VirtualTryOnPage.tsx:146
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopConcurrentByScheduler @ react-dom-client.development.js:15126
+renderRootConcurrent @ react-dom-client.development.js:15101
+performWorkOnRoot @ react-dom-client.development.js:14418
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+<VirtualTryOnPage>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+App @ App.tsx:65
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopSync @ react-dom-client.development.js:14956
+renderRootSync @ react-dom-client.development.js:14936
+performWorkOnRoot @ react-dom-client.development.js:14419
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+<App>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+(anonymous) @ index.tsx:18
+enhancedGeminiService.ts:141  ❌ API request failed: 400 {
+  "error": {
+    "code": 400,
+    "message": "API key not valid. Please pass a valid API key.",
+    "status": "INVALID_ARGUMENT",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "API_KEY_INVALID",
+        "domain": "googleapis.com",
+        "metadata": {
+          "service": "generativelanguage.googleapis.com"
+        }
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.LocalizedMessage",
+        "locale": "en-US",
+        "message": "API key not valid. Please pass a valid API key."
+      }
+    ]
+  }
+}
+
+extractOutfitFromImage @ enhancedGeminiService.ts:141
+await in extractOutfitFromImage
+handleExtractOutfit @ VirtualTryOnPage.tsx:86
+executeDispatch @ react-dom-client.development.js:16368
+runWithFiberInDEV @ react-dom-client.development.js:1519
+processDispatchQueue @ react-dom-client.development.js:16418
+(anonymous) @ react-dom-client.development.js:17016
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16572
+dispatchEvent @ react-dom-client.development.js:20658
+dispatchDiscreteEvent @ react-dom-client.development.js:20626
+<button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+VirtualTryOnPage @ VirtualTryOnPage.tsx:146
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopConcurrentByScheduler @ react-dom-client.development.js:15126
+renderRootConcurrent @ react-dom-client.development.js:15101
+performWorkOnRoot @ react-dom-client.development.js:14418
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+<VirtualTryOnPage>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+App @ App.tsx:65
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopSync @ react-dom-client.development.js:14956
+renderRootSync @ react-dom-client.development.js:14936
+performWorkOnRoot @ react-dom-client.development.js:14419
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+<App>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+(anonymous) @ index.tsx:18
+enhancedGeminiService.ts:172  ❌ Outfit extraction failed: Error: API request failed: 400 {
+  "error": {
+    "code": 400,
+    "message": "API key not valid. Please pass a valid API key.",
+    "status": "INVALID_ARGUMENT",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "API_KEY_INVALID",
+        "domain": "googleapis.com",
+        "metadata": {
+          "service": "generativelanguage.googleapis.com"
+        }
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.LocalizedMessage",
+        "locale": "en-US",
+        "message": "API key not valid. Please pass a valid API key."
+      }
+    ]
+  }
+}
+
+    at extractOutfitFromImage (enhancedGeminiService.ts:142:13)
+    at async handleExtractOutfit (VirtualTryOnPage.tsx:86:22)
+extractOutfitFromImage @ enhancedGeminiService.ts:172
+await in extractOutfitFromImage
+handleExtractOutfit @ VirtualTryOnPage.tsx:86
+executeDispatch @ react-dom-client.development.js:16368
+runWithFiberInDEV @ react-dom-client.development.js:1519
+processDispatchQueue @ react-dom-client.development.js:16418
+(anonymous) @ react-dom-client.development.js:17016
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16572
+dispatchEvent @ react-dom-client.development.js:20658
+dispatchDiscreteEvent @ react-dom-client.development.js:20626
+<button>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+VirtualTryOnPage @ VirtualTryOnPage.tsx:146
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopConcurrentByScheduler @ react-dom-client.development.js:15126
+renderRootConcurrent @ react-dom-client.development.js:15101
+performWorkOnRoot @ react-dom-client.development.js:14418
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+<VirtualTryOnPage>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+App @ App.tsx:65
+react_stack_bottom_frame @ react-dom-client.development.js:23863
+renderWithHooksAgain @ react-dom-client.development.js:5629
+renderWithHooks @ react-dom-client.development.js:5541
+updateFunctionComponent @ react-dom-client.development.js:8897
+beginWork @ react-dom-client.development.js:10522
+runWithFiberInDEV @ react-dom-client.development.js:1519
+performUnitOfWork @ react-dom-client.development.js:15140
+workLoopSync @ react-dom-client.development.js:14956
+renderRootSync @ react-dom-client.development.js:14936
+performWorkOnRoot @ react-dom-client.development.js:14419
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16216
+performWorkUntilDeadline @ scheduler.development.js:45
+<App>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+(anonymous) @ index.tsx:18
