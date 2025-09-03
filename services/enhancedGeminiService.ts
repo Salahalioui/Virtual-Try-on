@@ -122,17 +122,36 @@ Focus only on the main clothing items visible on the person. Ignore accessories 
       }]
     };
 
-    console.log('🚀 Sending outfit extraction request to Gemini API...');
+    console.log('🚀 Sending outfit extraction request to OpenRouter API...');
 
     const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent',
+      'https://openrouter.ai/api/v1/chat/completions',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': window.location.href,
+          'X-Title': 'StyleAI Virtual Try-On'
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash-image-preview',
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'text', text: extractionPrompt },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:${mimeType};base64,${base64Image}`
+                }
+              }
+            ]
+          }],
+          modalities: ["image", "text"],
+          max_tokens: 1000,
+          temperature: 0.7
+        })
       }
     );
 
@@ -143,26 +162,26 @@ Focus only on the main clothing items visible on the person. Ignore accessories 
     }
 
     const result = await response.json();
-    console.log('📦 Received response from Gemini API');
+    console.log('📦 Received response from OpenRouter API');
 
-    // Extract the generated image
-    if (result.candidates && result.candidates[0] && result.candidates[0].content && result.candidates[0].content.parts) {
-      for (const part of result.candidates[0].content.parts) {
-        if (part.inline_data && part.inline_data.data) {
-          // Convert base64 to data URL
-          const extractedOutfitUrl = `data:${part.inline_data.mime_type || 'image/png'};base64,${part.inline_data.data}`;
-          
-          console.log('✅ Successfully extracted outfit from photo!');
-          return {
-            success: true,
-            extractedOutfit: extractedOutfitUrl,
-            message: 'Outfit successfully extracted from your photo! You can now use it for virtual try-on.'
-          };
-        }
+    // Extract the generated image from OpenRouter response format
+    if (result.choices && result.choices[0] && result.choices[0].message) {
+      const message = result.choices[0].message;
+      
+      // Check for images in the response
+      if (message.images && message.images.length > 0) {
+        const imageData = message.images[0].image_url.url;
         
-        if (part.text) {
-          console.log('📝 Gemini response text:', part.text);
-        }
+        console.log('✅ Successfully extracted outfit from photo!');
+        return {
+          success: true,
+          extractedOutfit: imageData, // Already a data URL
+          message: 'Outfit successfully extracted from your photo! You can now use it for virtual try-on.'
+        };
+      }
+      
+      if (message.content) {
+        console.log('📝 OpenRouter response text:', message.content);
       }
     }
 
