@@ -1,8 +1,8 @@
-# Virtual Try-On App
+# StyleAI - Virtual Styling Assistant
 
 ## Overview
 
-Virtual Try-On is a React-based AI application that allows users to upload their photo and an outfit image to generate photorealistic try-on visualizations. The app uses OpenRouter to access Google's Gemini 2.5 Flash Image Preview model, creating realistic clothing overlays on user photos, supporting different body types and providing an interactive virtual dressing room experience.
+StyleAI is a comprehensive mobile-first React application that provides AI-powered styling services. The app features multiple tabs for different styling needs: Virtual Try-On for clothing visualization, Hair & Beard Styling for hairstyle transformations, and Background Changer for environment modifications. Built with modern web technologies and powered by Google's Gemini 2.5 Flash Image Preview model via OpenRouter API.
 
 ## User Preferences
 
@@ -12,28 +12,42 @@ Preferred communication style: Simple, everyday language.
 
 ### Frontend Architecture
 - **Framework**: React 19 with TypeScript
+- **Routing**: React Router DOM for multi-page navigation and tab management
 - **Styling**: Tailwind CSS for responsive design and modern UI components
+- **Animations**: Framer Motion for smooth transitions and interactive elements
 - **Build Tool**: Vite for fast development and optimized production builds
-- **State Management**: React hooks (useState, useCallback, useEffect) for local component state
+- **State Management**: Context API for global state management across all tabs
 - **Image Processing**: React Image Crop library for user photo cropping functionality
 
 ### Component Structure
-- **App.tsx**: Main application component managing global state and orchestrating the try-on workflow
-- **Header.tsx**: Application title and description display
-- **ImageUploader.tsx**: Handles file uploads with drag-and-drop functionality and image cropping
-- **ProductSelector.tsx**: Scrollable gallery for outfit selection
-- **Spinner.tsx**: Loading indicator during AI processing
-- **Modal Components**: AddProductModal and DebugModal for enhanced user interactions
+**Core Components:**
+- **App.tsx**: Main application component with routing and splash screen management
+- **SplashScreen.tsx**: Loading screen with branding and initialization animations
+- **TabNavigation.tsx**: Mobile-first bottom navigation with animated tab switching
+- **ImageUploader.tsx**: Enhanced file upload component with drag-and-drop and cropping
+
+**Page Components:**
+- **VirtualTryOnPage.tsx**: Complete virtual try-on experience with multiple angles and outfit extraction
+- **HairStylePage.tsx**: Hair and beard styling with preset styles and custom prompts  
+- **BackgroundPage.tsx**: Background replacement with automatic and manual placement options
+- **SettingsPage.tsx**: API key management and user preferences
+
+**Context & State:**
+- **AppContext.tsx**: Global state management for all features and user data
 
 ### AI Integration
-- **Service Layer**: Dedicated geminiService.ts for AI model integration via OpenRouter
-- **Primary Method**: OpenRouter API as the main pathway to Google's Gemini 2.5 Flash Image Preview model
-- **Image Processing Pipeline**: 
-  - Automatic image dimension detection and aspect ratio preservation
-  - Square padding for consistent AI input format
-  - Post-processing to crop results back to original aspect ratios
-- **Body Type Support**: Configurable body build options (Slim, Athletic, Average, Curvy, Plus Size)
-- **Progressive Loading**: Multi-stage loading messages to enhance user experience
+- **Original Service**: geminiService.ts for core AI model integration via OpenRouter
+- **Enhanced Service**: enhancedGeminiService.ts for multi-feature support (virtual try-on, hair styling, background changes)
+- **Primary Model**: Google's Gemini 2.5 Flash Image Preview via OpenRouter API
+- **Multi-Feature Support**:
+  - Virtual Try-On with multiple angle views (front, side, 3/4, back)
+  - Hair & Beard Styling with gender-specific presets and custom descriptions
+  - Background Replacement with automatic placement and custom prompts
+  - Outfit Extraction (placeholder for future cloth segmentation)
+- **Enhanced Features**:
+  - Natural language editing prompts for fine-tuning results
+  - Progressive loading with contextual messages for each feature
+  - Body type support for virtual try-on accuracy
 
 ### Data Flow
 - **File Handling**: Browser File API for image uploads and processing
@@ -45,8 +59,11 @@ Preferred communication style: Simple, everyday language.
 
 ### Core Libraries
 - **React & React DOM**: Frontend framework and rendering (v19.1.0)
+- **React Router DOM**: Client-side routing for multi-page navigation
 - **TypeScript**: Type safety and enhanced developer experience (v5.8.2)
 - **Vite**: Development server and build tooling (v6.2.0)
+- **Framer Motion**: Animation library for smooth transitions and interactions
+- **React Icons**: Icon library for consistent UI elements
 
 ### AI Services
 - **OpenRouter**: API gateway for accessing Google's Gemini 2.5 Flash Image Preview model

@@ -3,632 +3,74 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { generateTryOnImage } from './services/geminiService';
-import Header from './components/Header';
-import ImageUploader from './components/ImageUploader';
-import Spinner from './components/Spinner';
-import SettingsModal from './components/SettingsModal';
-import MobileConsole from './components/MobileConsole';
-import ColorPicker from './components/ColorPicker';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AppProvider } from './contexts/AppContext';
+import SplashScreen from './components/SplashScreen';
+import TabNavigation from './components/TabNavigation';
+import VirtualTryOnPage from './pages/VirtualTryOnPage';
+import HairStylePage from './pages/HairStylePage';
+import BackgroundPage from './pages/BackgroundPage';
+import SettingsPage from './pages/SettingsPage';
 import LandingScreen from './components/LandingScreen';
-import LearnMoreScreen from './components/LearnMoreScreen';
-
-const loadingMessages = [
-    "Warming up the virtual dressing room...",
-    "Tailoring the fit...",
-    "Matching the lighting and shadows...",
-    "Applying the final touches...",
-    "Almost ready for your reveal!",
-];
-
-const bodyBuildOptions = ['Slim', 'Athletic', 'Average', 'Curvy', 'Plus Size'];
 
 const App: React.FC = () => {
-  const [showLanding, setShowLanding] = useState<boolean>(true);
-  const [showLearnMore, setShowLearnMore] = useState<boolean>(false);
-  const [subjectImageFile, setSubjectImageFile] = useState<File | null>(null);
-  const [outfitImageFile, setOutfitImageFile] = useState<File | null>(null);
-  const [bodyBuild, setBodyBuild] = useState<string>(bodyBuildOptions[2]); // Default to 'Average'
-  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
-  const [showSettings, setShowSettings] = useState<boolean>(false);
-  const [openRouterApiKey, setOpenRouterApiKey] = useState<string>('');
-  const [isPWAInstallable, setIsPWAInstallable] = useState<boolean>(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [loadingStartTime, setLoadingStartTime] = useState<number | null>(null);
+  const [showSplash, setShowSplash] = useState<boolean>(true);
+  const [showLanding, setShowLanding] = useState<boolean>(false);
 
-  const subjectImageUrl = useMemo(() => {
-    if (subjectImageFile) {
-      try {
-        const url = URL.createObjectURL(subjectImageFile);
-        console.log('📸 Created subject image URL:', url.substring(0, 50) + '...');
-        return url;
-      } catch (error) {
-        console.error('❌ Error creating subject image URL:', error);
-        return null;
-      }
+  useEffect(() => {
+    // Check if this is the first visit
+    const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
+    
+    if (!hasVisitedBefore) {
+      localStorage.setItem('hasVisitedBefore', 'true');
+      setShowLanding(true);
+    } else {
+      setShowLanding(false);
     }
-    return null;
-  }, [subjectImageFile]);
+  }, []);
 
-  const outfitImageUrl = useMemo(() => {
-    if (outfitImageFile) {
-      try {
-        const url = URL.createObjectURL(outfitImageFile);
-        console.log('👕 Created outfit image URL:', url.substring(0, 50) + '...');
-        return url;
-      } catch (error) {
-        console.error('❌ Error creating outfit image URL:', error);
-        return null;
-      }
-    }
-    return null;
-  }, [outfitImageFile]);
-
-  const handleGenerateTryOn = useCallback(async () => {
-    if (!subjectImageFile || !outfitImageFile) {
-      setError('Please upload both a subject photo and an outfit image.');
-      return;
-    }
-    setIsLoading(true);
-    setLoadingStartTime(Date.now());
-    setError(null);
-    try {
-      const { finalImageUrl } = await generateTryOnImage(
-        subjectImageFile, 
-        outfitImageFile, 
-        bodyBuild,
-        selectedColor || undefined,
-        openRouterApiKey || undefined
-      );
-      setGeneratedImageUrl(finalImageUrl);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-      console.error('Try-on generation error:', err);
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [subjectImageFile, outfitImageFile, bodyBuild, selectedColor, openRouterApiKey]);
-
-  const handleDownload = () => {
-    if (!generatedImageUrl) return;
-    const link = document.createElement('a');
-    link.href = generatedImageUrl;
-    link.download = `virtual-try-on-${Date.now()}.jpeg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleSplashComplete = () => {
+    setShowSplash(false);
   };
 
-  const handleReset = useCallback(() => {
-    setSubjectImageFile(null);
-    setOutfitImageFile(null);
-    setGeneratedImageUrl(null);
-    setError(null);
-    setIsLoading(false);
-    setBodyBuild(bodyBuildOptions[2]);
-    setSelectedColor(null);
-  }, []);
-
-  const handleColorSelect = useCallback((color: string) => {
-    setSelectedColor(color);
-    console.log('🎨 Color selected for outfit recoloring:', color);
-  }, []);
-
-  const handleOpenColorPicker = useCallback(() => {
-    setShowColorPicker(true);
-  }, []);
-
-  const handleCloseColorPicker = useCallback(() => {
-    setShowColorPicker(false);
-  }, []);
-
-  const resetColorSelection = useCallback(() => {
-    setSelectedColor(null);
-  }, []);
-
-  const handleApiKeyChange = useCallback((openRouterApiKey: string) => {
-    console.log('📝 OpenRouter API key changed, length:', openRouterApiKey.length);
-    setOpenRouterApiKey(openRouterApiKey);
-    
-    if (openRouterApiKey) {
-      localStorage.setItem('openrouter-api-key', openRouterApiKey);
-      console.log('💾 OpenRouter API key saved to localStorage');
-    } else {
-      localStorage.removeItem('openrouter-api-key');
-      console.log('🗑️ OpenRouter API key removed from localStorage');
-    }
-  }, []);
-
-  const handleInstallPWA = useCallback(() => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult: any) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the install prompt');
-        }
-        setDeferredPrompt(null);
-        setIsPWAInstallable(false);
-      });
-    }
-  }, [deferredPrompt]);
-
-  const handleChangeOutfit = useCallback(() => {
-    setOutfitImageFile(null);
-    setGeneratedImageUrl(null); // Allow new generation
-  }, []);
-  
-  const handleChangeSubject = useCallback(() => {
-    setSubjectImageFile(null);
-    setGeneratedImageUrl(null); // Allow new generation
-  }, []);
-
-  const handleEnterApp = useCallback(() => {
+  const handleEnterApp = () => {
     setShowLanding(false);
-    setShowLearnMore(false);
-  }, []);
-
-  const handleShowLearnMore = useCallback(() => {
-    setShowLanding(false);
-    setShowLearnMore(true);
-  }, []);
-
-  const handleBackToLanding = useCallback(() => {
-    setShowLanding(true);
-    setShowLearnMore(false);
-  }, []);
-
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval> | undefined;
-    if (isLoading) {
-      setLoadingMessageIndex(0); // Reset on start
-      interval = setInterval(() => {
-        setLoadingMessageIndex(prevIndex => (prevIndex + 1) % loadingMessages.length);
-      }, 3000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isLoading]);
-  
-  // PWA Installation handling
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e: any) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setIsPWAInstallable(true);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(() => console.log('Service Worker registered'))
-        .catch((error) => console.log('Service Worker registration failed:', error));
-    }
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
-  }, []);
-
-  // Load OpenRouter API key from localStorage
-  useEffect(() => {
-    const savedOpenRouterApiKey = localStorage.getItem('openrouter-api-key');
-    
-    if (savedOpenRouterApiKey) {
-      console.log('🔄 Loading saved OpenRouter API key from localStorage (length:', savedOpenRouterApiKey.length, 'chars)');
-      setOpenRouterApiKey(savedOpenRouterApiKey);
-    } else {
-      console.log('🔄 No OpenRouter API key found in localStorage');
-    }
-  }, []);
-
-  useEffect(() => {
-    return () => {
-        if (subjectImageUrl) URL.revokeObjectURL(subjectImageUrl);
-        if (outfitImageUrl) URL.revokeObjectURL(outfitImageUrl);
-    };
-  }, [subjectImageUrl, outfitImageUrl]);
-
-
-  const renderContent = () => {
-    if (error) {
-        // Check if it's a rate limit error
-        const isRateLimit = error.includes('rate limit') || error.includes('quota') || error.includes('exceeded');
-        const isQuotaExceeded = error.includes('daily') || error.includes('quota');
-        
-       return (
-           <div className="text-center animate-fade-in max-w-3xl mx-auto px-4">
-            <div className={`${isRateLimit ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200'} border p-6 sm:p-8 rounded-2xl shadow-lg`}>
-                <div className={`w-16 h-16 mx-auto mb-4 ${isRateLimit ? 'bg-amber-100' : 'bg-red-100'} rounded-full flex items-center justify-center`}>
-                    {isRateLimit ? (
-                        <svg className="w-8 h-8 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                        </svg>
-                    ) : (
-                        <svg className="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                    )}
-                </div>
-                
-                {isRateLimit ? (
-                    <>
-                        <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-amber-800">
-                            {isQuotaExceeded ? '⏰ Daily Limit Reached' : '🚦 Rate Limit Reached'}
-                        </h2>
-                        <p className="text-base sm:text-lg text-amber-700 mb-6 leading-relaxed">{error}</p>
-                        
-                        <div className="bg-white rounded-xl p-4 mb-6 border border-amber-200">
-                            <h3 className="font-semibold text-amber-800 mb-3">📊 API Rate Limits:</h3>
-                            <div className="space-y-3">
-                                <div>
-                                    <p className="font-medium text-gray-800 mb-2">Gemini API Free Tier:</p>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
-                                        <div className="flex items-center space-x-2">
-                                            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                                            <span>5 requests per minute</span>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                                            <span>25 requests per day</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                {openRouterApiKey && (
-                                    <div className="border-t border-gray-200 pt-3">
-                                        <p className="font-medium text-gray-800 mb-2">OpenRouter Fallback:</p>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
-                                            <div className="flex items-center space-x-2">
-                                                <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
-                                                <span>20 requests per minute</span>
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                                                <span>50-1000 requests per day</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                            <p className="text-xs text-gray-500 mt-2">Resets at midnight Pacific Time</p>
-                        </div>
-                        
-                        <div className="space-y-3">
-                            <button
-                                onClick={handleReset}
-                                className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-6 sm:px-8 rounded-xl text-base sm:text-lg transition-all duration-200 shadow-md hover:shadow-lg"
-                            >
-                                🔄 Try Again Later
-                            </button>
-                            <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                                {!openRouterApiKey && (
-                                    <button
-                                        onClick={() => setShowSettings(true)}
-                                        className="text-orange-600 hover:text-orange-700 text-sm font-medium transition-colors"
-                                    >
-                                        🔄 Set up OpenRouter Fallback
-                                    </button>
-                                )}
-                                <a 
-                                    href="https://ai.google.dev/pricing" 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
-                                >
-                                    💳 Upgrade Gemini API Plan
-                                </a>
-                            </div>
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <div className="w-16 h-16 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
-                            <span className="text-3xl">⚠️</span>
-                        </div>
-                        <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-red-800">Something Went Wrong</h2>
-                        <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-6">
-                            <h4 className="font-semibold text-red-700 mb-2">Error Details:</h4>
-                            <p className="text-base text-red-600 leading-relaxed">{error}</p>
-                        </div>
-                        <div className="space-y-3">
-                            <button
-                                onClick={handleReset}
-                                className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-                            >
-                                🔄 Try Again
-                            </button>
-                            <div className="flex flex-col sm:flex-row gap-3 justify-center text-sm">
-                                <button
-                                    onClick={() => setShowSettings(true)}
-                                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
-                                >
-                                    ⚙️ Check Settings
-                                </button>
-                                <button
-                                    onClick={() => window.location.reload()}
-                                    className="text-gray-600 hover:text-gray-700 font-medium transition-colors"
-                                >
-                                    🔄 Refresh Page
-                                </button>
-                            </div>
-                        </div>
-                    </>
-                )}
-            </div>
-          </div>
-        );
-    }
-
-    if (isLoading) {
-        const estimatedProgress = Math.min(((Date.now() - (loadingStartTime || Date.now())) / 30000) * 100, 95);
-        return (
-            <div className="text-center animate-fade-in w-full max-w-2xl mx-auto px-4">
-                <div className="bg-white rounded-3xl shadow-2xl p-8 sm:p-12 border border-gray-100">
-                    <div className="mb-8">
-                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">✨ Creating Your Virtual Try-On</h2>
-                        <p className="text-gray-600">Our AI is working its magic...</p>
-                    </div>
-                    
-                    <Spinner showProgress={true} progress={Math.round(estimatedProgress)} />
-                    
-                    <div className="mt-8 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100">
-                        <p className="text-lg font-medium text-gray-700 mb-3">{loadingMessages[loadingMessageIndex]}</p>
-                        <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                            <span>Processing with AI</span>
-                            <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                        </div>
-                    </div>
-                    
-                    <div className="mt-6 text-sm text-gray-500">
-                        <p>This typically takes 10-30 seconds</p>
-                        <p className="mt-1">Please keep this tab open</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (generatedImageUrl) {
-        return (
-            <div className="w-full max-w-4xl mx-auto animate-fade-in text-center px-4">
-                <div className="mb-6">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">✨ Your Virtual Try-On</h2>
-                    <p className="text-gray-600">Looking amazing! Here's your AI-generated result</p>
-                </div>
-                <div className="bg-white rounded-2xl overflow-hidden shadow-xl border border-gray-200 mb-8">
-                    <img src={generatedImageUrl} alt="Generated virtual try-on" className="w-full h-full object-contain" />
-                </div>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                    <button onClick={handleDownload} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-4 rounded-xl text-sm sm:text-base transition-all duration-200 shadow-md hover:shadow-lg col-span-2 lg:col-span-1">
-                        📥 Download
-                    </button>
-                    <button onClick={handleChangeOutfit} className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-xl text-sm sm:text-base transition-all duration-200 shadow-md hover:shadow-lg">
-                        👗 New Outfit
-                    </button>
-                     <button onClick={handleChangeSubject} className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-4 rounded-xl text-sm sm:text-base transition-all duration-200 shadow-md hover:shadow-lg">
-                        📷 New Photo
-                    </button>
-                    <button onClick={handleReset} className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-xl text-sm sm:text-base transition-all duration-200">
-                        🔄 Start Over
-                    </button>
-                </div>
-            </div>
-        )
-    }
-    
-    if (subjectImageFile && outfitImageFile) {
-        return (
-            <div className="w-full max-w-6xl mx-auto animate-fade-in px-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                     <div className="space-y-4">
-                        <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-800">Your Photo</h2>
-                        <ImageUploader 
-                            id="subject-uploader"
-                            onFileSelect={setSubjectImageFile}
-                            imageUrl={subjectImageUrl}
-                        />
-                         <div className="text-center">
-                             <button onClick={handleChangeSubject} className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors">Change Photo</button>
-                         </div>
-                     </div>
-                     <div className="space-y-4">
-                        <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-800">The Outfit</h2>
-                        <ImageUploader 
-                            id="outfit-uploader"
-                            onFileSelect={setOutfitImageFile}
-                            imageUrl={outfitImageUrl}
-                        />
-                        <div className="text-center">
-                            <button onClick={handleChangeOutfit} className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors">Change Outfit</button>
-                        </div>
-                     </div>
-                </div>
-
-                <div className="mt-8 lg:mt-12 space-y-6">
-                    {/* Color Picker Section */}
-                    <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 rounded-2xl p-6 sm:p-8 border border-purple-200/50 shadow-lg">
-                        <div className="text-center mb-6">
-                            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-xl">🎨</span>
-                            </div>
-                            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Color Customization</h3>
-                            <p className="text-sm sm:text-base text-gray-600">Pick a color from your photo to recolor the outfit</p>
-                        </div>
-                        
-                        <div className="flex items-center justify-center gap-4 flex-wrap">
-                            <button
-                                onClick={handleOpenColorPicker}
-                                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-                            >
-                                👁️ Pick a Color
-                            </button>
-                            
-                            {selectedColor && (
-                                <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm border">
-                                    <div 
-                                        className="w-6 h-6 rounded border-2 border-gray-300 shadow-sm"
-                                        style={{ backgroundColor: selectedColor }}
-                                    />
-                                    <span className="font-mono text-sm text-gray-700">{selectedColor}</span>
-                                    <button
-                                        onClick={resetColorSelection}
-                                        className="text-gray-400 hover:text-red-500 transition-colors ml-1"
-                                        title="Remove color selection"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                        
-                        {selectedColor && (
-                            <p className="text-xs text-center text-gray-500 mt-2">
-                                The AI will recolor the outfit to match this color
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200 shadow-md">
-                        <div className="text-center mb-6">
-                            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-xl">👤</span>
-                            </div>
-                            <label htmlFor="body-build-select" className="block text-xl sm:text-2xl font-bold text-gray-800 mb-2">
-                                Select Your Body Build
-                            </label>
-                            <p className="text-sm text-gray-600">Choose the option that best matches your body type</p>
-                        </div>
-                        <select
-                            id="body-build-select"
-                            value={bodyBuild}
-                            onChange={(e) => setBodyBuild(e.target.value)}
-                            className="bg-gradient-to-r from-gray-50 to-white border-2 border-gray-300 text-gray-900 text-lg font-medium rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 block w-full max-w-sm mx-auto px-6 py-4 shadow-lg transition-all hover:shadow-xl"
-                        >
-                            {bodyBuildOptions.map(option => (
-                                <option key={option} value={option}>{option}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="text-center">
-                        <button
-                            onClick={handleGenerateTryOn}
-                            className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white font-black py-5 px-10 sm:px-16 rounded-2xl text-xl sm:text-2xl transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-110 hover:-translate-y-1 relative overflow-hidden group"
-                        >
-                            <span className="relative z-10">✨ Try It On!</span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-yellow-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                        </button>
-                        <p className="text-sm text-gray-500 mt-4">Ready to see the magic? Click to generate your virtual try-on!</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="w-full max-w-7xl mx-auto animate-fade-in px-3 sm:px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
-            <div className="space-y-4 sm:space-y-6">
-              <div className="flex items-center justify-center space-x-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full flex items-center justify-center text-sm sm:text-base font-bold shadow-lg">1</div>
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Upload Your Photo</h2>
-              </div>
-              <ImageUploader 
-                id="subject-uploader"
-                onFileSelect={setSubjectImageFile}
-                imageUrl={subjectImageUrl}
-              />
-            </div>
-            <div className="space-y-4 sm:space-y-6">
-              <div className="flex items-center justify-center space-x-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-full flex items-center justify-center text-sm sm:text-base font-bold shadow-lg">2</div>
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Upload The Outfit</h2>
-              </div>
-              <ImageUploader 
-                id="outfit-uploader"
-                onFileSelect={setOutfitImageFile}
-                imageUrl={outfitImageUrl}
-              />
-            </div>
-          </div>
-          <div className="text-center mt-8 lg:mt-12 min-h-[4rem] flex flex-col justify-center items-center space-y-4">
-            <div className="max-w-md mx-auto">
-              <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
-                Upload a photo of yourself and a photo of an outfit to get started
-              </p>
-              <div className="mt-4 flex justify-center space-x-6 text-sm text-gray-500">
-                <div className="flex items-center space-x-1">
-                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  <span>AI Ready</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-                  </svg>
-                  <span>Secure</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-    );
   };
-  
-  // Show landing screen first
+
+  // Show splash screen first
+  if (showSplash) {
+    return <SplashScreen onComplete={handleSplashComplete} />;
+  }
+
+  // Show landing screen for first-time users
   if (showLanding) {
-    return <LandingScreen onEnterApp={handleEnterApp} onLearnMore={handleShowLearnMore} />;
+    return (
+      <LandingScreen 
+        onEnterApp={handleEnterApp}
+        onLearnMore={() => {}} // We can implement this later if needed
+      />
+    );
   }
 
-  if (showLearnMore) {
-    return <LearnMoreScreen onBackToLanding={handleBackToLanding} onEnterApp={handleEnterApp} />;
-  }
-
+  // Main app with routing
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 text-gray-800">
-      <div className="flex flex-col min-h-screen">
-        <Header 
-          onOpenSettings={() => setShowSettings(true)}
-          onInstallPWA={handleInstallPWA}
-          showInstallButton={isPWAInstallable}
-          hasOpenRouterApiKey={!!openRouterApiKey}
-        />
-        <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-          <div className="w-full">
-            {renderContent()}
+    <AppProvider>
+      <Router>
+        <div className="flex flex-col h-screen bg-gray-50">
+          <div className="flex-1 overflow-hidden">
+            <Routes>
+              <Route path="/" element={<Navigate to="/virtual-tryon" replace />} />
+              <Route path="/virtual-tryon" element={<VirtualTryOnPage />} />
+              <Route path="/hair-style" element={<HairStylePage />} />
+              <Route path="/background" element={<BackgroundPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Routes>
           </div>
-        </main>
-        
-        <SettingsModal
-          isOpen={showSettings}
-          onClose={() => setShowSettings(false)}
-          onApiKeyChange={handleApiKeyChange}
-          currentOpenRouterApiKey={openRouterApiKey}
-        />
-        
-        <MobileConsole />
-        
-        {/* Color Picker Modal */}
-        {showColorPicker && subjectImageFile && (
-          <ColorPicker
-            imageFile={subjectImageFile}
-            onColorSelect={handleColorSelect}
-            onClose={handleCloseColorPicker}
-          />
-        )}
-      </div>
-    </div>
+          <TabNavigation />
+        </div>
+      </Router>
+    </AppProvider>
   );
 };
 
