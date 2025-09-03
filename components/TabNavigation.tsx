@@ -51,7 +51,7 @@ const TabNavigation: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe z-50">
       <div className="flex justify-around items-center py-3 px-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -61,18 +61,19 @@ const TabNavigation: React.FC = () => {
             <motion.button
               key={tab.id}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate(tab.path)}
-              className={`flex flex-col items-center py-3 px-3 rounded-2xl transition-all duration-200 min-w-0 flex-1 max-w-[80px] ${
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Navigating to:', tab.path);
+                navigate(tab.path);
+              }}
+              className={`relative flex flex-col items-center py-3 px-3 rounded-2xl transition-all duration-200 min-w-0 flex-1 max-w-[80px] touch-manipulation ${
                 isActive ? 'text-white' : tab.inactiveColor
               }`}
             >
               {isActive && (
-                <motion.div
-                  layoutId="activeTab"
-                  className={`absolute inset-0 bg-gradient-to-r ${tab.gradient} rounded-xl`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.2 }}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-r ${tab.gradient} rounded-2xl pointer-events-none`}
                 />
               )}
               
