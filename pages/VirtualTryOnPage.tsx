@@ -100,6 +100,13 @@ const VirtualTryOnPage: React.FC = () => {
     }
   };
 
+  const handleSaveExtractedOutfit = () => {
+    if (virtualTryOn.outfitImage && virtualTryOn.outfitImage.startsWith('data:image')) {
+      saveImage(virtualTryOn.outfitImage);
+      alert('✅ Extracted outfit saved to your gallery!');
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-gray-50 pb-20">
       {/* Header */}
@@ -142,14 +149,22 @@ const VirtualTryOnPage: React.FC = () => {
                 }}
                 imageUrl={virtualTryOn.outfitImage}
               />
-              <div className="text-center">
+              <div className="text-center space-y-2">
                 <button
                   onClick={handleExtractOutfit}
-                  className="text-sm px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+                  className="text-sm px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors block w-full"
                   disabled={!virtualTryOn.subjectImage}
                 >
                   Extract Outfit from My Photo
                 </button>
+                {virtualTryOn.outfitImage && virtualTryOn.outfitImage.startsWith('data:image') && (
+                  <button
+                    onClick={handleSaveExtractedOutfit}
+                    className="text-sm px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors block w-full"
+                  >
+                    💾 Save Extracted Outfit
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>

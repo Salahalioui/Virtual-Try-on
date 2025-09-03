@@ -162,7 +162,7 @@ Focus only on the main clothing items visible on the person. Ignore accessories 
     }
 
     const result = await response.json();
-    console.log('📦 Received response from OpenRouter API');
+    console.log('📦 Received response from OpenRouter API:', JSON.stringify(result, null, 2));
 
     // Extract the generated image from OpenRouter response format
     if (result.choices && result.choices[0] && result.choices[0].message) {
@@ -176,6 +176,16 @@ Focus only on the main clothing items visible on the person. Ignore accessories 
         return {
           success: true,
           extractedOutfit: imageData, // Already a data URL
+          message: 'Outfit successfully extracted from your photo! You can now use it for virtual try-on.'
+        };
+      }
+      
+      // Also check if content contains image data (alternative format)
+      if (message.content && typeof message.content === 'string' && message.content.includes('data:image')) {
+        console.log('✅ Found image in content field!');
+        return {
+          success: true,
+          extractedOutfit: message.content,
           message: 'Outfit successfully extracted from your photo! You can now use it for virtual try-on.'
         };
       }
