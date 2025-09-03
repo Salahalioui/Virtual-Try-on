@@ -81,9 +81,13 @@ const HairStylePage: React.FC = () => {
       const result = await generateEnhancedImage(
         hairStyle.userPhoto,
         hairStyle.hairStyleImage,
-        prompt,
+        hairStyle.hairStylePrompt,
         'hair-style',
-        state.apiKey
+        state.apiKey,
+        {
+          gender: hairStyle.selectedGender,
+          styleDescription: selectedStyle || hairStyle.hairStylePrompt
+        }
       );
 
       updateHairStyle({ resultImage: result, isProcessing: false });

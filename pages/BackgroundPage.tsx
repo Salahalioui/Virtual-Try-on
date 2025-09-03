@@ -71,9 +71,14 @@ const BackgroundPage: React.FC = () => {
       const result = await generateEnhancedImage(
         background.userPhoto,
         background.backgroundImage,
-        prompt,
+        background.backgroundPrompt,
         'background',
-        state.apiKey
+        state.apiKey,
+        {
+          backgroundDescription: selectedPreset || background.backgroundPrompt || 'a beautiful setting',
+          placementMode: background.placementMode,
+          placementInstructions: placementPrompt
+        }
       );
 
       updateBackground({ resultImage: result, isProcessing: false });

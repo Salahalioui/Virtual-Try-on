@@ -4,6 +4,7 @@
  */
 
 import { generateTryOnImage as originalGenerateImage } from './geminiService';
+import { generateOptimizedImage } from './optimizedGeminiService';
 
 // Enhanced service function that works with image URLs instead of Files
 export const generateEnhancedImage = async (
@@ -11,26 +12,50 @@ export const generateEnhancedImage = async (
   referenceImageUrl: string | null,
   prompt: string,
   feature: 'virtual-tryon' | 'hair-style' | 'background',
-  apiKey: string
+  apiKey: string,
+  options: {
+    angle?: string;
+    bodyBuild?: string;
+    gender?: string;
+    styleDescription?: string;
+    backgroundDescription?: string;
+    placementMode?: 'auto' | 'manual';
+    placementInstructions?: string;
+  } = {}
 ): Promise<string> => {
   try {
-    // Convert image URLs back to Files for the original service
-    const userFile = await urlToFile(userImageUrl, 'user-image.jpg');
-    const referenceFile = referenceImageUrl ? await urlToFile(referenceImageUrl, 'reference-image.jpg') : new File([''], 'empty.jpg', { type: 'image/jpeg' });
-    
-    // Call the original service with appropriate parameters
-    const result = await originalGenerateImage(
-      userFile,
-      referenceFile,
-      'Average', // bodyBuild - can be made configurable
-      undefined, // selectedColor
+    // Use optimized service with best practices prompts
+    return await generateOptimizedImage(
+      userImageUrl,
+      referenceImageUrl,
+      feature,
+      {
+        ...options,
+        customPrompt: prompt // Use the provided prompt as additional instructions
+      },
       apiKey
     );
-
-    return result.finalImageUrl;
   } catch (error) {
-    console.error(`${feature} generation failed:`, error);
-    throw error;
+    console.error(`${feature} generation failed with optimized service, falling back to original:`, error);
+    
+    // Fallback to original service
+    try {
+      const userFile = await urlToFile(userImageUrl, 'user-image.jpg');
+      const referenceFile = referenceImageUrl ? await urlToFile(referenceImageUrl, 'reference-image.jpg') : new File([''], 'empty.jpg', { type: 'image/jpeg' });
+      
+      const result = await originalGenerateImage(
+        userFile,
+        referenceFile,
+        options.bodyBuild || 'Average',
+        undefined, // selectedColor
+        apiKey
+      );
+
+      return result.finalImageUrl;
+    } catch (fallbackError) {
+      console.error(`${feature} generation failed with fallback service:`, fallbackError);
+      throw fallbackError;
+    }
   }
 };
 

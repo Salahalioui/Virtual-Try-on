@@ -37,9 +37,13 @@ const VirtualTryOnPage: React.FC = () => {
       const result = await generateEnhancedImage(
         virtualTryOn.subjectImage,
         virtualTryOn.outfitImage,
-        prompt,
+        editPrompt,
         'virtual-tryon',
-        state.apiKey
+        state.apiKey,
+        {
+          angle: virtualTryOn.selectedAngle,
+          bodyBuild: virtualTryOn.bodyBuild
+        }
       );
 
       updateVirtualTryOn({ resultImage: result, isProcessing: false });
