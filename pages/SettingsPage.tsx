@@ -15,7 +15,7 @@ const SettingsPage: React.FC = () => {
       setLocalApiKey(savedApiKey);
       updateApiKey(savedApiKey);
     }
-  }, [updateApiKey]);
+  }, []); // Empty dependency array - only run once on mount
 
   const handleSaveApiKey = () => {
     if (localApiKey.trim()) {
