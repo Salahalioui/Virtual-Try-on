@@ -12,6 +12,7 @@ import HomePage from './pages/HomePage';
 import VirtualTryOnPage from './pages/VirtualTryOnPage';
 import HairStylePage from './pages/HairStylePage';
 import BackgroundPage from './pages/BackgroundPage';
+import AboutPage from './pages/AboutPage';
 import SettingsPage from './pages/SettingsPage';
 import LandingScreen from './components/LandingScreen';
 
@@ -65,6 +66,7 @@ const App: React.FC = () => {
               <Route path="/virtual-tryon" element={<VirtualTryOnPage />} />
               <Route path="/hair-style" element={<HairStylePage />} />
               <Route path="/background" element={<BackgroundPage />} />
+              <Route path="/about" element={<AboutPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </div>

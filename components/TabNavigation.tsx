@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FiHome, FiUser, FiScissors, FiImage, FiSettings } from 'react-icons/fi';
+import { FiHome, FiUser, FiScissors, FiImage, FiSettings, FiInfo } from 'react-icons/fi';
 
 const tabs = [
   { 
@@ -35,6 +35,14 @@ const tabs = [
     path: '/background',
     gradient: 'from-green-500 to-teal-500',
     inactiveColor: 'text-green-600 hover:text-green-700'
+  },
+  { 
+    id: 'about', 
+    label: 'About', 
+    icon: FiInfo, 
+    path: '/about',
+    gradient: 'from-orange-500 to-red-500',
+    inactiveColor: 'text-orange-600 hover:text-orange-700'
   },
   { 
     id: 'settings', 
