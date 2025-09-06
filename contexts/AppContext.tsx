@@ -30,6 +30,8 @@ export interface BackgroundState {
 
 export interface AppState {
   apiKey: string;
+  apiProvider: 'openrouter' | 'direct';
+  geminiApiKey: string;
   user: {
     name: string;
     savedImages: string[];
@@ -42,6 +44,8 @@ export interface AppState {
 interface AppContextType {
   state: AppState;
   updateApiKey: (key: string) => void;
+  updateApiProvider: (provider: 'openrouter' | 'direct') => void;
+  updateGeminiApiKey: (key: string) => void;
   updateVirtualTryOn: (updates: Partial<VirtualTryOnState>) => void;
   updateHairStyle: (updates: Partial<HairStyleState>) => void;
   updateBackground: (updates: Partial<BackgroundState>) => void;
@@ -51,6 +55,8 @@ interface AppContextType {
 
 const initialState: AppState = {
   apiKey: '',
+  apiProvider: 'openrouter',
+  geminiApiKey: '',
   user: {
     name: '',
     savedImages: []
@@ -102,6 +108,14 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setState(prev => ({ ...prev, apiKey: key }));
   };
 
+  const updateApiProvider = (provider: 'openrouter' | 'direct') => {
+    setState(prev => ({ ...prev, apiProvider: provider }));
+  };
+
+  const updateGeminiApiKey = (key: string) => {
+    setState(prev => ({ ...prev, geminiApiKey: key }));
+  };
+
   const updateVirtualTryOn = (updates: Partial<VirtualTryOnState>) => {
     setState(prev => ({
       ...prev,
@@ -143,6 +157,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const contextValue: AppContextType = {
     state,
     updateApiKey,
+    updateApiProvider,
+    updateGeminiApiKey,
     updateVirtualTryOn,
     updateHairStyle,
     updateBackground,
