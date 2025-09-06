@@ -86,7 +86,9 @@ const HairStylePage: React.FC = () => {
         state.apiKey,
         {
           gender: hairStyle.selectedGender,
-          styleDescription: selectedStyle || hairStyle.hairStylePrompt
+          styleDescription: selectedStyle || hairStyle.hairStylePrompt,
+          apiProvider: state.apiProvider,
+          geminiApiKey: state.geminiApiKey
         }
       );
 

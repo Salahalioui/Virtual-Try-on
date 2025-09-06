@@ -44,7 +44,9 @@ const VirtualTryOnPage: React.FC = () => {
         state.apiKey,
         {
           angle: virtualTryOn.selectedAngle,
-          bodyBuild: virtualTryOn.bodyBuild
+          bodyBuild: virtualTryOn.bodyBuild,
+          apiProvider: state.apiProvider,
+          geminiApiKey: state.geminiApiKey
         }
       );
 
@@ -83,7 +85,10 @@ const VirtualTryOnPage: React.FC = () => {
     setLoadingMessage('🎽 Extracting outfit from your photo...');
 
     try {
-      const result = await extractOutfitFromImage(virtualTryOn.subjectImage, state.apiKey);
+      const result = await extractOutfitFromImage(virtualTryOn.subjectImage, state.apiKey, {
+        apiProvider: state.apiProvider,
+        geminiApiKey: state.geminiApiKey
+      });
       
       if (result.success && result.extractedOutfit) {
         updateVirtualTryOn({ outfitImage: result.extractedOutfit });

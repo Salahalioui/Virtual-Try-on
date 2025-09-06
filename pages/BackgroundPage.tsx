@@ -77,7 +77,9 @@ const BackgroundPage: React.FC = () => {
         {
           backgroundDescription: selectedPreset || background.backgroundPrompt || 'a beautiful setting',
           placementMode: background.placementMode,
-          placementInstructions: placementPrompt
+          placementInstructions: placementPrompt,
+          apiProvider: state.apiProvider,
+          geminiApiKey: state.geminiApiKey
         }
       );
 
