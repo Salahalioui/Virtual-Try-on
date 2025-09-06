@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/genai": "^1.17.0",
     "@types/react-router-dom": "^5.3.3",
     "framer-motion": "^12.23.12",
     "path": "^0.12.7",
