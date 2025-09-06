@@ -5,8 +5,9 @@
 
 import { generateTryOnImage as originalGenerateImage } from './geminiService';
 import { generateOptimizedImage } from './optimizedGeminiService';
+import { generateImageWithDirectGemini, generateTextToImageWithDirectGemini } from './geminiDirectService';
 
-// Enhanced service function that works with image URLs instead of Files
+// Enhanced service function that works with image URLs and supports both API providers
 export const generateEnhancedImage = async (
   userImageUrl: string,
   referenceImageUrl: string | null,
@@ -21,40 +22,72 @@ export const generateEnhancedImage = async (
     backgroundDescription?: string;
     placementMode?: 'auto' | 'manual';
     placementInstructions?: string;
+    apiProvider?: 'openrouter' | 'direct';
+    geminiApiKey?: string;
   } = {}
 ): Promise<string> => {
-  try {
-    // Use optimized service with best practices prompts
-    return await generateOptimizedImage(
-      userImageUrl,
-      referenceImageUrl,
-      feature,
-      {
-        ...options,
-        customPrompt: prompt // Use the provided prompt as additional instructions
-      },
-      apiKey
-    );
-  } catch (error) {
-    console.error(`${feature} generation failed with optimized service, falling back to original:`, error);
+  const provider = options.apiProvider || 'openrouter';
+  
+  if (provider === 'direct') {
+    console.log('🔗 Using Direct Gemini API for image generation...');
     
-    // Fallback to original service
     try {
       const userFile = await urlToFile(userImageUrl, 'user-image.jpg');
-      const referenceFile = referenceImageUrl ? await urlToFile(referenceImageUrl, 'reference-image.jpg') : new File([''], 'empty.jpg', { type: 'image/jpeg' });
+      const referenceFile = referenceImageUrl ? await urlToFile(referenceImageUrl, 'reference-image.jpg') : null;
       
-      const result = await originalGenerateImage(
+      if (!options.geminiApiKey) {
+        throw new Error('Google AI Studio API key is required for direct access');
+      }
+      
+      // Use direct Gemini service
+      const result = await generateImageWithDirectGemini(
         userFile,
         referenceFile,
-        options.bodyBuild || 'Average',
-        undefined, // selectedColor
+        prompt,
+        options.geminiApiKey
+      );
+      
+      return result.finalImageUrl;
+    } catch (error) {
+      console.error(`${feature} generation failed with Direct Gemini API:`, error);
+      throw error;
+    }
+  } else {
+    console.log('🔗 Using OpenRouter API for image generation...');
+    
+    try {
+      // Use optimized OpenRouter service with best practices prompts
+      return await generateOptimizedImage(
+        userImageUrl,
+        referenceImageUrl,
+        feature,
+        {
+          ...options,
+          customPrompt: prompt // Use the provided prompt as additional instructions
+        },
         apiKey
       );
+    } catch (error) {
+      console.error(`${feature} generation failed with optimized service, falling back to original:`, error);
+      
+      // Fallback to original service
+      try {
+        const userFile = await urlToFile(userImageUrl, 'user-image.jpg');
+        const referenceFile = referenceImageUrl ? await urlToFile(referenceImageUrl, 'reference-image.jpg') : new File([''], 'empty.jpg', { type: 'image/jpeg' });
+        
+        const result = await originalGenerateImage(
+          userFile,
+          referenceFile,
+          options.bodyBuild || 'Average',
+          undefined, // selectedColor
+          apiKey
+        );
 
-      return result.finalImageUrl;
-    } catch (fallbackError) {
-      console.error(`${feature} generation failed with fallback service:`, fallbackError);
-      throw fallbackError;
+        return result.finalImageUrl;
+      } catch (fallbackError) {
+        console.error(`${feature} generation failed with fallback service:`, fallbackError);
+        throw fallbackError;
+      }
     }
   }
 };
@@ -74,7 +107,11 @@ async function urlToFile(url: string, filename: string): Promise<File> {
 // Extract clothing/outfit from image using Gemini 2.5 Flash Image Generation
 export const extractOutfitFromImage = async (
   imageUrl: string,
-  apiKey: string
+  apiKey: string,
+  options: {
+    apiProvider?: 'openrouter' | 'direct';
+    geminiApiKey?: string;
+  } = {}
 ): Promise<{ success: boolean; extractedOutfit?: string; message: string }> => {
   try {
     console.log('🎽 Starting outfit extraction from user photo...');
@@ -108,80 +145,100 @@ export const extractOutfitFromImage = async (
 
 Focus only on the main clothing items visible on the person. Ignore accessories like shoes, jewelry, or bags unless they're integral to the outfit.`;
 
-    console.log('🚀 Sending outfit extraction request to OpenRouter API...');
+    const provider = options.apiProvider || 'openrouter';
+    
+    if (provider === 'direct') {
+      console.log('🚀 Sending outfit extraction request to Direct Gemini API...');
+      
+      if (!options.geminiApiKey) {
+        throw new Error('Google AI Studio API key is required for direct access');
+      }
+      
+      // Convert to File for direct API
+      const imageFile = await urlToFile(imageUrl, 'outfit-source.jpg');
+      const result = await generateTextToImageWithDirectGemini(extractionPrompt, options.geminiApiKey);
+      
+      return {
+        success: true,
+        extractedOutfit: result.finalImageUrl,
+        message: 'Outfit successfully extracted from your photo using Google AI Studio! You can now use it for virtual try-on.'
+      };
+    } else {
+      console.log('🚀 Sending outfit extraction request to OpenRouter API...');
 
-    const response = await fetch(
-      'https://openrouter.ai/api/v1/chat/completions',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-          'HTTP-Referer': window.location.href,
-          'X-Title': 'StyleAI Virtual Try-On'
-        },
-        body: JSON.stringify({
-          model: 'google/gemini-2.5-flash-image-preview',
-          messages: [{
-            role: 'user',
-            content: [
-              { type: 'text', text: extractionPrompt },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: `data:${mimeType};base64,${base64Image}`
+      const response = await fetch(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+            'HTTP-Referer': window.location.href,
+            'X-Title': 'StyleAI Virtual Try-On'
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash-image-preview',
+            messages: [{
+              role: 'user',
+              content: [
+                { type: 'text', text: extractionPrompt },
+                {
+                  type: 'image_url',
+                  image_url: {
+                    url: `data:${mimeType};base64,${base64Image}`
+                  }
                 }
-              }
-            ]
-          }],
-          modalities: ["image", "text"],
-          max_tokens: 1000,
-          temperature: 0.7
-        })
+              ]
+            }],
+            modalities: ["image", "text"],
+            max_tokens: 1000,
+            temperature: 0.7
+          })
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ API request failed:', response.status, errorText);
+        throw new Error(`API request failed: ${response.status} ${errorText}`);
       }
-    );
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ API request failed:', response.status, errorText);
-      throw new Error(`API request failed: ${response.status} ${errorText}`);
-    }
+      const result = await response.json();
+      console.log('📦 Received response from OpenRouter API:', JSON.stringify(result, null, 2));
 
-    const result = await response.json();
-    console.log('📦 Received response from OpenRouter API:', JSON.stringify(result, null, 2));
-
-    // Extract the generated image from OpenRouter response format
-    if (result.choices && result.choices[0] && result.choices[0].message) {
-      const message = result.choices[0].message;
-      
-      // Check for images in the response
-      if (message.images && message.images.length > 0) {
-        const imageData = message.images[0].image_url.url;
+      // Extract the generated image from OpenRouter response format
+      if (result.choices && result.choices[0] && result.choices[0].message) {
+        const message = result.choices[0].message;
         
-        console.log('✅ Successfully extracted outfit from photo!');
-        return {
-          success: true,
-          extractedOutfit: imageData, // Already a data URL
-          message: 'Outfit successfully extracted from your photo! You can now use it for virtual try-on.'
-        };
+        // Check for images in the response
+        if (message.images && message.images.length > 0) {
+          const imageData = message.images[0].image_url.url;
+          
+          console.log('✅ Successfully extracted outfit from photo!');
+          return {
+            success: true,
+            extractedOutfit: imageData, // Already a data URL
+            message: 'Outfit successfully extracted from your photo! You can now use it for virtual try-on.'
+          };
+        }
+        
+        // Also check if content contains image data (alternative format)
+        if (message.content && typeof message.content === 'string' && message.content.includes('data:image')) {
+          console.log('✅ Found image in content field!');
+          return {
+            success: true,
+            extractedOutfit: message.content,
+            message: 'Outfit successfully extracted from your photo! You can now use it for virtual try-on.'
+          };
+        }
+        
+        if (message.content) {
+          console.log('📝 OpenRouter response text:', message.content);
+        }
       }
-      
-      // Also check if content contains image data (alternative format)
-      if (message.content && typeof message.content === 'string' && message.content.includes('data:image')) {
-        console.log('✅ Found image in content field!');
-        return {
-          success: true,
-          extractedOutfit: message.content,
-          message: 'Outfit successfully extracted from your photo! You can now use it for virtual try-on.'
-        };
-      }
-      
-      if (message.content) {
-        console.log('📝 OpenRouter response text:', message.content);
-      }
-    }
 
-    throw new Error('No image data received from API');
+      throw new Error('No image data received from API');
+    }
 
   } catch (error) {
     console.error('❌ Outfit extraction failed:', error);
