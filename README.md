@@ -45,7 +45,8 @@
 - **Vite** for fast development and optimized builds
 
 ### AI Integration
-- **Google Gemini 2.5 Flash Image Preview** via OpenRouter API
+- **Google Gemini 2.5 Flash Image Preview** with direct API integration
+- **Dual API Support**: Direct Google Gemini API or OpenRouter proxy
 - **Professional Prompt Engineering** with photography terminology
 - **Multi-Modal Processing** supporting both images and text
 - **Advanced Error Handling** with user-friendly messages
@@ -59,7 +60,8 @@
 ## 📋 Prerequisites
 
 - **Node.js** (v18 or higher)
-- **OpenRouter API Key** - Get yours from [OpenRouter.ai](https://openrouter.ai)
+- **Google Gemini API Key** - Get yours from [Google AI Studio](https://aistudio.google.com/app/apikey)
+- **OpenRouter API Key** (optional alternative) - Get yours from [OpenRouter.ai](https://openrouter.ai)
 
 ## 🛠️ Installation & Setup
 
@@ -75,9 +77,10 @@
    ```
 
 3. **Set up your API key**
-   - Get an OpenRouter API key from [OpenRouter.ai](https://openrouter.ai)
+   - **Primary Option**: Get a Google Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+   - **Alternative**: Get an OpenRouter API key from [OpenRouter.ai](https://openrouter.ai)
    - Open the app and go to Settings
-   - Enter your API key and click "Save API Key"
+   - Enter your preferred API key and click "Save API Key"
 
 4. **Run the development server**
    ```bash
@@ -185,10 +188,19 @@ This application is optimized for deployment on modern hosting platforms:
 ## 🔐 Configuration
 
 ### API Keys
-The application uses OpenRouter API for accessing Google's Gemini AI model:
+The application supports two methods for accessing Google's Gemini AI model:
+
+**Primary Method - Direct Google Gemini API:**
+- Sign up at [Google AI Studio](https://aistudio.google.com/app/apikey)
+- Create a new API key
+- Configure it in the app's Settings page
+- Provides direct access to Google's latest models
+
+**Alternative Method - OpenRouter API:**
 - Sign up at [OpenRouter.ai](https://openrouter.ai)
 - Get your API key from the dashboard
 - Configure it in the app's Settings page
+- Provides access through OpenRouter's proxy service
 
 ### Storage
 - **API Key**: Stored securely in browser localStorage
