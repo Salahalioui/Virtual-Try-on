@@ -144,6 +144,21 @@ export const generateOptimizedImage = async (
 
     if (!response.ok) {
       const errorData = await response.text();
+      
+      // Provide specific error messages based on status code
+      if (response.status === 401) {
+        throw new Error('Invalid API key. Please check your OpenRouter API key in Settings.');
+      }
+      if (response.status === 429) {
+        throw new Error('API rate limit exceeded. Please wait a few minutes before trying again.');
+      }
+      if (response.status === 400) {
+        throw new Error('Bad request. Please check your image format and try again.');
+      }
+      if (response.status >= 500) {
+        throw new Error('Server error. The AI service is temporarily unavailable. Please try again later.');
+      }
+      
       throw new Error(`API request failed: ${response.status} - ${errorData}`);
     }
 
@@ -165,7 +180,12 @@ export const generateOptimizedImage = async (
       }
     }
 
-    throw new Error('No image data found in response');
+    // Check for content filtering or other response issues
+    if (data.choices && data.choices[0] && data.choices[0].finish_reason === 'content_filter') {
+      throw new Error('Content was rejected by safety filters. Please try using different images or descriptions.');
+    }
+    
+    throw new Error('No image data found in response. The AI service may be temporarily unavailable.');
 
   } catch (error) {
     console.error(`${feature} generation failed:`, error);

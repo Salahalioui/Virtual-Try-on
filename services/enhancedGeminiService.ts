@@ -70,6 +70,21 @@ export const generateEnhancedImage = async (
     } catch (error) {
       console.error(`${feature} generation failed with optimized service, falling back to original:`, error);
       
+      // Check for specific API errors and provide better user feedback
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('429') || errorMessage.includes('quota') || errorMessage.includes('rate limit')) {
+        throw new Error('API rate limit exceeded. Please wait a few minutes before trying again.');
+      }
+      if (errorMessage.includes('401') || errorMessage.includes('unauthorized') || errorMessage.includes('API key')) {
+        throw new Error('Invalid API key. Please check your OpenRouter API key in Settings.');
+      }
+      if (errorMessage.includes('content_filter') || errorMessage.includes('content policy')) {
+        throw new Error('Content was rejected by safety filters. Try using different images or descriptions.');
+      }
+      if (errorMessage.includes('Failed to process image')) {
+        throw new Error('Unable to process your image. Please try using a smaller image file (under 5MB) or different format (JPG/PNG).');
+      }
+      
       // Fallback to original service
       try {
         const userFile = await urlToFile(userImageUrl, 'user-image.jpg');
@@ -86,7 +101,18 @@ export const generateEnhancedImage = async (
         return result.finalImageUrl;
       } catch (fallbackError) {
         console.error(`${feature} generation failed with fallback service:`, fallbackError);
-        throw fallbackError;
+        
+        // Provide specific guidance based on the type of failure
+        const fallbackErrorMessage = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
+        if (fallbackErrorMessage.includes('Google AI Studio API key is required') || fallbackErrorMessage.includes('OpenRouter API key is required')) {
+          throw new Error(`${feature === 'hair-style' ? 'Hair styling' : feature === 'background' ? 'Background change' : 'Image generation'} failed. Your OpenRouter key has issues and no Google AI key is set up as backup. Please check your OpenRouter API key in Settings or add a Google AI Studio key for backup.`);
+        }
+        
+        if (fallbackErrorMessage.includes('Unable to process image on mobile device')) {
+          throw new Error(`${feature === 'hair-style' ? 'Hair styling' : feature === 'background' ? 'Background change' : 'Image generation'} failed due to mobile image processing issues. Please try using a smaller image file (under 3MB) and ensure it's in JPG or PNG format.`);
+        }
+        
+        throw new Error(`${feature === 'hair-style' ? 'Hair styling' : feature === 'background' ? 'Background change' : 'Image generation'} failed. Both primary and backup services are unavailable. Please:\n1. Check your API keys in Settings\n2. Ensure you have a stable internet connection\n3. Try again in a few minutes\n4. Use a smaller image if you're on mobile`);
       }
     }
   }
