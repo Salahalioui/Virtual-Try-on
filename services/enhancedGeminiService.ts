@@ -4,7 +4,7 @@
  */
 
 import { generateTryOnImage as originalGenerateImage } from './geminiService';
-import { generateOptimizedImage } from './optimizedGeminiService';
+import { generateOptimizedImage, getHairStylePrompt, getBackgroundPrompt } from './optimizedGeminiService';
 import { generateImageWithDirectGemini, generateTextToImageWithDirectGemini } from './geminiDirectService';
 
 // Enhanced service function that works with image URLs and supports both API providers
@@ -39,11 +39,32 @@ export const generateEnhancedImage = async (
         throw new Error('Google AI Studio API key is required for direct access');
       }
       
-      // Use direct Gemini service
+      // Build proper prompt using the same templates as OpenRouter
+      let enhancedPrompt = prompt; // Start with the provided prompt
+      
+      if (feature === 'hair-style') {
+        enhancedPrompt = getHairStylePrompt(
+          options.gender || 'unisex',
+          prompt, // Use provided prompt as custom instructions
+          options.styleDescription || 'a modern, stylish haircut',
+          !!referenceImageUrl // hasReference
+        );
+      } else if (feature === 'background') {
+        enhancedPrompt = getBackgroundPrompt(
+          options.backgroundDescription || 'a beautiful outdoor setting',
+          prompt, // Use provided prompt as custom instructions
+          options.placementInstructions,
+          options.placementMode === 'manual'
+        );
+      }
+      
+      console.log('📝 Using enhanced prompt for Direct Gemini API:', enhancedPrompt.substring(0, 100) + '...');
+      
+      // Use direct Gemini service with enhanced prompt
       const result = await generateImageWithDirectGemini(
         userFile,
         referenceFile,
-        prompt,
+        enhancedPrompt,
         options.geminiApiKey
       );
       
