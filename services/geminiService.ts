@@ -563,7 +563,7 @@ ${selectedColor ? '0.  **ABSOLUTE PRIORITY - Color Matching:** The outfit MUST b
 2.  **Preserve Identity & Scene:** You ABSOLUTELY MUST preserve the subject's face, hair, skin tone, body pose, and the original background from the subject image. The final image should look like it was taken in the same location. Do not change the person's identity.
 3.  **Fit the Outfit:** Intelligently fit the outfit from the second image onto the subject's body. The outfit should follow the contours of their body and pose naturally. Pay close attention to fabric drape, folds, and wrinkles to make it look realistic.
 4.  **Realistic Integration:** Adjust the lighting, shadows, and colors of the outfit to perfectly match the lighting conditions of the subject's photo. The outfit must cast realistic shadows on the body and the environment.
-5.  **Complete Replacement:** The new outfit must completely REPLACE the clothing the subject is currently wearing. If the outfit image contains an item that corresponds to an item the subject is wearing (e.g., both images contain a hat, or the outfit has glasses and the person is wearing glasses), you MUST replace the subject's original item with the new one. Ensure a complete replacement, leaving no parts of the original item visible.
+5.  **Complete Replacement:** The new outfit must completely REPLACE ALL clothing the subject is currently wearing. IGNORE what the person was originally wearing - do not try to match, adapt, or correspond clothing types. Replace EVERYTHING with the outfit from the reference image. If the reference shows a dress, replace pants and shirt with the dress. If it shows pants and a shirt, replace any dress, shorts, or other clothing with exactly what's shown. Remove ALL original garments and replace with the complete outfit exactly as shown in the reference image.
 6.  **Clean Output:** The final output must ONLY be the composed image. Do not add any text, logos, watermarks, or other artifacts.
 
 **CRITICAL NEGATIVE CONSTRAINTS (Things to ABSOLUTELY AVOID):**
@@ -571,7 +571,9 @@ ${selectedColor ? '0.  **ABSOLUTE PRIORITY - Color Matching:** The outfit MUST b
 - **DO NOT** change the background, lighting environment, or scene from the subject's photo
 - **DO NOT** add any text, logos, watermarks, branding, or digital artifacts to the final image
 - **DO NOT** generate an image where the person's body type differs from the specified '${bodyBuild}' build
-- **DO NOT** leave any part of the original clothing visible under or through the new outfit
+- **DO NOT** leave any part of the original clothing visible anywhere on the body
+- **DO NOT** try to match or adapt original clothing types with new ones
+- **DO NOT** keep any original garments - replace everything completely
 - **DO NOT** change the subject's pose, hand positions, or body positioning
 - **DO NOT** add accessories, jewelry, or items not present in the outfit image
 - **DO NOT** modify the subject's age, gender presentation, or physical characteristics

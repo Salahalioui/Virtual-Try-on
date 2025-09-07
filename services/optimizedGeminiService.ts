@@ -7,10 +7,30 @@
 const PROMPT_TEMPLATES = {
   virtualTryOn: {
     photorealistic: (angle: string, bodyBuild: string, additionalPrompt?: string) => `
-A photorealistic ${angle === 'front' ? 'straight-on portrait' : angle === 'side' ? 'side profile' : angle === '3quarter' ? '3/4 view portrait' : 'back view'} of a ${bodyBuild.toLowerCase()}-build person wearing the outfit from the reference image. The scene shows a natural indoor setting with soft, even lighting that highlights fabric textures and fit details. The person has a confident, natural expression. Captured with professional portrait lighting, emphasizing the clothing's drape, texture, and how it complements the person's body type. The image should show realistic fabric behavior, proper fit, and natural shadows. High-quality fashion photography style with crisp details and accurate colors.${additionalPrompt ? ` Additional styling: ${additionalPrompt}` : ''}
+Create a photorealistic ${angle === 'front' ? 'straight-on portrait' : angle === 'side' ? 'side profile' : angle === '3quarter' ? '3/4 view portrait' : 'back view'} of a ${bodyBuild.toLowerCase()}-build person wearing the COMPLETE outfit from the reference image.
+
+**OUTFIT REQUIREMENTS:**
+- Show ALL clothing items from the reference image
+- Display every garment layer (tops, bottoms, outerwear, etc.)
+- Ensure complete coverage as shown in reference
+- Maintain exact outfit composition and styling
+
+**SCENE & QUALITY:**
+Natural indoor setting with professional portrait lighting. Confident expression, realistic fabric textures, natural shadows, and proper draping for ${bodyBuild.toLowerCase()} build. High-quality fashion photography with crisp details and accurate colors.${additionalPrompt ? ` Scene details: ${additionalPrompt}` : ''}
     `,
     editing: (angle: string, bodyBuild: string, additionalPrompt?: string) => `
-Transform this person to wear the outfit shown in the reference image. Create a ${angle === 'front' ? 'front-facing' : angle === 'side' ? 'side profile' : angle === '3quarter' ? '3/4 angle' : 'back-facing'} view that shows how the clothing naturally fits a ${bodyBuild.toLowerCase()}-build body type. Maintain the person's facial features, skin tone, and body proportions while seamlessly integrating the new outfit. The clothing should drape naturally with realistic wrinkles, shadows, and fabric behavior. Ensure proper fit and proportions for the body type. Use natural lighting that enhances both the person and the clothing details.${additionalPrompt ? ` Style adjustments: ${additionalPrompt}` : ''}
+**COMPLETE CLOTHING REPLACEMENT:** Remove and replace ALL existing clothing on this person with the outfit from the reference image. Create a ${angle === 'front' ? 'front-facing' : angle === 'side' ? 'side profile' : angle === '3quarter' ? '3/4 angle' : 'back-facing'} view showing a ${bodyBuild.toLowerCase()}-build body type wearing the new outfit.
+
+**CRITICAL REPLACEMENT RULES:**
+- COMPLETELY REMOVE all original clothing items (shirts, pants, dresses, jackets, etc.)
+- REPLACE with ALL garments visible in the outfit image
+- DO NOT match or adapt original clothing types - replace everything
+- DO NOT leave any original clothing visible
+- IGNORE what the person was originally wearing
+
+**PRESERVE:** Facial features, skin tone, body proportions, pose, and background scene.
+
+**ENSURE:** Natural fabric drape, realistic shadows, proper fit for ${bodyBuild.toLowerCase()} build, professional lighting that enhances clothing details.${additionalPrompt ? ` Additional requirements: ${additionalPrompt}` : ''}
     `
   },
   
