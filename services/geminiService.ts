@@ -33,8 +33,19 @@ const getImageDimensions = (file: File): Promise<{ width: number; height: number
                 img.onerror = function(err) {
                     URL.revokeObjectURL(objectUrl);
                     console.error('📱 Mobile image load error, falling back to FileReader:', err);
-                    // Fallback to FileReader method
-                    getImageDimensionsWithFileReader(file).then(resolve).catch(reject);
+                    console.log('📱 Image file details - Name:', file.name, 'Size:', file.size, 'Type:', file.type);
+                    
+                    // Check if file size is reasonable for mobile
+                    if (file.size > 10 * 1024 * 1024) { // 10MB
+                        reject(new Error('Image file is too large for mobile processing. Please use an image smaller than 10MB.'));
+                        return;
+                    }
+                    
+                    // Fallback to FileReader method with additional error handling
+                    getImageDimensionsWithFileReader(file).then(resolve).catch((readerError) => {
+                        console.error('📱 Both mobile methods failed:', readerError);
+                        reject(new Error(`Unable to process image on mobile device. Try using a smaller image file or different format. Error: ${readerError.message}`));
+                    });
                 };
                 img.src = objectUrl;
                 return;
@@ -79,7 +90,10 @@ const getImageDimensionsWithFileReader = (file: File): Promise<{ width: number; 
         
         reader.onerror = function(err) {
             console.error('📱 FileReader error in getImageDimensionsWithFileReader:', err);
-            const errorMsg = err instanceof Event ? 'FileReader failed to read the image file for dimension analysis' : String(err);
+            // More robust error handling for mobile devices
+            const errorMsg = err instanceof Event ? 
+                `FileReader failed to read the image file. This may be due to file corruption, unsupported format, or device limitations. Try using a smaller image or different format.` : 
+                String(err);
             reject(new Error(`File reader error: ${errorMsg}`));
         };
         
