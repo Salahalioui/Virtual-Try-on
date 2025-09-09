@@ -71,6 +71,20 @@ export const generateEnhancedImage = async (
       return result.finalImageUrl;
     } catch (error) {
       console.error(`${feature} generation failed with Direct Gemini API:`, error);
+      
+      // Pass through the enhanced error message from Direct Gemini service
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      // Add feature-specific context to help users understand what failed
+      if (errorMessage.includes('🚦 Rate limit')) {
+        throw new Error(`${errorMessage}\n\n💡 Quick tip: Rate limits are per account, so this affects all features. Consider trying again later or switching to OpenRouter API in Settings.`);
+      }
+      
+      if (errorMessage.includes('🛡️ Content filtered')) {
+        const featureName = feature === 'hair-style' ? 'Hair styling' : feature === 'background' ? 'Background change' : 'Virtual try-on';
+        throw new Error(`${errorMessage}\n\n💡 ${featureName} tip: Try using photos with neutral poses and appropriate clothing. The safety filter can be sensitive to certain image combinations.`);
+      }
+      
       throw error;
     }
   } else {

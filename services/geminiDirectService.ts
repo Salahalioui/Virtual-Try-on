@@ -38,33 +38,49 @@ const handleDirectApiError = (error: any): string => {
   console.error('Direct Gemini API Error Details:', error);
   
   // Handle authentication errors
-  if (error.status === 401 || error.message?.includes('API key')) {
-    return "Your Google AI Studio API key is invalid or expired. Please check your API key in Settings and ensure it has the correct permissions for image generation.";
+  if (error.status === 401 || error.message?.includes('API key') || error.message?.includes('401') || error.message?.includes('unauthorized')) {
+    return "🔑 Authentication failed: Your Google AI Studio API key is invalid, expired, or doesn't have permissions for image generation. Please check your API key in Settings.";
   }
   
-  // Handle quota/rate limit errors
-  if (error.status === 429 || error.message?.includes('quota') || error.message?.includes('rate limit')) {
-    return "You've exceeded your Google AI Studio API quota or rate limits. Please wait a moment before trying again, or check your usage in the Google AI Studio console.";
+  // Handle quota/rate limit errors - most common issue
+  if (error.status === 429 || error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('rate limit') || error.message?.includes('Too Many Requests')) {
+    return "🚦 Rate limit exceeded: You've hit Google's API usage limits. Please wait 1-2 minutes before trying again. Consider upgrading your Google AI Studio plan for higher limits, or try again during off-peak hours.";
   }
   
-  // Handle content policy violations
-  if (error.status === 400 && error.message?.includes('content policy')) {
-    return "The image was rejected due to Google's content policy. Please try with different images that comply with the content guidelines.";
+  // Handle content policy violations / safety filters
+  if (error.status === 400 || error.message?.includes('content policy') || error.message?.includes('safety') || error.message?.includes('prohibited') || error.message?.includes('SAFETY')) {
+    return "🛡️ Content filtered: The image was rejected by Google's safety filters. Try using different images (avoid provocative poses, clothing, or content), or add more context to your request.";
   }
   
   // Handle model availability errors
-  if (error.message?.includes('model') && error.message?.includes('not available')) {
-    return "The Gemini image generation model is temporarily unavailable. Please try again later.";
+  if (error.status === 503 || error.message?.includes('503') || error.message?.includes('model') && error.message?.includes('not available') || error.message?.includes('temporarily unavailable')) {
+    return "🔧 Service unavailable: The Gemini image generation model is temporarily down. Please try again in a few minutes.";
   }
   
-  // Handle image format/size errors
-  if (error.message?.includes('image') && (error.message?.includes('format') || error.message?.includes('size'))) {
-    return "There's an issue with your image format or size. Please ensure your images are in JPG, PNG, or WebP format and under 10MB.";
+  // Handle request too large errors
+  if (error.status === 413 || error.message?.includes('413') || error.message?.includes('too large') || error.message?.includes('payload')) {
+    return "📏 File too large: Your images are too big for processing. Please use images smaller than 10MB and reduce resolution if needed.";
   }
   
-  // Generic error fallback
-  const errorMessage = error.message || error.error?.message || 'Unknown error occurred';
-  return `Google AI Studio API error: ${errorMessage}. Please check your API key and try again.`;
+  // Handle image format/processing errors
+  if (error.message?.includes('image') && (error.message?.includes('format') || error.message?.includes('invalid') || error.message?.includes('corrupt'))) {
+    return "🖼️ Image format issue: Please ensure your images are in JPG, PNG, or WebP format and not corrupted. Try re-saving or using different images.";
+  }
+  
+  // Handle network/connectivity errors
+  if (error.message?.includes('network') || error.message?.includes('fetch') || error.message?.includes('connection') || error.code === 'NETWORK_ERROR') {
+    return "🌐 Network error: Unable to connect to Google's servers. Please check your internet connection and try again.";
+  }
+  
+  // Handle timeout errors
+  if (error.message?.includes('timeout') || error.code === 'TIMEOUT') {
+    return "⏱️ Request timeout: The request took too long to process. This often happens during peak usage. Please try again with smaller images or wait a few minutes.";
+  }
+  
+  // Generic error fallback with more specific info
+  const errorMessage = error.message || error.error?.message || error.code || 'Unknown error occurred';
+  const statusInfo = error.status ? ` (Status: ${error.status})` : '';
+  return `⚠️ Google AI Studio error${statusInfo}: ${errorMessage}. If this persists, try switching to OpenRouter API in Settings, or check Google AI Studio console for account issues.`;
 };
 
 // Direct Gemini API service for image generation and editing
@@ -142,7 +158,8 @@ export const generateImageWithDirectGemini = async (
     
   } catch (error) {
     console.error('❌ Direct Gemini API generation failed:', error);
-    throw new Error(handleDirectApiError(error));
+    const friendlyError = handleDirectApiError(error);
+    throw new Error(friendlyError);
   }
 };
 
@@ -199,7 +216,8 @@ export const generateTextToImageWithDirectGemini = async (
     
   } catch (error) {
     console.error('❌ Direct Gemini API text-to-image generation failed:', error);
-    throw new Error(handleDirectApiError(error));
+    const friendlyError = handleDirectApiError(error);
+    throw new Error(friendlyError);
   }
 };
 

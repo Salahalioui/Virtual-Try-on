@@ -167,16 +167,22 @@ export const generateOptimizedImage = async (
       
       // Provide specific error messages based on status code
       if (response.status === 401) {
-        throw new Error('Invalid API key. Please check your OpenRouter API key in Settings.');
+        throw new Error('🔑 Authentication failed: Your OpenRouter API key is invalid or expired. Please check your API key in Settings.');
       }
       if (response.status === 429) {
-        throw new Error('API rate limit exceeded. Please wait a few minutes before trying again.');
+        throw new Error('🚦 Rate limit exceeded: You\'ve hit OpenRouter\'s usage limits. Please wait a few minutes before trying again, or check your OpenRouter dashboard for usage details.');
       }
       if (response.status === 400) {
-        throw new Error('Bad request. Please check your image format and try again.');
+        throw new Error('🖼️ Request error: There\'s an issue with your image format or request. Please ensure images are in JPG/PNG format and under 20MB.');
+      }
+      if (response.status === 402) {
+        throw new Error('💳 Payment required: Your OpenRouter account has insufficient credits. Please add credits to your OpenRouter account.');
+      }
+      if (response.status === 413) {
+        throw new Error('📏 File too large: Your images are too big. Please use images smaller than 20MB and reduce resolution if needed.');
       }
       if (response.status >= 500) {
-        throw new Error('Server error. The AI service is temporarily unavailable. Please try again later.');
+        throw new Error('🔧 Server error: OpenRouter\'s servers are temporarily unavailable. Please try again in a few minutes.');
       }
       
       throw new Error(`API request failed: ${response.status} - ${errorData}`);
@@ -201,11 +207,26 @@ export const generateOptimizedImage = async (
     }
 
     // Check for content filtering or other response issues
-    if (data.choices && data.choices[0] && data.choices[0].finish_reason === 'content_filter') {
-      throw new Error('Content was rejected by safety filters. Please try using different images or descriptions.');
+    if (data.choices && data.choices[0]) {
+      const choice = data.choices[0];
+      
+      if (choice.finish_reason === 'content_filter' || choice.finish_reason === 'safety') {
+        throw new Error('🛡️ Content filtered: Your request was blocked by safety filters. Try using different images with appropriate clothing and neutral poses, or modify your description.');
+      }
+      
+      if (choice.finish_reason === 'length') {
+        throw new Error('📏 Response too long: The AI response was truncated. Try using smaller images or simpler prompts.');
+      }
     }
     
-    throw new Error('No image data found in response. The AI service may be temporarily unavailable.');
+    // Check if the response indicates a quota/billing issue
+    if (data.error && data.error.message) {
+      if (data.error.message.includes('quota') || data.error.message.includes('billing')) {
+        throw new Error('💳 Quota exceeded: You\'ve reached your OpenRouter usage limits. Please check your account or add more credits.');
+      }
+    }
+    
+    throw new Error('😭 No image generated: The AI couldn\'t create an image from your request. Try different images or descriptions. If this persists, the service may be temporarily overloaded.');
 
   } catch (error) {
     console.error(`${feature} generation failed:`, error);
