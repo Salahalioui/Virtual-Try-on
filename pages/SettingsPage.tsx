@@ -49,13 +49,26 @@ const SettingsPage: React.FC = () => {
     if (localGeminiKey.trim()) {
       setValidatingGemini(true);
       try {
-        const isValid = await validateDirectGeminiApiKey(localGeminiKey.trim());
-        if (isValid) {
+        const validation = await validateDirectGeminiApiKey(localGeminiKey.trim());
+        if (validation.valid) {
           localStorage.setItem('gemini_api_key', localGeminiKey.trim());
           updateGeminiApiKey(localGeminiKey.trim());
           alert('Google AI Studio API key saved successfully!');
         } else {
-          alert('Invalid Google AI Studio API key. Please check your key and try again.');
+          // Show specific error message or allow saving anyway for rate limit cases
+          const errorMsg = validation.errorMessage || 'API key validation failed.';
+          if (errorMsg.includes('Rate limit') || errorMsg.includes('quota')) {
+            const proceed = window.confirm(
+              `${errorMsg}\n\nWould you like to save the key anyway? You can test it by using the app features.`
+            );
+            if (proceed) {
+              localStorage.setItem('gemini_api_key', localGeminiKey.trim());
+              updateGeminiApiKey(localGeminiKey.trim());
+              alert('Google AI Studio API key saved! (Validation skipped due to rate limits)');
+            }
+          } else {
+            alert(errorMsg);
+          }
         }
       } catch (error) {
         alert('Unable to validate API key. Please check your key and internet connection.');

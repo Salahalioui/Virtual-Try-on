@@ -203,20 +203,52 @@ export const generateTextToImageWithDirectGemini = async (
   }
 };
 
-// Validate Google AI Studio API key
-export const validateDirectGeminiApiKey = async (apiKey: string): Promise<boolean> => {
+// Validate Google AI Studio API key with detailed error information
+export const validateDirectGeminiApiKey = async (apiKey: string): Promise<{ valid: boolean; errorMessage?: string }> => {
   try {
     const genAI = new GoogleGenAI({ apiKey });
     
-    // Try a simple text-to-image request to validate the key
+    // Try a simple text request first (less likely to hit rate limits)
     await genAI.models.generateContent({
-      model: 'gemini-2.5-flash-image-preview',
-      contents: ['A simple test image']
+      model: 'gemini-2.5-flash',
+      contents: ['Hello']
     });
     
-    return true;
-  } catch (error) {
+    return { valid: true };
+  } catch (error: any) {
     console.error('API key validation failed:', error);
-    return false;
+    
+    // Handle specific error types
+    if (error.status === 429 || error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('rate limit')) {
+      return { 
+        valid: false, 
+        errorMessage: 'Rate limit exceeded. Your API key is valid but you\'ve hit Google\'s usage limits. Please wait a few minutes and try again, or use your key directly - no validation needed.' 
+      };
+    }
+    
+    if (error.status === 401 || error.message?.includes('401') || error.message?.includes('API key') || error.message?.includes('authentication')) {
+      return { 
+        valid: false, 
+        errorMessage: 'Invalid API key. Please check that you copied the complete API key from Google AI Studio.' 
+      };
+    }
+    
+    if (error.message?.includes('network') || error.message?.includes('fetch')) {
+      return { 
+        valid: false, 
+        errorMessage: 'Network error. Please check your internet connection and try again.' 
+      };
+    }
+    
+    return { 
+      valid: false, 
+      errorMessage: `Validation failed: ${error.message || 'Unknown error'}. Your key might still be valid - you can save it and test by using the app features.` 
+    };
   }
+};
+
+// Legacy function for backward compatibility
+export const validateDirectGeminiApiKeyLegacy = async (apiKey: string): Promise<boolean> => {
+  const result = await validateDirectGeminiApiKey(apiKey);
+  return result.valid;
 };
