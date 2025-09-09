@@ -87,7 +87,10 @@ const BackgroundPage: React.FC = () => {
     } catch (error) {
       console.error('Background change failed:', error);
       updateBackground({ isProcessing: false });
-      alert('Failed to change background. Please try again.');
+      
+      // Show the actual error message from enhanced error handling
+      const errorMessage = error instanceof Error ? error.message : 'Failed to change background. Please try again.';
+      alert(errorMessage);
     }
   }, [background, selectedPreset, placementPrompt, state.apiKey, updateBackground]);
 

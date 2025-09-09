@@ -96,7 +96,10 @@ const HairStylePage: React.FC = () => {
     } catch (error) {
       console.error('Hair styling failed:', error);
       updateHairStyle({ isProcessing: false });
-      alert('Failed to generate hair style. Please try again.');
+      
+      // Show the actual error message from enhanced error handling
+      const errorMessage = error instanceof Error ? error.message : 'Failed to generate hair style. Please try again.';
+      alert(errorMessage);
     }
   }, [hairStyle, selectedStyle, state.apiKey, updateHairStyle]);
 

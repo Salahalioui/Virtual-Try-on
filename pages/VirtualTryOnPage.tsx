@@ -54,7 +54,10 @@ const VirtualTryOnPage: React.FC = () => {
     } catch (error) {
       console.error('Virtual try-on failed:', error);
       updateVirtualTryOn({ isProcessing: false });
-      alert('Failed to generate try-on image. Please try again.');
+      
+      // Show the actual error message from enhanced error handling
+      const errorMessage = error instanceof Error ? error.message : 'Failed to generate try-on image. Please try again.';
+      alert(errorMessage);
     }
   }, [virtualTryOn, editPrompt, state.apiKey, updateVirtualTryOn]);
 
